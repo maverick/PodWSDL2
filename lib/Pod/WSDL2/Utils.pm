@@ -1,4 +1,4 @@
-package Pod::WSDL::Utils;
+package Pod::WSDL2::Utils;
 
 use strict;
 use warnings;
@@ -119,11 +119,11 @@ __END__
 
 =head1 NAME
 
-Pod::WSDL::Utils - Utilities and constants for Pod::WSDL (internal use only)
+Pod::WSDL2::Utils - Utilities and constants for Pod::WSDL2 (internal use only)
 
 =head1 DESCRIPTION
 
-This module is used internally by Pod::WSDL. It is unlikely that you have to interact directly with it. If that is the case, take a look at the code, it is rather simple.
+This module is used internally by Pod::WSDL2. It is unlikely that you have to interact directly with it. If that is the case, take a look at the code, it is rather simple.
 
 =head1 METHODS
 
@@ -137,19 +137,19 @@ Returns a type description for type attributes in the wsdl document
 
 =head1 EXAMPLES
 
-see Pod::WSDL
+see Pod::WSDL2
 
 =head1 BUGS
 
-see Pod::WSDL
+see Pod::WSDL2
 
 =head1 TODO
 
-see Pod::WSDL
+see Pod::WSDL2
 
 =head1 SEE ALSO
 
-  Pod::WSDL ;-)
+  Pod::WSDL2 ;-)
  
 =head1 AUTHOR
 

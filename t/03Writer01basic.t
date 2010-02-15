@@ -1,13 +1,13 @@
 #!/usr/bin/perl -w
 use Test::More tests => 16;
-BEGIN {use_ok('Pod::WSDL::Writer')}
+BEGIN {use_ok('Pod::WSDL2::Writer')}
 use strict;
 use warnings;
 
 # ****************************************************************
 # test constructor()
 
-my $wr = new Pod::WSDL::Writer(pretty => 1, withDocumentation => 1);
+my $wr = new Pod::WSDL2::Writer(pretty => 1, withDocumentation => 1);
 
 ok($wr->{_pretty} == 1, 'Constructor: Read argument pretty correctly.');
 ok($wr->{_withDocumentation} == 1, 'Constructor: Read argument withDocumentation correctly.');
@@ -30,7 +30,7 @@ ok($wr->output . "\n" eq $expectedOutput, 'wrNewLine works.');
 
 # ****************************************************************
 # test wrElem()
-$wr = new Pod::WSDL::Writer();
+$wr = new Pod::WSDL2::Writer();
 $wr->wrElem('empty', 'foo', bar => 1, bloerch => 'ggg');
 $expectedOutput =<<EOU;
 <?xml version="1.0" encoding="UTF-8"?>
@@ -38,7 +38,7 @@ $expectedOutput =<<EOU;
 EOU
 ok($wr->output . "\n" eq $expectedOutput, 'Writing empty elements works.');
 
-$wr = new Pod::WSDL::Writer();
+$wr = new Pod::WSDL2::Writer();
 $wr->wrElem('start', 'foo', bar => 1, bloerch => 'ggg');
 $wr->wrElem('end', 'foo', bar => 1, bloerch => 'ggg');
 $expectedOutput =<<EOU;
@@ -49,17 +49,17 @@ ok($wr->output . "\n" eq $expectedOutput, 'Writing non empty elements works.');
 
 # ****************************************************************
 # test wrDoc()
-$wr = new Pod::WSDL::Writer(withDocumentation => 1);
+$wr = new Pod::WSDL2::Writer(withDocumentation => 1);
 $wr->wrElem('start', 'foo', bar => 1, bloerch => 'ggg');
 $wr->wrDoc('This is my documentation.');
 $wr->wrElem('end', 'foo', bar => 1, bloerch => 'ggg');
 $expectedOutput =<<EOU;
 <?xml version="1.0" encoding="UTF-8"?>
-<foo bar="1" bloerch="ggg"><wsdl:documentation>This is my documentation.</wsdl:documentation></foo>
+<foo bar="1" bloerch="ggg"><wsdl:documentation><![CDATA[This is my documentation.]]></wsdl:documentation></foo>
 EOU
 ok($wr->output . "\n" eq $expectedOutput, 'wrDoc works.');
 
-$wr = new Pod::WSDL::Writer(withDocumentation => 0);
+$wr = new Pod::WSDL2::Writer(withDocumentation => 0);
 $wr->wrElem('start', 'foo', bar => 1, bloerch => 'ggg');
 $wr->wrDoc('This is my documentation.');
 $wr->wrElem('end', 'foo', bar => 1, bloerch => 'ggg');
@@ -71,7 +71,7 @@ ok($wr->output . "\n" eq $expectedOutput, 'wrDoc writes no documentation when ob
 
 # ****************************************************************
 # test withDocumentation()
-$wr = new Pod::WSDL::Writer(withDocumentation => 1);
+$wr = new Pod::WSDL2::Writer(withDocumentation => 1);
 $wr->withDocumentation(0);
 $wr->wrElem('start', 'foo', bar => 1, bloerch => 'ggg');
 $wr->wrDoc('This is my documentation.');
@@ -82,14 +82,14 @@ $expectedOutput =<<EOU;
 EOU
 ok($wr->output . "\n" eq $expectedOutput, 'wrDoc works.');
 
-$wr = new Pod::WSDL::Writer(withDocumentation => 0);
+$wr = new Pod::WSDL2::Writer(withDocumentation => 0);
 $wr->withDocumentation(1);
 $wr->wrElem('start', 'foo', bar => 1, bloerch => 'ggg');
 $wr->wrDoc('This is my documentation.');
 $wr->wrElem('end', 'foo', bar => 1, bloerch => 'ggg');
 $expectedOutput =<<EOU;
 <?xml version="1.0" encoding="UTF-8"?>
-<foo bar="1" bloerch="ggg"><wsdl:documentation>This is my documentation.</wsdl:documentation></foo>
+<foo bar="1" bloerch="ggg"><wsdl:documentation><![CDATA[This is my documentation.]]></wsdl:documentation></foo>
 EOU
 ok($wr->output . "\n" eq $expectedOutput, 'wrDoc writes no documentation when object not initialized with withDocumentation.');
 

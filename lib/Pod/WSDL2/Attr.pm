@@ -1,10 +1,10 @@
-package Pod::WSDL::Attr;
+package Pod::WSDL2::Attr;
 use strict;
 use warnings;
-use Pod::WSDL::AUTOLOAD;
+use Pod::WSDL2::AUTOLOAD;
 
 our $VERSION = "0.05";
-our @ISA = qw/Pod::WSDL::AUTOLOAD/;
+our @ISA = qw/Pod::WSDL2::AUTOLOAD/;
 
 our %FORBIDDEN_METHODS = (
 	name      => {get => 1, set =>  0},
@@ -47,22 +47,22 @@ __END__
 
 =head1 NAME
 
-Pod::WSDL::Attr - Represents the WSDL pod for an attribute of a class (internal use only)
+Pod::WSDL2::Attr - Represents the WSDL pod for an attribute of a class (internal use only)
 
 =head1 SYNOPSIS
 
-  use Pod::WSDL::Attr;
-  my $attr = new Pod::WSDL::Attr('_ATTR $string _NEEDED This attribute is for blah ...');
+  use Pod::WSDL2::Attr;
+  my $attr = new Pod::WSDL2::Attr('_ATTR $string _NEEDED This attribute is for blah ...');
 
 =head1 DESCRIPTION
 
-This module is used internally by Pod::WSDL. It is unlikely that you have to interact directly with it. If that is the case, take a look at the code, it is rather simple.
+This module is used internally by Pod::WSDL2. It is unlikely that you have to interact directly with it. If that is the case, take a look at the code, it is rather simple.
 
 =head1 METHODS
 
 =head2 new
 
-Instantiates a new Pod::WSDL::Attr. The method needs one parameter, the attribute string from the pod. Please see SYNOPSIS or the section "Pod Syntax" in the description of Pod::WSDL.
+Instantiates a new Pod::WSDL2::Attr. The method needs one parameter, the attribute string from the pod. Please see SYNOPSIS or the section "Pod Syntax" in the description of Pod::WSDL2.
 
 =head1 EXTERNAL DEPENDENCIES
 
@@ -70,19 +70,19 @@ Instantiates a new Pod::WSDL::Attr. The method needs one parameter, the attribut
 
 =head1 EXAMPLES
 
-see Pod::WSDL
+see Pod::WSDL2
 
 =head1 BUGS
 
-see Pod::WSDL
+see Pod::WSDL2
 
 =head1 TODO
 
-see Pod::WSDL
+see Pod::WSDL2
 
 =head1 SEE ALSO
 
-  Pod::WSDL
+  Pod::WSDL2
  
 =head1 AUTHOR
 

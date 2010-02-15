@@ -1,5 +1,17 @@
 NAME
-    Pod::WSDL - Creates WSDL documents from (extended) pod
+    Pod::WSDL2 - Creates WSDL documents from (extended) pod
+
+	This is a fork of Pod::WSDL by Tarek Ahmed, which appears
+	to be unmaintained.  The original Pod::WSDL covered about 
+	80-90% of what my colleagues and I (Maverick) needed it to do.
+	I suspect the same is probably true for others.  If Tarek
+	becomes active again, I'll happily merge my changes back
+	into the original; it's not my intent to make some of
+	"hostile take over", just to contribute back and not let
+	a excellent module rot away.
+
+	Where appropriate I've modified and extended the original
+	documentation.
 
 INSTALLATION
 
@@ -11,33 +23,33 @@ To install this module type the following:
    make install
 
 SYNOPSIS
-      use Pod::WSDL;
+      use Pod::WSDL2;
 
-      my $pod = new Pod::WSDL(source => 'My::Server', 
+      my $pod = new Pod::WSDL2(source => 'My::Server', 
         location => 'http://localhost/My/Server',
         pretty => 1,
         withDocumentation => 1);
 
       print $pod->WSDL;
 
-DESCRIPTION - How to use Pod::WSDL
+DESCRIPTION - How to use Pod::WSDL2
   Parsing the pod
-    How does Pod::WSDL work? If you instantiate a Pod::WSDL object with the
+    How does Pod::WSDL2 work? If you instantiate a Pod::WSDL2 object with the
     name of the module (or the path of the file, or an open filehandle)
     providing the web service like this
 
-      my $pwsdl = new Pod::WSDL(source => 'My::Module', 
+      my $pwsdl = new Pod::WSDL2(source => 'My::Module', 
             location => 'http://my.services.location/on/the/web');
 
-    Pod::WSDL will try to find "My::Module" in @INC, open the file, parse it
+    Pod::WSDL2 will try to find "My::Module" in @INC, open the file, parse it
     for WSDL directives and prepare the information for WSDL output. By
     calling
 
       $pwsdl->WSDL;
 
-    Pod::WSDL will output the WSDL document. That's it.
+    Pod::WSDL2 will output the WSDL document. That's it.
 
-    When using Pod::WSDL, the parser expects you to do the following:
+    When using Pod::WSDL2, the parser expects you to do the following:
 
     * Put the pod directly above the subroutines which the web service's
       client is going to call. There may be whitespace between the pod and
@@ -48,11 +60,11 @@ DESCRIPTION - How to use Pod::WSDL
       treated as pod. Anything composing a paragraph together with "=for
       WSDL" will be treated as pod.
 
-    Any subroutine not preceeded by WSDL pod will be left unmentioned. Any
+    Any subroutine not proceeded by WSDL pod will be left unmentioned. Any
     standard pod will be ignored (though, for an exception to this, see the
     section on own complex types below).
 
-    The individual instructions for Pod::WSDL always begin with a keyword,
+    The individual instructions for Pod::WSDL2 always begin with a keyword,
     like "_RETURN" or "_DOC" or "_FAULT". After this different things may
     follow, according to the specific type of instruction. The instruction
     may take one or more lines - everything up to the next line beginning
@@ -60,7 +72,7 @@ DESCRIPTION - How to use Pod::WSDL
     instruction.
 
   Describing Methods
-    How do we use Pod::WSDL? In describing a web service's method we have to
+    How do we use Pod::WSDL2? In describing a web service's method we have to
     say something about parameters, return values and faults. In addition
     you might want to add some documentation to these items and to the
     method itself.
@@ -86,21 +98,21 @@ DESCRIPTION - How to use Pod::WSDL
     can move on. "NAME" is the name of your parameter. It does not have any
     real function (the order of the parameters being the only important
     thing) but it is nice to have it since in a WSDL document the parameters
-    need to have names. So instead of having Pod::WSDL automatically
+    need to have names. So instead of having Pod::WSDL2 automatically
     generate cryptic names (it cannot do that right now) be nice to the
     client and use some sensible name. The "TYPE" of the parameters can be
     any of the xsd (schema) standard types (see [5]) or a type of your own
-    creation. The "$" resp. "@" symbols tell Pod::WSDL and your client if it
+    creation. The "$" resp. "@" symbols tell Pod::WSDL2 and your client if it
     is a scalar or array parameter. Everything following the type up to the
     next instruction is treated as the parameter's documentation. If you
-    call the constructor of Pod::WSDL with the argument "withDocumentation
+    call the constructor of Pod::WSDL2 with the argument "withDocumentation
     => 1", it will be added to the WSDL.
 
    Return Values
     Return values work like parameters but since in WSDL there is provision
     for only one return value (you have (in)out parameters, or can return
     arrays if that isn't enough), you do not need to give them a name.
-    Pod::WSDL will automatically call them 'Return' in the WSDL document.
+    Pod::WSDL2 will automatically call them 'Return' in the WSDL document.
     So, the structure of "_RETURN" instructions is
 
       _RETURN ($|@)TYPE DESCRIPTION
@@ -110,9 +122,9 @@ DESCRIPTION - How to use Pod::WSDL
       _RETURN $string Returns a string
 
     The pod for one method may only have one "_RETURN" instruction. If you
-    don't specify a "_RETURN" instruction, Pod::WSDL will assume that you
+    don't specify a "_RETURN" instruction, Pod::WSDL2 will assume that you
     return void. Of course the perl subroutine still will return something,
-    but your web service won't. To make this clear Pod::WSDL generates an
+    but your web service won't. To make this clear Pod::WSDL2 generates an
     empty response message for this.
 
     If you want some method to be a one way operation (see [4], ch. 2.4.1),
@@ -149,18 +161,18 @@ DESCRIPTION - How to use Pod::WSDL
       _DOC Here comes my documentation ...
 
     That's it. Use several lines of documentation if you like. If you
-    instantiate the Pod::WSDL object with the parameter "withDocumentation
+    instantiate the Pod::WSDL2 object with the parameter "withDocumentation
     => 1", it will be written into the WSDL document.
 
   Describing Modules - Using Own Complex Types
     Quite often it will be the case that you have to use complex types as
     parameters or return values. One example of this we saw when talking
     about faults: you might want to create custom fault types (exceptions)
-    of your own to fullfill special needs in the communication between web
+    of your own to fulfill special needs in the communication between web
     service and client. But of course you also might simply want to pass a
     complex parameter like a address object containing customer data to your
     application. WSDL provides the means to describe complex types borrowing
-    the xsd schema syntax. Pod::WSDL makes use of this by allowing you to
+    the xsd schema syntax. Pod::WSDL2 makes use of this by allowing you to
     add WSDL pod to your own types. Assuming you have some own type like
 
       package My::Type;
@@ -183,18 +195,18 @@ DESCRIPTION - How to use Pod::WSDL
 
       =end WSDL
 
-    Put this pod anywhere within the package My::Type. Pod::WSDL will find
+    Put this pod anywhere within the package My::Type. Pod::WSDL2 will find
     it (if it is in @INC), parse it and integrate it into the WSDL document.
     The "_ATTR" instruction works exactly as the "_IN", "_OUT" and "_INOUT"
     instructions for methods (see above).
 
-    If you initialize the Pod::WSDL object using "withDocumentation => 1",
-    Pod::WSDL will look for standard pod in the module, parse it using
+    If you initialize the Pod::WSDL2 object using "withDocumentation => 1",
+    Pod::WSDL2 will look for standard pod in the module, parse it using
     Pod::Text and put it into the WSDL document.
 
 METHODS
   new
-    Instantiates a new Pod::WSDL.
+    Instantiates a new Pod::WSDL2.
 
    Parameters
     *   source - Name of the source file, package of the source module or
@@ -273,7 +285,7 @@ TODO
     outside the pod, too.
 
   Handle Several Package Declarations in One File
-    So far, Pod::WSDL assumes a one to one relation between packages and
+    So far, Pod::WSDL2 assumes a one to one relation between packages and
     files. If it meets several package declarations in one file, it will
     fail some way or the other. For most uses, one package in one file will
     presumably suffice, but it would be nice to be able to handle the other
@@ -289,13 +301,13 @@ TODO
     you might not be able to put the WSDL pod into the module files. So why
     not fetch it from somewhere else like a configuration file?
 
-  Integrate Pod::WSDL with SOAP::Lite
+  Integrate Pod::WSDL2 with SOAP::Lite
     With Axis, you simply call the web service's URL with the parameter
     '?wsdl' and you get the WSDL document. It would be nice to be able to do
     this with SOAP::Lite, too.
 
   Implement Non RPC Style Messages
-    Pod::WSDL writes WSDL documents in encoded RPC style. It should be able
+    Pod::WSDL2 writes WSDL documents in encoded RPC style. It should be able
     to generate literal RPC and document styles, too.
 
 REFERENCES

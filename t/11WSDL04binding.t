@@ -1,13 +1,13 @@
 #!/usr/bin/perl -w
-package Pod::WSDL;
+package Pod::WSDL2;
 use Test::More tests => 15;
-BEGIN {use_ok('Pod::WSDL');}
+BEGIN {use_ok('Pod::WSDL2');}
 use lib length $0 > 11 ? substr $0, 0, length($0) - 17 : '.';
 use strict;
 use warnings;
 use XML::XPath;
 
-my $p = new Pod::WSDL(source => 'My::BindingTest',
+my $p = new Pod::WSDL2(source => 'My::BindingTest',
 	               location => 'http://localhost/My/Test',
 	               pretty => 1,
 	               withDocumentation => 1);

@@ -1,17 +1,17 @@
-package Pod::WSDL::Method;
+package Pod::WSDL2::Method;
 
 use strict;
 use warnings;
-use Pod::WSDL::Param;
-use Pod::WSDL::Fault;
-use Pod::WSDL::Return;
-use Pod::WSDL::Doc;
-use Pod::WSDL::Writer;
-use Pod::WSDL::Utils qw(:writexml :namespaces :messages);
-use Pod::WSDL::AUTOLOAD;
+use Pod::WSDL2::Param;
+use Pod::WSDL2::Fault;
+use Pod::WSDL2::Return;
+use Pod::WSDL2::Doc;
+use Pod::WSDL2::Writer;
+use Pod::WSDL2::Utils qw(:writexml :namespaces :messages);
+use Pod::WSDL2::AUTOLOAD;
 
 our $VERSION = "0.05";
-our @ISA = qw/Pod::WSDL::AUTOLOAD/;
+our @ISA = qw/Pod::WSDL2::AUTOLOAD/;
 
 our $EMPTY_MESSAGE_NAME    = 'empty';
 our $REQUEST_SUFFIX_NAME   = 'Request';
@@ -33,13 +33,13 @@ sub new {
 	my ($pkg, %data) = @_;
 	
 	die "A method needs a name, died"   unless defined $data{name};
-	die "A method needs a writer, died" unless defined $data{writer} and ref $data{writer} eq 'Pod::WSDL::Writer';
+	die "A method needs a writer, died" unless defined $data{writer} and ref $data{writer} eq 'Pod::WSDL2::Writer';
 	
 	bless {
 		_name                => $data{name},
 		_params              => $data{params} || [],
 		_return              => $data{return},
-		_doc                 => $data{doc} || new Pod::WSDL::Doc('_DOC'),
+		_doc                 => $data{doc} || new Pod::WSDL2::Doc('_DOC'),
 		_faults              => $data{faults} || [],
 		_oneway              => $data{oneWay} || 0,
 		_writer              => $data{writer},
@@ -220,7 +220,7 @@ sub _writePartElem {
 	my %attrs = (name => $name);
 	
 	if ($style eq $RPC_STYLE) {
-		$attrs{type} = Pod::WSDL::Utils::getTypeDescr($type, $array, $ownType);
+		$attrs{type} = Pod::WSDL2::Utils::getTypeDescr($type, $array, $ownType);
 	} elsif ($style eq $DOCUMENT_STYLE) {
 		$attrs{element} = ($isReturn ? lcfirst $RETURN_SUFFIX_NAME : $name) . $PART_IN . ucfirst $me->requestName
 	}
@@ -268,7 +268,7 @@ sub writeDocumentStyleSchemaElements {
 	for my $param (@{$me->params}) {
 		$me->writer->wrElem($EMPTY_PREFIX_NAME, 'element', 
 			name => $param->name . $PART_IN . ucfirst $me->requestName,
-			type => Pod::WSDL::Utils::getTypeDescr($param->type, $param->array, $types->{$param->type}));
+			type => Pod::WSDL2::Utils::getTypeDescr($param->type, $param->array, $types->{$param->type}));
 	}
 
 	for my $fault (@{$me->faults}) {
@@ -278,13 +278,13 @@ sub writeDocumentStyleSchemaElements {
 
 		$me->writer->wrElem($EMPTY_PREFIX_NAME, 'element', 
 			name => $fault->wsdlName . $MESSAGE_PART,
-			type => Pod::WSDL::Utils::getTypeDescr($fault->type, 0, $types->{$fault->type}));
+			type => Pod::WSDL2::Utils::getTypeDescr($fault->type, 0, $types->{$fault->type}));
 	}
 
 	if (!$me->oneway and $me->return) {
 		$me->writer->wrElem($EMPTY_PREFIX_NAME, 'element', 
 			name => lcfirst $RETURN_SUFFIX_NAME . $PART_IN . ucfirst $me->requestName,
-			type => Pod::WSDL::Utils::getTypeDescr($me->return->type, $me->return->array, $types->{$me->return->type}));
+			type => Pod::WSDL2::Utils::getTypeDescr($me->return->type, $me->return->array, $types->{$me->return->type}));
 	}
 }
 1;
@@ -292,22 +292,22 @@ __END__
 
 =head1 NAME
 
-Pod::WSDL::Method - Represents a method in Pod::WSDL (internal use only)
+Pod::WSDL2::Method - Represents a method in Pod::WSDL2 (internal use only)
 
 =head1 SYNOPSIS
 
-  use Pod::WSDL::Method;
-  my $m = new Pod::WSDL::Method(name => 'mySub', writer => 'myWriter', doc => new Pod::WSDL::Doc($docStr), return => new Pod::WSDL::Return($retStr));
+  use Pod::WSDL2::Method;
+  my $m = new Pod::WSDL2::Method(name => 'mySub', writer => 'myWriter', doc => new Pod::WSDL2::Doc($docStr), return => new Pod::WSDL2::Return($retStr));
 
 =head1 DESCRIPTION
 
-This module is used internally by Pod::WSDL. It is unlikely that you have to interact directly with it. If that is the case, take a look at the code, it is rather simple.
+This module is used internally by Pod::WSDL2. It is unlikely that you have to interact directly with it. If that is the case, take a look at the code, it is rather simple.
 
 =head1 METHODS
 
 =head2 new
 
-Instantiates a new Pod::WSDL::Method.
+Instantiates a new Pod::WSDL2::Method.
 
 =head2 Parameters
 
@@ -319,19 +319,19 @@ name - name of the method, mandatory
 
 =item
 
-doc - a Pod::WSDL::Doc object, can be ommitted, use method doc later
+doc - a Pod::WSDL2::Doc object, can be ommitted, use method doc later
 
 =item
 
-return - a Pod::WSDL::Return object, can be ommitted, use method return later
+return - a Pod::WSDL2::Return object, can be ommitted, use method return later
 
 =item
 
-params - ref to array of Pod::WSDL::Param objects, can be ommitted, use addParam() later
+params - ref to array of Pod::WSDL2::Param objects, can be ommitted, use addParam() later
 
 =item
 
-faults - ref to array of Pod::WSDL::Fault objects, can be ommitted, use addFault() later
+faults - ref to array of Pod::WSDL2::Fault objects, can be ommitted, use addFault() later
 
 =item
 
@@ -345,19 +345,19 @@ writer - XML::Writer-Object for output, mandatory
 
 =head2 addParam
 
-Add a Pod::WSDL::Param object to Pod::WSDL::Method
+Add a Pod::WSDL2::Param object to Pod::WSDL2::Method
 
 =head2 addFault
 
-Add a Pod::WSDL::Fault object to Pod::WSDL::Method
+Add a Pod::WSDL2::Fault object to Pod::WSDL2::Method
 
 =head2 return
 
-Get or Set the Pod::WSDL::Return object for Pod::WSDL::Method
+Get or Set the Pod::WSDL2::Return object for Pod::WSDL2::Method
 
 =head2 doc
 
-Get or Set the Pod::WSDL::Doc object for Pod::WSDL::Method
+Get or Set the Pod::WSDL2::Doc object for Pod::WSDL2::Method
 
 =head2 requestName
 
@@ -385,19 +385,19 @@ Write operation child for porttype element in XML output
 
 =head1 EXAMPLES
 
-see Pod::WSDL
+see Pod::WSDL2
 
 =head1 BUGS
 
-see Pod::WSDL
+see Pod::WSDL2
 
 =head1 TODO
 
-see Pod::WSDL
+see Pod::WSDL2
 
 =head1 SEE ALSO
 
-  Pod::WSDL :-)
+  Pod::WSDL2 :-)
  
 =head1 AUTHOR
 

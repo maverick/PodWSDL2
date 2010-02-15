@@ -1,4 +1,4 @@
-package Pod::WSDL;
+package Pod::WSDL2;
 
 # TODO: make array based objects work as own complex types
 # TODO: non RPC style bindings
@@ -10,22 +10,22 @@ use warnings;
 use Carp;
 use IO::Scalar;
 use Pod::Text;
-use Pod::WSDL::Method;
-use Pod::WSDL::Return;
-use Pod::WSDL::Param;
-use Pod::WSDL::Fault;
-use Pod::WSDL::Doc;
-use Pod::WSDL::Type;
-use Pod::WSDL::Writer;
-use Pod::WSDL::Utils qw(:writexml :namespaces :messages :types);
-use Pod::WSDL::AUTOLOAD;
+use Pod::WSDL2::Method;
+use Pod::WSDL2::Return;
+use Pod::WSDL2::Param;
+use Pod::WSDL2::Fault;
+use Pod::WSDL2::Doc;
+use Pod::WSDL2::Type;
+use Pod::WSDL2::Writer;
+use Pod::WSDL2::Utils qw(:writexml :namespaces :messages :types);
+use Pod::WSDL2::AUTOLOAD;
 
 # -------------------------------------------------------------------------- #
 # ------------------ > "CONSTANTS" ----------------------------------------- #
 # -------------------------------------------------------------------------- #
 
 our $VERSION                = "0.05";
-our @ISA                    = qw/Pod::WSDL::AUTOLOAD/;
+our @ISA                    = qw/Pod::WSDL2::AUTOLOAD/;
 
 our $WSDL_METHOD_REGEXP_BEG = qr/^=(?:begin)\s+wsdl\s*\n(.*?)^=(?:cut|end\s+wsdl).*?^\s*sub\s+(\w+)/ims;
 our $WSDL_METHOD_REGEXP_FOR = qr/^=(?:for)\s+wsdl\s*\n(.*?)\n\n^\s*sub\s+(\w+)/ims;
@@ -37,7 +37,7 @@ our $PORT_TYPE_SUFFIX_NAME  = 'Handler';
 our $BINDING_SUFFIX_NAME    = 'SoapBinding';
 our $SERVICE_SUFFIX_NAME    = 'Service';
 
-# Pod::WSDL::AUTOLOAD uses this
+# Pod::WSDL2::AUTOLOAD uses this
 our %FORBIDDEN_METHODS = (
 	source              => {get => 0, set =>  0},
 	source              => {get => 0, set =>  0},
@@ -76,7 +76,7 @@ sub new {
 		_targetNS            => undef,
 		_generateNS          => sub {return $DEFAULT_NS_DECL . $nsnum++},
 		_types               => {},
-		_writer              => new Pod::WSDL::Writer(withDocumentation => $data{withDocumentation}, pretty => $data{pretty}),
+		_writer              => new Pod::WSDL2::Writer(withDocumentation => $data{withDocumentation}, pretty => $data{pretty}),
 		_standardTypeArrays  => {},
 		_emptymessagewritten => 0,
 		_use                 => $data{use} || $ENCODED_USE,
@@ -239,7 +239,7 @@ sub _addType {
 		
 	new Pod::Text()->parse_from_filehandle($IN, $OUT);
 		
-	$me->types->{$name} = new Pod::WSDL::Type(name => $name, array => $array, pod => $pod, descr => $out, writer => $me->writer);
+	$me->types->{$name} = new Pod::WSDL2::Type(name => $name, array => $array, pod => $pod, descr => $out, writer => $me->writer);
 	
 	for my $attr (@{$me->types->{$name}->attrs}) {
 		unless (exists $XSD_STANDARD_TYPE_MAP{$attr->type}) {
@@ -258,7 +258,7 @@ sub _parseMethodPod {
 	my $methodName = shift;
 	my $podData    = shift;
 	
-	my $method = new Pod::WSDL::Method(name => $methodName, writer => $me->writer);
+	my $method = new Pod::WSDL2::Method(name => $methodName, writer => $me->writer);
 	
 	my @data = split "\n", $podData;
 	
@@ -269,31 +269,35 @@ sub _parseMethodPod {
 		
 		if ($data[$i] !~ /^\s*(_INOUT|_IN|_OUT|_RETURN|_DOC|_FAULT|_ONEWAY)/i) {
 			if ($i > 0) {
-				$data[$i - 1] .= " $data[$i]";
+				$data[$i - 1] .= "\n$data[$i]";
 				$data[$i] = '';
 			}
 		}
 	}
 
 	for (@data) {
-		s/\s+/ /g;
-		s/^ //;
-		s/ $//;
+		s/^\s*//;
+		s/\s*$//;
 
-		if (/^_(INOUT|IN|OUT)\s+/i) {
-			my $param = new Pod::WSDL::Param($_);
-			$method->addParam($param);
-			$me->standardTypeArrays->{$param->type} = 1 if $param->array and $XSD_STANDARD_TYPE_MAP{$param->type};
-		} elsif (/^_RETURN\s+/i) {
-			my $return = new Pod::WSDL::Return($_);
-			$method->return($return);
-			$me->standardTypeArrays->{$return->type} = 1 if $return->array and $XSD_STANDARD_TYPE_MAP{$return->type};
-		} elsif (/^_DOC\s+/i) {
-			$method->doc(new Pod::WSDL::Doc($_));
-		} elsif (/^_FAULT\s+/i) {
-			$method->addFault(new Pod::WSDL::Fault($_));
-		} elsif (/^_ONEWAY\s*$/i) {
-			$method->oneway(1);
+		if (/^_DOC\s+/i) {
+			$method->doc(new Pod::WSDL2::Doc($_));
+		}
+		else {
+			s/\s+/ /g;
+			if (/^_(INOUT|IN|OUT)\s+/i) {
+				my $param = new Pod::WSDL2::Param($_);
+				$method->addParam($param);
+				$me->standardTypeArrays->{$param->type} = 1 if $param->array and $XSD_STANDARD_TYPE_MAP{$param->type};
+			} elsif (/^_RETURN\s+/i) {
+				my $return = new Pod::WSDL2::Return($_);
+				$method->return($return);
+				$me->standardTypeArrays->{$return->type} = 1 if $return->array and $XSD_STANDARD_TYPE_MAP{$return->type};
+			}
+			elsif (/^_FAULT\s+/i) {
+				$method->addFault(new Pod::WSDL2::Fault($_));
+			} elsif (/^_ONEWAY\s*$/i) {
+				$method->oneway(1);
+			}
 		}
 	}
 
@@ -467,35 +471,35 @@ __END__
 
 =head1 NAME
 
-Pod::WSDL - Creates WSDL documents from (extended) pod
+Pod::WSDL2 - Creates WSDL documents from (extended) pod
 
 =head1 SYNOPSIS
 
-  use Pod::WSDL;
+  use Pod::WSDL2;
 
-  my $pod = new Pod::WSDL(source => 'My::Server', 
+  my $pod = new Pod::WSDL2(source => 'My::Server', 
     location => 'http://localhost/My/Server',
     pretty => 1,
     withDocumentation => 1);
 
   print $pod->WSDL;
 
-=head1 DESCRIPTION - How to use Pod::WSDL
+=head1 DESCRIPTION - How to use Pod::WSDL2
 
 =head2 Parsing the pod
 
-How does Pod::WSDL work? If you instantiate a Pod::WSDL object with the name of the module (or the path of the file, or an open filehandle) providing the web service like this
+How does Pod::WSDL2 work? If you instantiate a Pod::WSDL2 object with the name of the module (or the path of the file, or an open filehandle) providing the web service like this
 
-  my $pwsdl = new Pod::WSDL(source => 'My::Module', 
+  my $pwsdl = new Pod::WSDL2(source => 'My::Module', 
 	location => 'http://my.services.location/on/the/web');
 
-Pod::WSDL will try to find C<My::Module> in C<@INC>, open the file, parse it for WSDL directives and prepare the information for WSDL output. By calling
+Pod::WSDL2 will try to find C<My::Module> in C<@INC>, open the file, parse it for WSDL directives and prepare the information for WSDL output. By calling
 
   $pwsdl->WSDL;
 
-Pod::WSDL will output the WSDL document. That's it.
+Pod::WSDL2 will output the WSDL document. That's it.
 
-When using Pod::WSDL, the parser expects you to do the following:
+When using Pod::WSDL2, the parser expects you to do the following:
 
 =over 2
 
@@ -511,15 +515,15 @@ Use the C<=begin>/C<=end> respectively the C<=for> directives according to stand
 
 Any subroutine not preceeded by WSDL pod will be left unmentioned. Any standard pod will be ignored (though, for an exception to this, see the section on own complex types below).
 
-The individual instructions for Pod::WSDL always begin with a keyword, like C<_RETURN> or C<_DOC> or C<_FAULT>. After this different things may follow, according to the specific type of instruction. The instruction may take one or more lines - everything up to the next line beginning with a keyword or the end of the pod is belonging to the current instruction.
+The individual instructions for Pod::WSDL2 always begin with a keyword, like C<_RETURN> or C<_DOC> or C<_FAULT>. After this different things may follow, according to the specific type of instruction. The instruction may take one or more lines - everything up to the next line beginning with a keyword or the end of the pod is belonging to the current instruction.
 
 =head2 Describing Methods
 
-How do we use Pod::WSDL? In describing a web service's method we have to say something about parameters, return values and faults. In addition you might want to add some documentation to these items and to the method itself.
+How do we use Pod::WSDL2? In describing a web service's method we have to say something about parameters, return values and faults. In addition you might want to add some documentation to these items and to the method itself.
 
 =head3 Parameters
 
-WSDL differentiates between in-, out- and inout-parameters, so we do that, too. A different matter is the question, if the client can do this too, but now we are talking about possibilities, not actualities.
+WSDL2 differentiates between in-, out- and inout-parameters, so we do that, too. A different matter is the question, if the client can do this too, but now we are talking about possibilities, not actualities.
 
 The pod string describing a parameter has the structure
 
@@ -533,11 +537,11 @@ or
 
   _INOUT bar @bar An array of bars
 
-You will easily guess what C<_IN>, C<_OUT> and C<_INOUT> stand for so we can move on. C<NAME> is the name of your parameter. It does not have any real function (the order of the parameters being the only important thing) but it is nice to have it since in a WSDL document the parameters need to have names. So instead of having Pod::WSDL automatically generate cryptic names (it cannot do that right now) be nice to the client and use some sensible name. The C<TYPE> of the parameters can be any of the xsd (schema) standard types (see [5]) or a type of your own creation. The C<$> resp. C<@> symbols tell Pod::WSDL and your client if it is a scalar or array parameter. Everything following the type up to the next instruction is treated as the parameter's documentation. If you call the constructor of Pod::WSDL with the argument C<withDocumentation =E<gt> 1>, it will be added to the WSDL.
+You will easily guess what C<_IN>, C<_OUT> and C<_INOUT> stand for so we can move on. C<NAME> is the name of your parameter. It does not have any real function (the order of the parameters being the only important thing) but it is nice to have it since in a WSDL document the parameters need to have names. So instead of having Pod::WSDL2 automatically generate cryptic names (it cannot do that right now) be nice to the client and use some sensible name. The C<TYPE> of the parameters can be any of the xsd (schema) standard types (see [5]) or a type of your own creation. The C<$> resp. C<@> symbols tell Pod::WSDL2 and your client if it is a scalar or array parameter. Everything following the type up to the next instruction is treated as the parameter's documentation. If you call the constructor of Pod::WSDL2 with the argument C<withDocumentation =E<gt> 1>, it will be added to the WSDL.
 
 =head3 Return Values
 
-Return values work like parameters but since in WSDL there is provision for only one return value (you have (in)out parameters, or can return arrays if that isn't enough), you do not need to give them a name. Pod::WSDL will automatically call them 'Return' in the WSDL document. So, the structure of C<_RETURN> instructions is
+Return values work like parameters but since in WSDL there is provision for only one return value (you have (in)out parameters, or can return arrays if that isn't enough), you do not need to give them a name. Pod::WSDL2 will automatically call them 'Return' in the WSDL document. So, the structure of C<_RETURN> instructions is
 
   _RETURN ($|@)TYPE DESCRIPTION
 
@@ -545,7 +549,7 @@ as in
 
   _RETURN $string Returns a string
 
-The pod for one method may only have one C<_RETURN> instruction. If you don't specify a C<_RETURN> instruction, Pod::WSDL will assume that you return void. Of course the perl subroutine still will return something, but your web service won't. To make this clear Pod::WSDL generates an empty response message for this.
+The pod for one method may only have one C<_RETURN> instruction. If you don't specify a C<_RETURN> instruction, Pod::WSDL2 will assume that you return void. Of course the perl subroutine still will return something, but your web service won't. To make this clear Pod::WSDL2 generates an empty response message for this.
 
 If you want some method to be a one way operation (see [4], ch. 2.4.1), say so by using the instruction C<_ONEWAY> in the pod. In this case no response message will be generated and a C<_RETURN> instruction will be ignored.
 
@@ -569,11 +573,11 @@ Method documentation is easily explained. It's structure is
   
   _DOC Here comes my documentation ...
 
-That's it. Use several lines of documentation if you like. If you instantiate the Pod::WSDL object with the parameter C<withDocumentation =E<gt> 1>, it will be written into the WSDL document.
+That's it. Use several lines of documentation if you like. If you instantiate the Pod::WSDL2 object with the parameter C<withDocumentation =E<gt> 1>, it will be written into the WSDL document.
 
 =head2 Describing Modules - Using Own Complex Types
 
-Quite often it will be the case that you have to use complex types as parameters or return values. One example of this we saw when talking about faults: you might want to create custom fault types (exceptions) of your own to fullfill special needs in the communication between web service and client. But of course you also might simply want to pass a complex parameter like a address object containing customer data to your application. WSDL provides the means to describe complex types borrowing the xsd schema syntax. Pod::WSDL makes use of this by allowing you to add WSDL pod to your own types. Assuming you have some own type like
+Quite often it will be the case that you have to use complex types as parameters or return values. One example of this we saw when talking about faults: you might want to create custom fault types (exceptions) of your own to fullfill special needs in the communication between web service and client. But of course you also might simply want to pass a complex parameter like a address object containing customer data to your application. WSDL provides the means to describe complex types borrowing the xsd schema syntax. Pod::WSDL2 makes use of this by allowing you to add WSDL pod to your own types. Assuming you have some own type like
 
   package My::Type;
 
@@ -595,15 +599,15 @@ simply describe the keys of your blessed hash like this.
 
   =end WSDL
 
-Put this pod anywhere within the package My::Type. Pod::WSDL will find it (if it is in @INC), parse it and integrate it into the WSDL document. The C<_ATTR> instruction works exactly as the C<_IN>, C<_OUT> and C<_INOUT> instructions for methods (see above). 
+Put this pod anywhere within the package My::Type. Pod::WSDL2 will find it (if it is in @INC), parse it and integrate it into the WSDL document. The C<_ATTR> instruction works exactly as the C<_IN>, C<_OUT> and C<_INOUT> instructions for methods (see above). 
 
-If you initialize the Pod::WSDL object using C<withDocumentation =E<gt> 1>, Pod::WSDL will look for standard pod in the module, parse it using Pod::Text and put it into the WSDL document.
+If you initialize the Pod::WSDL2 object using C<withDocumentation =E<gt> 1>, Pod::WSDL2 will look for standard pod in the module, parse it using Pod::Text and put it into the WSDL document.
 
 =head1 METHODS
 
 =head2 new
 
-Instantiates a new Pod::WSDL.
+Instantiates a new Pod::WSDL2.
 
 =head3 Parameters
 
@@ -694,7 +698,7 @@ Right know, the pod is found using some rather complex regular expressions. This
 
 =head2 Handle Several Package Declarations in One File
 
-So far, Pod::WSDL assumes a one to one relation between packages and files. If it meets several package declarations in one file, it will fail some way or the other. For most uses, one package in one file will presumably suffice, but it would be nice to be able to handle the other cases, too.
+So far, Pod::WSDL2 assumes a one to one relation between packages and files. If it meets several package declarations in one file, it will fail some way or the other. For most uses, one package in one file will presumably suffice, but it would be nice to be able to handle the other cases, too.
 
 =head2 Handle Array based blessed References
 
@@ -704,13 +708,13 @@ Array based blessed references used for complex types are something of a problem
 
 If you use complex types for parameters that are not your own (we assume, that the module containing the web service always is your own), you might not be able to put the WSDL pod into the module files. So why not fetch it from somewhere else like a configuration file?
 
-=head2 Integrate Pod::WSDL with SOAP::Lite
+=head2 Integrate Pod::WSDL2 with SOAP::Lite
 
 With Axis, you simply call the web service's URL with the parameter '?wsdl' and you get the WSDL document. It would be nice to be able to do this with SOAP::Lite, too.
 
 =head2 Implement Non RPC Style Messages
 
-Pod::WSDL writes WSDL documents in encoded RPC style. It should be able to generate literal RPC and document styles, too.
+Pod::WSDL2 writes WSDL documents in encoded RPC style. It should be able to generate literal RPC and document styles, too.
 
 =head1 REFERENCES
 
@@ -732,8 +736,8 @@ Pod::WSDL writes WSDL documents in encoded RPC style. It should be able to gener
   http://www.w3.org/TR/wsdl
   
   WSDL::Generator (a different way to do it)
-  SOAP::WSDL (the client side)
-  SOAP::Clean::WSDL (I have not tried this)
+  SOAP::WSDL2 (the client side)
+  SOAP::Clean::WSDL2 (I have not tried this)
  
 =head1 AUTHOR
 

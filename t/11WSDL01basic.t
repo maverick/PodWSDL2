@@ -1,25 +1,25 @@
 #!/usr/bin/perl -w
-package Pod::WSDL;
+package Pod::WSDL2;
 use Test::More tests => 33;
-BEGIN {use_ok('Pod::WSDL');}
+BEGIN {use_ok('Pod::WSDL2');}
 use lib length $0 > 10 ? substr $0, 0, length($0) - 16 : '.';
 use strict;
 use warnings;
 use XML::XPath;
 
 eval {
-	new Pod::WSDL(source => 'bla');
+	new Pod::WSDL2(source => 'bla');
 };
 
 ok($@ =~ /I need a location/, 'new dies, if it does not get a location');
 
 eval {
-	new Pod::WSDL(location => 'bla');
+	new Pod::WSDL2(location => 'bla');
 };
 
 ok($@ =~ /I need a file or module name or a filehandle, died/, 'new dies, if it does not get a source');
 
-my $p = new Pod::WSDL(source => 'My::Server', 
+my $p = new Pod::WSDL2(source => 'My::Server', 
 	location => 'http://localhost/My/Server',
 	pretty => 1,
 	withDocumentation => 1);
@@ -47,10 +47,10 @@ ok($p->writer->{_indent} == 1, 'Initialized indentation correctly');
 ok($p->writer->{_lastTag} eq '', 'Initialized lastTag correctly');
 
 my $loc = $p->location;
-ok($p->WSDL =~ m#<!-- WSDL for $loc created by Pod::WSDL version: $Pod::WSDL::VERSION on .*? -->#, 'Generated comment correctly');
+ok($p->WSDL =~ m#<!-- WSDL for $loc created by Pod::WSDL2 version: $Pod::WSDL2::VERSION on .*? -->#, 'Generated comment correctly');
 
 # arguments of method WSDL()
-$p = new Pod::WSDL(source => 'My::OperationTest', 
+$p = new Pod::WSDL2(source => 'My::OperationTest', 
 	location => 'http://localhost/My/OperationTest',
 	pretty => 1,
 	withDocumentation => 1);
@@ -71,7 +71,7 @@ ok($xp->exists('/wsdl:definitions/wsdl:types/schema/complexType[@name="MyFoo"]/a
 ok($xp->exists('/wsdl:definitions/wsdl:types/schema/complexType[@name="MyFoo"]/sequence/element[@name="_bar"]/annotation/documentation'), 'Found documentation in schema part (element).');
 ok($xp->exists('/wsdl:definitions/wsdl:portType[@name="MyOperationTestHandler"]/wsdl:operation[@name="testGeneral"]/wsdl:documentation'), 'Found documentation in operation part.');
 
-$p = new Pod::WSDL(source => 'My::Server', 
+$p = new Pod::WSDL2(source => 'My::Server', 
 	location => 'http://localhost/My/Server',
 	pretty => 1);
 

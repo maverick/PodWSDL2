@@ -1,7 +1,7 @@
 #!/usr/bin/perl -w
-package Pod::WSDL;
+package Pod::WSDL2;
 use Test::More tests => 54;
-BEGIN {use_ok('Pod::WSDL');}
+BEGIN {use_ok('Pod::WSDL2');}
 use lib length $0 > 10 ? substr $0, 0, length($0) - 16 : '.';
 use strict;
 use warnings;
@@ -50,7 +50,7 @@ my @xsdTypes = qw(
 	base64Binary
 );
 
-my $p = new Pod::WSDL(source => 'My::TypeTest',
+my $p = new Pod::WSDL2(source => 'My::TypeTest',
 	               location => 'http://localhost/My/TypeTest',
 	               pretty => 1,
 	               withDocumentation => 1);
@@ -104,13 +104,13 @@ ok($xp->exists('/wsdl:definitions/wsdl:types/schema/complexType/sequence/element
 
 # test non existing types
 eval {
-$p = new Pod::WSDL(source => 'My::WrongTypeTest',
+$p = new Pod::WSDL2(source => 'My::WrongTypeTest',
 	               location => 'http://localhost/My/WrongTypeTest',
 	               pretty => 1,
 	               withDocumentation => 1);
 };
 
-ok($@ =~ /Can't find any file 'Non::Existent::Type' and can't locate it as a module in \@INC either \(\@INC contains/, 'Pod::WSDL dies on encountering unknown type');
+ok($@ =~ /Can't find any file 'Non::Existent::Type' and can't locate it as a module in \@INC either \(\@INC contains/, 'Pod::WSDL2 dies on encountering unknown type');
 
 __END__
 This is just to help making tests ...

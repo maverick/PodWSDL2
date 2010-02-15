@@ -1,40 +1,40 @@
 #!/usr/bin/perl -w
 use Test::More tests => 11;
-BEGIN {use_ok('Pod::WSDL::Return')}
+BEGIN {use_ok('Pod::WSDL2::Return')}
 use strict;
 use warnings;
 
 eval {
-	my $a1 = new Pod::WSDL::Return();
+	my $a1 = new Pod::WSDL2::Return();
 };
 
 ok(defined $@, 'new dies, if it does not get a string');
 
 eval {
-	my $a1 = new Pod::WSDL::Return('$string blah blah ...');
+	my $a1 = new Pod::WSDL2::Return('$string blah blah ...');
 };
 
 ok(defined $@, 'new dies, if it does not get a string beginning with _RETURN');
 
 eval {
-	my $a1 = new Pod::WSDL::Return('_RETURN string blah blah ...');
+	my $a1 = new Pod::WSDL2::Return('_RETURN string blah blah ...');
 };
 
 ok(defined $@, 'new dies, if array/scalar type is not specified');
 
-my $a1 = new Pod::WSDL::Return('_RETURN $string blah blah ...');
+my $a1 = new Pod::WSDL2::Return('_RETURN $string blah blah ...');
 
 ok($a1->type eq 'string', 'Read type correctly from input');
 ok($a1->array == 0, 'Read scalar type correctly from input');
 ok($a1->descr eq 'blah blah ...', 'Read descr correctly from input');
 
-$a1 = new Pod::WSDL::Return('   _RETURN $string blah blah ...');
+$a1 = new Pod::WSDL2::Return('   _RETURN $string blah blah ...');
 ok($a1->type eq 'string', 'Handles whitespace before _RETURN correctly.');
 
-$a1 = new Pod::WSDL::Return('_RETURN @string blah blah ...');
+$a1 = new Pod::WSDL2::Return('_RETURN @string blah blah ...');
 ok($a1->array == 1, 'Read array type correctly from input');
 
-$a1 = new Pod::WSDL::Return('_RETURN @string');
+$a1 = new Pod::WSDL2::Return('_RETURN @string');
 ok($a1->descr eq '', 'No description is handled correctly');
 
 eval {

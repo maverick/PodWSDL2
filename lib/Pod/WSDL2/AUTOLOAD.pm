@@ -1,4 +1,4 @@
-package Pod::WSDL::AUTOLOAD;
+package Pod::WSDL2::AUTOLOAD;
 
 use Carp;
 use strict;
@@ -50,12 +50,12 @@ __END__
 
 =head1 NAME
 
-Pod::WSDL::AUTOLOAD - Base class for autoloading (internal use only)
+Pod::WSDL2::AUTOLOAD - Base class for autoloading (internal use only)
 
 =head1 SYNOPSIS
 
   package Foo;
-  our @ISA = qw/Pod::WSDL::AUTOLOAD/;
+  our @ISA = qw/Pod::WSDL2::AUTOLOAD/;
 
   sub new {
     my $pgk = shift;
@@ -75,7 +75,7 @@ Pod::WSDL::AUTOLOAD - Base class for autoloading (internal use only)
   
 =head1 DESCRIPTION
 
-This module is used internally by Pod::WSDL. It is unlikely that you have to interact directly with it. The Pod::WSDL::AUTOLOADER is used as a base class and handels autoloading of accessor methods. If there is a property called _foo in a hash based blessed reference, it will allow the use of the method 'foo' as a getter and setter. As a getter is returns the value of _foo, as a setter it sets _foo with the argument and returns the object. You can exclude the accessor by using a hash %FORBIDDEN_METHODS in the derived class like that:
+This module is used internally by Pod::WSDL2. It is unlikely that you have to interact directly with it. The Pod::WSDL2::AUTOLOADER is used as a base class and handels autoloading of accessor methods. If there is a property called _foo in a hash based blessed reference, it will allow the use of the method 'foo' as a getter and setter. As a getter is returns the value of _foo, as a setter it sets _foo with the argument and returns the object. You can exclude the accessor by using a hash %FORBIDDEN_METHODS in the derived class like that:
 
   our %FORBIDDEN_METHODS = (
 	foo => {get => 1, set => 0},
@@ -94,19 +94,19 @@ In this example it will not be allowed to set _foo and to set or get _bar. If th
 
 =head1 EXAMPLES
 
-see Pod::WSDL
+see Pod::WSDL2
 
 =head1 BUGS
 
-see Pod::WSDL
+see Pod::WSDL2
 
 =head1 TODO
 
-see Pod::WSDL
+see Pod::WSDL2
 
 =head1 SEE ALSO
 
-  Pod::WSDL :-)
+  Pod::WSDL2 :-)
  
 =head1 AUTHOR
 

@@ -1,8 +1,8 @@
 #!/usr/bin/perl -w
 package Foo;
-use Pod::WSDL::AUTOLOAD;
+use Pod::WSDL2::AUTOLOAD;
 
-our @ISA = qw/Pod::WSDL::AUTOLOAD/;
+our @ISA = qw/Pod::WSDL2::AUTOLOAD/;
 
 sub new {
 	my $pgk = shift;

@@ -1,13 +1,13 @@
-package Pod::WSDL::Type;
+package Pod::WSDL2::Type;
 
 use strict;
 use warnings;
-use Pod::WSDL::Attr;
-use Pod::WSDL::Utils qw(:writexml :namespaces :types);
-use Pod::WSDL::AUTOLOAD;
+use Pod::WSDL2::Attr;
+use Pod::WSDL2::Utils qw(:writexml :namespaces :types);
+use Pod::WSDL2::AUTOLOAD;
 
 our $VERSION = "0.05";
-our @ISA = qw/Pod::WSDL::AUTOLOAD/;
+our @ISA = qw/Pod::WSDL2::AUTOLOAD/;
 
 our %FORBIDDEN_METHODS = (
 	name     => {get => 1, set =>  0},
@@ -66,7 +66,7 @@ sub _initPod {
 		s/ $//;
 
 		if (/^\s*_ATTR\s+/i) {
-			push @{$me->{_attrs}}, new Pod::WSDL::Attr($_);
+			push @{$me->{_attrs}}, new Pod::WSDL2::Attr($_);
 		} elsif (/^\s*_REFTYPE\s+(HASH|ARRAY)/i) {
 			$me->reftype(uc $1);
 		}
@@ -87,7 +87,7 @@ sub writeComplexType {
 	
 		for my $attr (@{$me->attrs}) {
 			my %tmpArgs = (name => $attr->name, 
-				type => Pod::WSDL::Utils::getTypeDescr($attr->type, $attr->array, $ownTypes->{$attr->type}));
+				type => Pod::WSDL2::Utils::getTypeDescr($attr->type, $attr->array, $ownTypes->{$attr->type}));
 			
 			$tmpArgs{nillable} = $attr->nillable if $attr->nillable;
 			
@@ -123,22 +123,22 @@ __END__
 
 =head1 NAME
 
-Pod::WSDL::Type - Represents a type in Pod::WSDL (internal use only)
+Pod::WSDL2::Type - Represents a type in Pod::WSDL2 (internal use only)
 
 =head1 SYNOPSIS
 
-  use Pod::WSDL::Type;
-  my $type = new Pod::WSDL::Param(name => 'My::Foo', array => 0, descr => 'My foo bars');
+  use Pod::WSDL2::Type;
+  my $type = new Pod::WSDL2::Param(name => 'My::Foo', array => 0, descr => 'My foo bars');
 
 =head1 DESCRIPTION
 
-This module is used internally by Pod::WSDL. It is unlikely that you have to interact directly with it. If that is the case, take a look at the code, it is rather simple.
+This module is used internally by Pod::WSDL2. It is unlikely that you have to interact directly with it. If that is the case, take a look at the code, it is rather simple.
 
 =head1 METHODS
 
 =head2 new
 
-Instantiates a new Pod::WSDL::Type.
+Instantiates a new Pod::WSDL2::Type.
 
 =head3 Parameters
 
@@ -158,7 +158,7 @@ descr - description of the type
 
 =item
 
-pod - the wsdl pod of the type. Please see the section "Pod Syntax" in the description of Pod::WSDL.
+pod - the wsdl pod of the type. Please see the section "Pod Syntax" in the description of Pod::WSDL2.
 
 =back
 
@@ -172,19 +172,19 @@ Write complex type element for XML output. Takes one parameter: ownTypes, refere
 
 =head1 EXAMPLES
 
-see Pod::WSDL
+see Pod::WSDL2
 
 =head1 BUGS
 
-see Pod::WSDL
+see Pod::WSDL2
 
 =head1 TODO
 
-see Pod::WSDL
+see Pod::WSDL2
 
 =head1 SEE ALSO
 
-  Pod::WSDL :-)
+  Pod::WSDL2 :-)
  
 =head1 AUTHOR
 

@@ -1,9 +1,9 @@
-package Pod::WSDL::Writer;
+package Pod::WSDL2::Writer;
 
 use strict;
 use warnings;
 use XML::Writer;
-use Pod::WSDL::Utils ':writexml';
+use Pod::WSDL2::Utils ':writexml';
 
 our $AUTOLOAD;
 our $VERSION = "0.05";
@@ -100,7 +100,7 @@ sub wrDoc {
 	}
 	
 	$me->{_writer}->startTag($docTagName);
-	$me->{_writer}->characters($txt);
+	$me->{_writer}->cdata($txt);
 	$me->{_writer}->endTag($docTagName);
 
 	if ($useAnnotation) {
@@ -195,22 +195,22 @@ __END__
 
 =head1 NAME
 
-Pod::WSDL::Writer - Writes XML output for Pod::WSDL (internal use only)
+Pod::WSDL2::Writer - Writes XML output for Pod::WSDL2 (internal use only)
 
 =head1 SYNOPSIS
 
-  use Pod::WSDL::Writer;
-  my $wr = new Pod::WSDL::Writer(pretty => 1, withDocumentation => 1);
+  use Pod::WSDL2::Writer;
+  my $wr = new Pod::WSDL2::Writer(pretty => 1, withDocumentation => 1);
 
 =head1 DESCRIPTION
 
-This module is used internally by Pod::WSDL. By using AUTOLOADing it delegates all unknown methods to XML::Writer. It is unlikely that you have to interact directly with it. If that is the case, take a look at the code, it is rather simple.
+This module is used internally by Pod::WSDL2. By using AUTOLOADing it delegates all unknown methods to XML::Writer. It is unlikely that you have to interact directly with it. If that is the case, take a look at the code, it is rather simple.
 
 =head1 METHODS
 
 =head2 new
 
-Instantiates a new Pod::WSDL::Writer. The method can take two parameters C<pretty> with a true value triggers  pretty printing of the WSDL output. C<withDocumentation> with a true value produces a WSDL docuemnt containing documentation for types and methods.
+Instantiates a new Pod::WSDL2::Writer. The method can take two parameters C<pretty> with a true value triggers  pretty printing of the WSDL output. C<withDocumentation> with a true value produces a WSDL docuemnt containing documentation for types and methods.
 
 =head2 wrNewLine
 
@@ -242,19 +242,19 @@ Returns XML output.
 
 =head1 EXAMPLES
 
-see Pod::WSDL
+see Pod::WSDL2
 
 =head1 BUGS
 
-see Pod::WSDL
+see Pod::WSDL2
 
 =head1 TODO
 
-see Pod::WSDL
+see Pod::WSDL2
 
 =head1 SEE ALSO
 
-  Pod::WSDL
+  Pod::WSDL2
  
 =head1 AUTHOR
 
