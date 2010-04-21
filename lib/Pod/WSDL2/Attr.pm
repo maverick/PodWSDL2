@@ -1,18 +1,11 @@
 package Pod::WSDL2::Attr;
 use strict;
 use warnings;
-use Pod::WSDL2::AUTOLOAD;
 
 our $VERSION = "0.05";
-our @ISA = qw/Pod::WSDL2::AUTOLOAD/;
 
-our %FORBIDDEN_METHODS = (
-	name      => {get => 1, set =>  0},
-	type      => {get => 1, set =>  0},
-	nillable  => {get => 1, set =>  0},
-	descr     => {get => 1, set =>  0},
-	array     => {get => 1, set =>  0},
-);
+use base("Class::Accessor::Fast");
+__PACKAGE__->mk_ro_accessors(qw(name type nillable descr array));
 
 sub new {
 	my ($pkg, $str) = @_;
@@ -34,11 +27,11 @@ sub new {
 	die "Type '$type' must be prefixed with either '\$' or '\@', died" unless $1;
 	
 	bless {
-		_name     => $name,
-		_type     => $2,
-		_nillable => $needed ? undef : 'true',
-		_descr    => $descr,
-		_array    => $1 eq '@' ? 1 : 0,
+		name     => $name,
+		type     => $2,
+		nillable => $needed ? undef : 'true',
+		descr    => $descr,
+		array    => $1 eq '@' ? 1 : 0,
 	}, $pkg;
 }
 

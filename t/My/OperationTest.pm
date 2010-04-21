@@ -2,10 +2,10 @@ package My::OperationTest;
 
 =begin WSDL
 
-_IN in $string
-_FAULT My::Foo
-_RETURN $string
 _DOC bla bla
+_IN in $string
+_RETURN $string
+_FAULT My::Foo
 
 =cut
 

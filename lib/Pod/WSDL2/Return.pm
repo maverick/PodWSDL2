@@ -1,33 +1,41 @@
 package Pod::WSDL2::Return;
+
 use strict;
 use warnings;
-use Pod::WSDL2::AUTOLOAD;
 
 our $VERSION = "0.05";
-our @ISA = qw/Pod::WSDL2::AUTOLOAD/;
 
-our %FORBIDDEN_METHODS = (
-	type  => {get => 1, set =>  0},
-	array => {get => 1, set =>  0},
-	descr => {get => 1, set =>  0},
-);
+use base("Class::Accessor::Fast");
+__PACKAGE__->mk_ro_accessors(qw(type descr array));
 
 sub new {
 	my ($pkg, $str) = @_;
 
 	defined $str or $str = ''; # avoids warnings, dies soon
-	$str =~ s/\s*_RETURN\s*//i;
-	my ($type, $descr) = split /\s+/, $str, 2;
 
-	$type ||= ''; # avoids warnings, dies soon
+	my ($type,$descr,$array);
+	if (ref($str) eq "HASH") {
+		$type  = $str->{type};
+		$descr = $str->{docs};
+		$array = $str->{multiple};
+	}
+	else {
+		$str =~ s/\s*_RETURN\s*//i;
+		($type, $descr) = split /\s+/, $str, 2;
 
-	$type =~ /([\$\@])(.+)/;
-	die "Type '$type' must have structure (\$|\@)<typename>, e.g. '\$boolean' or '\@string', died" unless $1 and $2;
+		$type ||= ''; # avoids warnings, dies soon
+
+		$type =~ /([\$\@])(.+)/;
+		die "Type '$type' must have structure (\$|\@)<typename>, e.g. '\$boolean' or '\@string', died" unless $1 and $2;
+
+		$type  = $2;
+		$array = ($1 eq '@')?1:0;
+	}
 	
 	bless {
-		_type   => $2,
-		_descr  => $descr || '',
-		_array  => $1 eq '@' ? 1 : 0,
+		type   => $type,
+		descr  => $descr || '',
+		array  => $array
 	}, $pkg;
 }
 

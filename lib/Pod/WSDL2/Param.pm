@@ -1,40 +1,53 @@
 package Pod::WSDL2::Param;
+
 use strict;
 use warnings;
-use Pod::WSDL2::AUTOLOAD;
 
-our $VERSION = "0.05";
-our @ISA = qw/Pod::WSDL2::AUTOLOAD/;
+use Pod::WSDL2::Doc;
 
-our %FORBIDDEN_METHODS = (
-	name      => {get => 1, set =>  0},
-	type      => {get => 1, set =>  0},
-	paramType => {get => 1, set =>  0},
-	descr     => {get => 1, set =>  0},
-	array     => {get => 1, set =>  0},
-);
+our $VERSION='0.5';
+
+use base("Class::Accessor::Fast");
+__PACKAGE__->mk_ro_accessors(qw(name type paramType descr array simple optional));
 
 sub new {
 	my ($pkg, $str) = @_;
 
 	defined $str or $str = ''; # avoids warnings, dies soon
-	$str =~ s/\s*_(INOUT|IN|OUT)\s*//i or die "Input string '$str' does not begin with '_IN', '_OUT' or '_INOUT'";
 	
-	my $paramType = $1;
+	my ($name,$type,$descr,$array,$paramType,$simple,$optional);
+	if (ref($str) eq "HASH") {
+		$name      = $str->{'name'};
+		$type      = $str->{'type'};
+		$descr     = $str->{'docs'};
+		$array     = $str->{'multiple'};
+		$paramType = $str->{'input_type'};
+		$simple    = $str->{'simple'};
+		$optional  = $str->{'optional'};
+	}
+	else {
+		$str =~ s/\s*_(INOUT|IN|OUT)\s*//i or die "Input string '$str' does not begin with '_IN', '_OUT' or '_INOUT'";
+		$paramType = $1;
 	
-	my ($name, $type, $descr) = split /\s+/, $str, 3;
+		($name, $type, $descr) = split /\s+/, $str, 3;
 
-	$type ||= ''; # avoids warnings, dies soon
-	
-	$type =~ /([\$\@])(.+)/;
-	die "Type '$type' must have structure (\$|@)<typename>, e.g. '\$boolean' or '\@string', not '$type' died" unless $1 and $2;
+		$type =~ /([\$\@])(.+)/;
+		$array = ($1 eq '@')?1:0;
+		$type  = $2;
+
+		$type ||= ''; # avoids warnings, dies soon
+
+		die "Type '$type' must have structure (\$|@)<typename>, e.g. '\$boolean' or '\@string', not '$type' died" unless $1 and $2;
+	}
 	
 	bless {
-		_name      => $name,
-		_type      => $2,
-		_paramType => $paramType,
-		_descr     => $descr || '',
-		_array     => $1 eq '@' ? 1 : 0,
+		name      => $name,
+		type      => $type,
+		paramType => $paramType,
+		descr     => $descr || '',
+		array     => $array,
+		simple    => $simple,
+		optional  => $optional
 	}, $pkg;
 }
 

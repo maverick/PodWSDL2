@@ -67,5 +67,5 @@ eval {
 	ok($@ == undef, 'Renaming method is forbidden.');
 }
 
-ok($m->requestName eq 'fooRequest', 'Method requestName() works');
-ok($m->responseName eq 'fooResponse', 'Method responseName() works');
+ok($m->requestName eq 'myMethodRequest', 'Method requestName() works');
+ok($m->responseName eq 'myMethodResponse', 'Method responseName() works');

@@ -2,32 +2,25 @@ package Pod::WSDL2::Method;
 
 use strict;
 use warnings;
+
 use Pod::WSDL2::Param;
 use Pod::WSDL2::Fault;
 use Pod::WSDL2::Return;
 use Pod::WSDL2::Doc;
 use Pod::WSDL2::Writer;
 use Pod::WSDL2::Utils qw(:writexml :namespaces :messages);
-use Pod::WSDL2::AUTOLOAD;
 
 our $VERSION = "0.05";
-our @ISA = qw/Pod::WSDL2::AUTOLOAD/;
+
+use base("Class::Accessor::Fast");
+__PACKAGE__->mk_accessors(qw(doc return oneway));
+__PACKAGE__->mk_ro_accessors(qw(name params doc faults writer));
 
 our $EMPTY_MESSAGE_NAME    = 'empty';
 our $REQUEST_SUFFIX_NAME   = 'Request';
 our $RESPONSE_SUFFIX_NAME  = 'Response';
 our $RETURN_SUFFIX_NAME    = 'Return';
 our $TARGET_NS_DECL        = 'tns1';
-
-our %FORBIDDEN_METHODS = (
-	name     => {get => 1, set =>  0},
-	params   => {get => 1, set =>  0},
-	doc      => {get => 1, set =>  1},
-	return   => {get => 1, set =>  1},
-	faults   => {get => 1, set =>  0},
-	oneway   => {get => 1, set =>  1},
-	writer   => {get => 0, set =>  0},
-);
 
 sub new {
 	my ($pkg, %data) = @_;
@@ -36,23 +29,23 @@ sub new {
 	die "A method needs a writer, died" unless defined $data{writer} and ref $data{writer} eq 'Pod::WSDL2::Writer';
 	
 	bless {
-		_name                => $data{name},
-		_params              => $data{params} || [],
-		_return              => $data{return},
-		_doc                 => $data{doc} || new Pod::WSDL2::Doc('_DOC'),
-		_faults              => $data{faults} || [],
-		_oneway              => $data{oneWay} || 0,
-		_writer              => $data{writer},
-		_emptyMessageWritten => 0,
+		name                => $data{name},
+		params              => $data{params} || [],
+		return              => $data{return},
+		doc                 => $data{doc} || new Pod::WSDL2::Doc('_DOC'),
+		faults              => $data{faults} || [],
+		oneway              => $data{oneWay} || 0,
+		writer              => $data{writer},
+		emptyMessageWritten => 0,
 	}, $pkg;
 }
 
 sub addParam {
-	push @{$_[0]->{_params}}, $_[1] if defined $_[1];
+	push @{$_[0]->{params}}, $_[1] if defined $_[1];
 }
 
 sub addFault {
-	push @{$_[0]->{_faults}}, $_[1] if defined $_[1];
+	push @{$_[0]->{faults}}, $_[1] if defined $_[1];
 }
 
 sub requestName {
@@ -287,6 +280,7 @@ sub writeDocumentStyleSchemaElements {
 			type => Pod::WSDL2::Utils::getTypeDescr($me->return->type, $me->return->array, $types->{$me->return->type}));
 	}
 }
+
 1;
 __END__
 

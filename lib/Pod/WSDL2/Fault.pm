@@ -1,34 +1,39 @@
 package Pod::WSDL2::Fault;
+
 use strict;
 use warnings;
-
-use Pod::WSDL2::AUTOLOAD;
+use Data::Dumper;
+use Carp;
 
 our $VERSION = "0.05";
-our @ISA = qw/Pod::WSDL2::AUTOLOAD/;
 
-our %FORBIDDEN_METHODS = (
-	type      => {get => 1, set =>  0},
-	descr     => {get => 1, set =>  0},
-	wsdlName  => {get => 1, set =>  0},
-);
+use base("Class::Accessor::Fast");
+__PACKAGE__->mk_ro_accessors(qw(type descr wsdlName));
 
 sub new {
 	my ($pkg, $str) = @_;
 
 	$str ||= '' ;  # avoid warnings here, will die soon
-	$str =~ s/^\s*_FAULT\s*//i or die "_FAULT statements must have structure '_FAULT <type> <text>', like '_FAULT My::Fault This is my documentation'";
-	my ($type, $descr) = split /\s+/, $str, 2;
+
+	my ($type,$descr);
+	if (ref($str) eq "HASH") {
+		$type  = $str->{type};
+		$descr = $str->{docs};
+	}
+	else {
+		$str =~ s/^\s*_FAULT\s*//i or confess "_FAULT statements must have structure '_FAULT <type> <text>', like '_FAULT My::Fault This is my documentation'";
+		($type, $descr) = split /\s+/, $str, 2;
+
+		$descr ||= '';
+	}
 
 	my $wsdlName = $type;
 	$wsdlName =~ s/::(.)/uc $1/eg;
-
-	$descr ||= '';
 	
 	bless {
-		_type     => $type,
-		_descr    => $descr,
-		_wsdlName => ucfirst $wsdlName,
+		type     => $type,
+		descr    => $descr,
+		wsdlName => ucfirst $wsdlName,
 	}, $pkg;
 }
 

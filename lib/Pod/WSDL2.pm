@@ -7,6 +7,7 @@ package Pod::WSDL2;
 
 use strict;
 use warnings;
+
 use Carp;
 use IO::Scalar;
 use Pod::Text;
@@ -18,14 +19,14 @@ use Pod::WSDL2::Doc;
 use Pod::WSDL2::Type;
 use Pod::WSDL2::Writer;
 use Pod::WSDL2::Utils qw(:writexml :namespaces :messages :types);
-use Pod::WSDL2::AUTOLOAD;
+
+use Pod::WSDL2::Parser;
 
 # -------------------------------------------------------------------------- #
 # ------------------ > "CONSTANTS" ----------------------------------------- #
 # -------------------------------------------------------------------------- #
 
-our $VERSION                = "0.05";
-our @ISA                    = qw/Pod::WSDL2::AUTOLOAD/;
+our $VERSION = "0.05";
 
 our $WSDL_METHOD_REGEXP_BEG = qr/^=(?:begin)\s+wsdl\s*\n(.*?)^=(?:cut|end\s+wsdl).*?^\s*sub\s+(\w+)/ims;
 our $WSDL_METHOD_REGEXP_FOR = qr/^=(?:for)\s+wsdl\s*\n(.*?)\n\n^\s*sub\s+(\w+)/ims;
@@ -37,21 +38,10 @@ our $PORT_TYPE_SUFFIX_NAME  = 'Handler';
 our $BINDING_SUFFIX_NAME    = 'SoapBinding';
 our $SERVICE_SUFFIX_NAME    = 'Service';
 
-# Pod::WSDL2::AUTOLOAD uses this
-our %FORBIDDEN_METHODS = (
-	source              => {get => 0, set =>  0},
-	source              => {get => 0, set =>  0},
-	baseName            => {get => 0, set =>  0},
-	methods             => {get => 0, set =>  0},
-	location            => {get => 1, set =>  1},
-	namespaces          => {get => 0, set =>  0},
-	generateNS          => {get => 0, set =>  0},
-	types               => {get => 0, set =>  0},
-	writer              => {get => 0, set =>  0},
-	standardTypeArrays  => {get => 0, set =>  0},
-	emptymessagewritten => {get => 0, set =>  0},
-	targetNS            => {get => 1, set =>  1},
-);
+use base("Class::Accessor::Fast");
+__PACKAGE__->mk_accessors(qw(baseName location targetNS));
+__PACKAGE__->mk_ro_accessors(qw(source methods namespaces generateNS types writer 
+                                standardTypeArrays emptymessagewritten use style wrapped));
 
 # -------------------------------------------------------------------------- #
 # --------------- > PUBLIC METHODS  ---------------------------------------- #
@@ -64,24 +54,31 @@ sub new {
 	croak "I need a location, died" unless defined $data{location};
 	croak "I need a file or module name or a filehandle, died" unless defined $data{source};
 	
-	$data{use} = $LITERAL_USE if $data{style} and $data{style} eq $DOCUMENT_STYLE and !defined $data{use};
-	$data{use} = $LITERAL_USE and $data{style} = $DOCUMENT_STYLE if $data{wrapped} and !defined $data{use} and !defined $data{style};
+	$data{use} = $LITERAL_USE 
+		if $data{style} and 
+			$data{style} eq $DOCUMENT_STYLE and 
+			!defined $data{use};
+
+	$data{use} = $LITERAL_USE and $data{style} = $DOCUMENT_STYLE 
+		if $data{wrapped} and 
+			!defined $data{use} and 
+			!defined $data{style};
 
 	my $me = bless {
-		_source              => $data{source},
-		_baseName            => undef,
-		_methods             => [],
-		_location            => $data{location},
-		_namespaces          => {},
-		_targetNS            => undef,
-		_generateNS          => sub {return $DEFAULT_NS_DECL . $nsnum++},
-		_types               => {},
-		_writer              => new Pod::WSDL2::Writer(withDocumentation => $data{withDocumentation}, pretty => $data{pretty}),
-		_standardTypeArrays  => {},
-		_emptymessagewritten => 0,
-		_use                 => $data{use} || $ENCODED_USE,
-		_style               => $data{style} || $RPC_STYLE,
-		_wrapped             => $data{wrapped} || 0,
+		source              => $data{source},
+		baseName            => undef,
+		methods             => [],
+		location            => $data{location},
+		namespaces          => {},
+		targetNS            => undef,
+		generateNS          => sub {return $DEFAULT_NS_DECL . $nsnum++},
+		types               => {},
+		writer              => new Pod::WSDL2::Writer(withDocumentation => $data{withDocumentation}, pretty => $data{pretty}),
+		standardTypeArrays  => {},
+		emptymessagewritten => 0,
+		use                 => $data{use} || $ENCODED_USE,
+		style               => $data{style} || $RPC_STYLE,
+		wrapped             => $data{wrapped} || 0,
 	}, $pkg;
 
 	croak "'use' argument may only be one of $ENCODED_USE or $LITERAL_USE, died" if $me->use ne $ENCODED_USE and $me->use ne $LITERAL_USE; 
@@ -114,8 +111,8 @@ sub WSDL {
 		$wr->withDocumentation($args{withDocumentation}) if defined $args{withDocumentation};
 	} 
 	
-	$me->writer->comment("WSDL for " . $me->{_location} . " created by " . ref ($me) . " version: $VERSION on " . scalar localtime);
-	$me->writer->startTag('wsdl:definitions', targetNamespace => $me->targetNS, %{$me->{_namespaces}});
+	$me->writer->comment("WSDL for " . $me->{location} . " created by " . ref ($me) . " version: $VERSION on " . scalar localtime);
+	$me->writer->startTag('wsdl:definitions', targetNamespace => $me->targetNS, %{$me->{namespaces}});
 	$me->writer->wrNewLine(2);
 
 	$me->_writeTypes;
@@ -138,11 +135,11 @@ sub addNamespace {
 	
 	croak "I need a namespace, died" unless defined $uri;
 	
-	defined $decl or $decl = $me->{_generateNS};
+	defined $decl or $decl = $me->{generateNS};
 	
 	$decl = 'xmlns:' . $decl unless $decl =~ /xmlns:/;
 
-	$me->{_namespaces}->{$decl} = $uri;
+	$me->{namespaces}->{$decl} = $uri;
 }
 
 # -------------------------------------------------------------------------- #
@@ -185,7 +182,7 @@ sub _initTypes {
 	my $me = shift;
 
 	
-	for my $method (@{$me->{_methods}}) {
+	for my $method (@{$me->{methods}}) {
     for my $param (@{$method->params},$method->return) {
       next unless $param;
 			unless (exists $XSD_STANDARD_TYPE_MAP{$param->type}) {				
@@ -194,7 +191,7 @@ sub _initTypes {
 				
 				#AHICOX: 10/10/2006
 				#changed to _standardTypeArrays (was singular)
-				$me->{_standardTypeArrays}->{$param->type} = 1;
+				$me->{standardTypeArrays}->{$param->type} = 1;
 			}
 		}
 
@@ -248,7 +245,7 @@ sub _addType {
 			
 			#AHICOX: 10/10/2006
 			#changed to _standardTypeArrays (was singular)
-			$me->{_standardTypeArrays}->{$attr->type} = 1;
+			$me->{standardTypeArrays}->{$attr->type} = 1;
 		}
 	}
 }
@@ -260,48 +257,76 @@ sub _parseMethodPod {
 	
 	my $method = new Pod::WSDL2::Method(name => $methodName, writer => $me->writer);
 	
-	my @data = split "\n", $podData;
-	
-	# Preprocess wsdl pod: trim all lines and concatenate lines not
-	# beginning with wsdl type tokens to previous line.
-	# Ignore first element, if it does not begin with wsdl type token.
-	for (my $i = $#data; $i >= 0; $i--) {
+	my $old_way = 0;
+	if ($old_way) {
+		my @data = split "\n", $podData;
 		
-		if ($data[$i] !~ /^\s*(_INOUT|_IN|_OUT|_RETURN|_DOC|_FAULT|_ONEWAY)/i) {
-			if ($i > 0) {
-				$data[$i - 1] .= "\n$data[$i]";
-				$data[$i] = '';
+		# Preprocess wsdl pod: trim all lines and concatenate lines not
+		# beginning with wsdl type tokens to previous line.
+		# Ignore first element, if it does not begin with wsdl type token.
+		for (my $i = $#data; $i >= 0; $i--) {
+			
+			if ($data[$i] !~ /^\s*(_INOUT|_IN|_OUT|_RETURN|_DOC|_FAULT|_ONEWAY)/i) {
+				if ($i > 0) {
+					$data[$i - 1] .= "\n$data[$i]";
+					$data[$i] = '';
+				}
+			}
+		}
+
+		for (@data) {
+			s/^\s*//;
+			s/\s*$//;
+
+			if (/^_DOC\s+/i) {
+				$method->doc(new Pod::WSDL2::Doc($_));
+			}
+			else {
+				s/\s+/ /g;
+				if (/^_(INOUT|IN|OUT)\s+/i) {
+					my $param = new Pod::WSDL2::Param($_);
+					$method->addParam($param);
+					$me->standardTypeArrays->{$param->type} = 1 if $param->array and $XSD_STANDARD_TYPE_MAP{$param->type};
+				} elsif (/^_RETURN\s+/i) {
+					my $return = new Pod::WSDL2::Return($_);
+					$method->return($return);
+					$me->standardTypeArrays->{$return->type} = 1 if $return->array and $XSD_STANDARD_TYPE_MAP{$return->type};
+				}
+				elsif (/^_FAULT\s+/i) {
+					$method->addFault(new Pod::WSDL2::Fault($_));
+				} elsif (/^_ONEWAY\s*$/i) {
+				}
 			}
 		}
 	}
+	else {
+		my $parser = Pod::WSDL2::Parser->new();
 
-	for (@data) {
-		s/^\s*//;
-		s/\s*$//;
+		my $data = $parser->wsdlblock($podData) || die "Parse Failed: $!\n".$podData;
 
-		if (/^_DOC\s+/i) {
-			$method->doc(new Pod::WSDL2::Doc($_));
+		$method->oneway($data->{oneway});
+
+		if ($data->{docs}) {
+			$method->doc($data->{docs});
 		}
-		else {
-			s/\s+/ /g;
-			if (/^_(INOUT|IN|OUT)\s+/i) {
-				my $param = new Pod::WSDL2::Param($_);
-				$method->addParam($param);
-				$me->standardTypeArrays->{$param->type} = 1 if $param->array and $XSD_STANDARD_TYPE_MAP{$param->type};
-			} elsif (/^_RETURN\s+/i) {
-				my $return = new Pod::WSDL2::Return($_);
-				$method->return($return);
-				$me->standardTypeArrays->{$return->type} = 1 if $return->array and $XSD_STANDARD_TYPE_MAP{$return->type};
-			}
-			elsif (/^_FAULT\s+/i) {
-				$method->addFault(new Pod::WSDL2::Fault($_));
-			} elsif (/^_ONEWAY\s*$/i) {
-				$method->oneway(1);
-			}
+
+		if ($data->{return}) {
+			my $return = $data->{return};
+			$method->return($return);
+			$me->standardTypeArrays->{$return->type} = 1 if $return->array and $XSD_STANDARD_TYPE_MAP{$return->type};
+		}
+
+		foreach my $param (@{$data->{inputs}}) {
+			$method->addParam($param);
+			$me->standardTypeArrays->{$param->type} = 1 if $param->array and $XSD_STANDARD_TYPE_MAP{$param->type};
+		}
+
+		foreach my $fault (@{$data->{faults}}) {
+			$method->addFault($fault);
 		}
 	}
 
-	push @{$me->{_methods}}, $method;
+	push @{$me->{methods}}, $method;
 }
 
 sub _getModuleCode {
@@ -429,7 +454,7 @@ sub _writePortType {
 	
 	$me->writer->wrElem($START_PREFIX_NAME, 'wsdl:portType', name => $me->baseName . $PORT_TYPE_SUFFIX_NAME);
 
-	for my $method (@{$me->{_methods}}) {
+	for my $method (@{$me->{methods}}) {
 		$method->writePortTypeOperation;
 		$me->writer->wrNewLine;
 	}

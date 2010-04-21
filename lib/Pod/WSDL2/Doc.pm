@@ -1,20 +1,21 @@
 package Pod::WSDL2::Doc;
+
 use strict;
 use warnings;
 
-use Pod::WSDL2::AUTOLOAD;
-
 our $VERSION = "0.05";
-our @ISA = qw/Pod::WSDL2::AUTOLOAD/;
+
+use base("Class::Accessor::Fast");
+__PACKAGE__->mk_accessors(qw(descr));
+
 sub new {
 	my ($pkg, $str) = @_;
 
 	defined $str or $str = ''; # avoids warnings
-	$str =~ /\s*_DOC\s*(.*)/ or die "_DOC statements must have structure '_DOC <text>', like '_DOC This is my documentation'";
-	$str =~ s/\s*_DOC\s*//;
-	
+	$str =~ s/^\s*_DOC\s*//;
+
 	bless {
-		_descr => $str || '',
+		descr => $str,
 	}, $pkg;
 }
 

@@ -2,21 +2,15 @@ package Pod::WSDL2::Type;
 
 use strict;
 use warnings;
-use Pod::WSDL2::Attr;
-use Pod::WSDL2::Utils qw(:writexml :namespaces :types);
-use Pod::WSDL2::AUTOLOAD;
 
 our $VERSION = "0.05";
-our @ISA = qw/Pod::WSDL2::AUTOLOAD/;
 
-our %FORBIDDEN_METHODS = (
-	name     => {get => 1, set =>  0},
-	wsdlName => {get => 1, set =>  0},
-	array    => {get => 1, set =>  1},
-	descr    => {get => 1, set =>  0},
-	attrs    => {get => 1, set =>  0},
-	writer   => {get => 0, set =>  0},
-);
+use Pod::WSDL2::Attr;
+use Pod::WSDL2::Utils qw(:writexml :namespaces :types);
+
+use base("Class::Accessor::Fast");
+__PACKAGE__->mk_ro_accessors(qw(writer attrs descr wsdlName name reftype));
+__PACKAGE__->mk_accessors(qw(array));
 
 sub new {
 	my ($pkg, %data) = @_;
@@ -27,13 +21,13 @@ sub new {
 	$wsdlName =~ s/(?:^|::)(.)/uc $1/eg;
 	
 	my $me = bless {
-		_name     => $data{name},
-		_wsdlName => ucfirst $wsdlName,
-		_array    => $data{array} || 0,
-		_attrs    => [],
-		_descr    => $data{descr} || '',
-		_writer   => $data{writer},
-		_reftype  => 'HASH',
+		name     => $data{name},
+		wsdlName => ucfirst $wsdlName,
+		array    => $data{array} || 0,
+		attrs    => [],
+		descr    => $data{descr} || '',
+		writer   => $data{writer},
+		reftype  => 'HASH',
 	}, $pkg;
 
 	$me->_initPod($data{pod}) if $data{pod};
@@ -66,7 +60,7 @@ sub _initPod {
 		s/ $//;
 
 		if (/^\s*_ATTR\s+/i) {
-			push @{$me->{_attrs}}, new Pod::WSDL2::Attr($_);
+			push @{$me->{attrs}}, new Pod::WSDL2::Attr($_);
 		} elsif (/^\s*_REFTYPE\s+(HASH|ARRAY)/i) {
 			$me->reftype(uc $1);
 		}

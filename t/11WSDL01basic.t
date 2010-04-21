@@ -27,8 +27,8 @@ my $p = new Pod::WSDL2(source => 'My::Server',
 ok($p->writer->{_pretty}, 'Received pretty argument correctly');
 ok($p->writer->{_withDocumentation}, 'Received withDocumentation argument correctly');
 ok($p->location eq 'http://localhost/My/Server', 'Received location argument correctly');
-ok($p->{_source} eq 'My::Server', 'Received source argument correctly');
-ok($p->{_baseName} eq 'MyServer', 'Generated base name argument correctly');
+ok($p->{source} eq 'My::Server', 'Received source argument correctly');
+ok($p->{baseName} eq 'MyServer', 'Generated base name argument correctly');
 
 $p->location('http://localhost/My/Other/Server');
 ok($p->location eq 'http://localhost/My/Other/Server', 'Setting location works');
