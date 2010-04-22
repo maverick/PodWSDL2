@@ -1,25 +1,26 @@
 { 
-	use Data::Dumper;
-	use lib('/data/perl/PodWSDL2/lib');
-
 	use Pod::WSDL2::Doc;
 	use Pod::WSDL2::Param;
 	use Pod::WSDL2::Return;
 	use Pod::WSDL2::Fault;
 }
 
-wsdlblock: doc_block(?) one_way(?) input_block(s?) return_block(?) fault_block(s?) eofile {
+wsdlblock: doc_line(s?) command_block(s?) eofile {
 	$return = {
-		'docs'   => $item[1]->[0],
-		'oneway' => $item[2]->[0],
-		'inputs' => $item[3],
-		'return' => $item[4]->[0],
-		'faults' => $item[5]
+		'docs' => Pod::WSDL2::Doc->new(join('',@{$item[1]}))
 	};
+
+	foreach (@{$item[2]}) {
+		if    (ref($_) eq 'Pod::WSDL2::Fault')  { push(@{$return->{'faults'}}, $_) }
+		elsif (ref($_) eq 'Pod::WSDL2::Param')  { push(@{$return->{'inputs'}}, $_) }
+		elsif (ref($_) eq 'Pod::WSDL2::Return') { $return->{'return'} = $_ }
+		elsif ($_ eq "oneway")                  { $return->{'oneway'} = 1; }
+	}
+	1;
 }
 | <error>
 
-doc_block: '_DOC' <commit> docline(s) { $return = Pod::WSDL2::Doc->new(join('',@{$item{'docline(s)'}})) }
+command_block: (one_way | input_block | return_block | fault_block) { $return = $item[1]; }
 
 input_block: input_type <commit> field_name ( hash | array | simple ) {
 	$item[4]->{input_type} = $item[1];
@@ -35,28 +36,29 @@ fault_block:  '_FAULT'  <commit> ( hash | array | fault_type ) { $return = Pod::
 
 eofile: /^\Z/
 
-docline: ...!commands <skip:'[ \t]*'> /.*\n+/ { $return = $item[3]; 1; }
+doc_line: ...!commands comment   { $return = $item[2]; 1; }
+comment: <skip:'[ \t]*'> /.*\n+/ { $return = $item[2]; 1; }
 
 field_name: /[\w-]+/ { $return = $item[1]; 1; }
           | <error> 
 
-simple: sigul <commit> data_type optional(?) docline(?) { 
+simple: sigul <commit> data_type optional(?) comment(?) { 
 	$return = {
 		simple   => 1,
 		multiple => $item{'sigul'},
 		type     => $item{'data_type'},
 		optional => $item{'optional(?)'}->[0],
-		docs     => Pod::WSDL2::Doc->new(join('',@{$item{'docline(?)'}}))
+		docs     => Pod::WSDL2::Doc->new($item{'comment(?)'}->[0])
 	};
 }
 
 sigul: '$' { $return = 0; 1;}
      | '@' { $return = 1;   }
 
-fault_type: data_type docline(?) {
+fault_type: data_type comment(?) {
 	$return = {
 		type => $item[1],
-		docs => $item[2]->[0]
+		docs => Pod::WSDL2::Doc->new($item[2]->[0])
 	};
 }
 
@@ -85,20 +87,8 @@ hash_element: field_name '=>' ( hash | array | simple ) {
 
 optional: 'OPTIONAL' { $return = 1; }
 
-commands: '_DOC' | input_type | one_way | '_RETURN' | '_FAULT'
+commands: input_type | one_way | '_RETURN' | '_FAULT'
 
 one_way: '_ONEWAY' { $return = 'oneway'; }
 
 data_type: /\w+(::\w+)*/ { $return = $item[1]; }
-
-#placeholder:
-#	'anyType' | 'anySimpleType' |
-#	'string' | 'normalizedString' | 'token' | 'anyUri' | 'language' | 'Name' | 'QName' | 'NCName' |
-#	'boolean' |
-#	'float' | 'double' |
-#	'decimal' | 'int' |
-#	'positiveInteger' | 'nonPositiveInteger' | 'negativeInteger' | 'nonNegativeInteger' |
-#	'long' | 'short' | 'byte' |
-#	'unsignedInt' | 'unsignedLong' | 'unsignedShort' | 'unsignedByte' |
-#	'duration' | 'dateTime' | 'time' | 'date' | 'gYearMonth' | 'gYear' | 'gMonthDay' | 'gDay' | 'gMonth' |
-#	'hexBinary' | 'base64Binary'

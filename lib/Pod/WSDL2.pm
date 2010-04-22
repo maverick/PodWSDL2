@@ -257,6 +257,7 @@ sub _parseMethodPod {
 	
 	my $method = new Pod::WSDL2::Method(name => $methodName, writer => $me->writer);
 	
+	use Data::Dumper;
 	my $old_way = 0;
 	if ($old_way) {
 		my @data = split "\n", $podData;
@@ -295,6 +296,7 @@ sub _parseMethodPod {
 				elsif (/^_FAULT\s+/i) {
 					$method->addFault(new Pod::WSDL2::Fault($_));
 				} elsif (/^_ONEWAY\s*$/i) {
+					$method->oneway(1);
 				}
 			}
 		}

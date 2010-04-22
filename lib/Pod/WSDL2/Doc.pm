@@ -13,6 +13,8 @@ sub new {
 
 	defined $str or $str = ''; # avoids warnings
 	$str =~ s/^\s*_DOC\s*//;
+	$str =~ s/^\s+//s;
+	$str =~ s/\s+$//s;
 
 	bless {
 		descr => $str,

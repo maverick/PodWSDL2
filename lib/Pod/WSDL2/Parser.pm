@@ -10,9 +10,6 @@ use vars qw($skip $AUTOLOAD  );
 @Parse::RecDescent::Pod::WSDL2::Parser::ISA = ();
 $skip = '\s*';
  
-	use Data::Dumper;
-	use lib('/data/perl/PodWSDL2/lib');
-
 	use Pod::WSDL2::Doc;
 	use Pod::WSDL2::Param;
 	use Pod::WSDL2::Return;
@@ -565,7 +562,7 @@ sub Parse::RecDescent::Pod::WSDL2::Parser::wsdlblock
     my $text;
     my $lastsep="";
     my $current_match;
-    my $expectation = new Parse::RecDescent::Expectation(q{doc_block});
+    my $expectation = new Parse::RecDescent::Expectation(q{doc_line});
     $expectation->at($_[1]);
     
     my $thisline;
@@ -576,7 +573,7 @@ sub Parse::RecDescent::Pod::WSDL2::Parser::wsdlblock
     while (!$_matched && !$commit)
     {
         
-        Parse::RecDescent::_trace(q{Trying production: [doc_block one_way input_block return_block fault_block eofile]},
+        Parse::RecDescent::_trace(q{Trying production: [doc_line command_block eofile]},
                       Parse::RecDescent::_tracefirst($_[1]),
                       q{wsdlblock},
                       $tracelevel)
@@ -589,142 +586,58 @@ sub Parse::RecDescent::Pod::WSDL2::Parser::wsdlblock
         my $repcount = 0;
 
 
-        Parse::RecDescent::_trace(q{Trying repeated subrule: [doc_block]},
+        Parse::RecDescent::_trace(q{Trying repeated subrule: [doc_line]},
                   Parse::RecDescent::_tracefirst($text),
                   q{wsdlblock},
                   $tracelevel)
                     if defined $::RD_TRACE;
         $expectation->is(q{})->at($text);
         
-        unless (defined ($_tok = $thisparser->_parserepeat($text, \&Parse::RecDescent::Pod::WSDL2::Parser::doc_block, 0, 1, $_noactions,$expectation,sub { \@arg }))) 
+        unless (defined ($_tok = $thisparser->_parserepeat($text, \&Parse::RecDescent::Pod::WSDL2::Parser::doc_line, 0, 100000000, $_noactions,$expectation,sub { \@arg }))) 
         {
-            Parse::RecDescent::_trace(q{<<Didn't match repeated subrule: [doc_block]>>},
+            Parse::RecDescent::_trace(q{<<Didn't match repeated subrule: [doc_line]>>},
                           Parse::RecDescent::_tracefirst($text),
                           q{wsdlblock},
                           $tracelevel)
                             if defined $::RD_TRACE;
             last;
         }
-        Parse::RecDescent::_trace(q{>>Matched repeated subrule: [doc_block]<< (}
+        Parse::RecDescent::_trace(q{>>Matched repeated subrule: [doc_line]<< (}
                     . @$_tok . q{ times)},
                       
                       Parse::RecDescent::_tracefirst($text),
                       q{wsdlblock},
                       $tracelevel)
                         if defined $::RD_TRACE;
-        $item{q{doc_block(?)}} = $_tok;
+        $item{q{doc_line(s?)}} = $_tok;
         push @item, $_tok;
         
 
 
-        Parse::RecDescent::_trace(q{Trying repeated subrule: [one_way]},
+        Parse::RecDescent::_trace(q{Trying repeated subrule: [command_block]},
                   Parse::RecDescent::_tracefirst($text),
                   q{wsdlblock},
                   $tracelevel)
                     if defined $::RD_TRACE;
-        $expectation->is(q{one_way})->at($text);
+        $expectation->is(q{command_block})->at($text);
         
-        unless (defined ($_tok = $thisparser->_parserepeat($text, \&Parse::RecDescent::Pod::WSDL2::Parser::one_way, 0, 1, $_noactions,$expectation,sub { \@arg }))) 
+        unless (defined ($_tok = $thisparser->_parserepeat($text, \&Parse::RecDescent::Pod::WSDL2::Parser::command_block, 0, 100000000, $_noactions,$expectation,sub { \@arg }))) 
         {
-            Parse::RecDescent::_trace(q{<<Didn't match repeated subrule: [one_way]>>},
+            Parse::RecDescent::_trace(q{<<Didn't match repeated subrule: [command_block]>>},
                           Parse::RecDescent::_tracefirst($text),
                           q{wsdlblock},
                           $tracelevel)
                             if defined $::RD_TRACE;
             last;
         }
-        Parse::RecDescent::_trace(q{>>Matched repeated subrule: [one_way]<< (}
+        Parse::RecDescent::_trace(q{>>Matched repeated subrule: [command_block]<< (}
                     . @$_tok . q{ times)},
                       
                       Parse::RecDescent::_tracefirst($text),
                       q{wsdlblock},
                       $tracelevel)
                         if defined $::RD_TRACE;
-        $item{q{one_way(?)}} = $_tok;
-        push @item, $_tok;
-        
-
-
-        Parse::RecDescent::_trace(q{Trying repeated subrule: [input_block]},
-                  Parse::RecDescent::_tracefirst($text),
-                  q{wsdlblock},
-                  $tracelevel)
-                    if defined $::RD_TRACE;
-        $expectation->is(q{input_block})->at($text);
-        
-        unless (defined ($_tok = $thisparser->_parserepeat($text, \&Parse::RecDescent::Pod::WSDL2::Parser::input_block, 0, 100000000, $_noactions,$expectation,sub { \@arg }))) 
-        {
-            Parse::RecDescent::_trace(q{<<Didn't match repeated subrule: [input_block]>>},
-                          Parse::RecDescent::_tracefirst($text),
-                          q{wsdlblock},
-                          $tracelevel)
-                            if defined $::RD_TRACE;
-            last;
-        }
-        Parse::RecDescent::_trace(q{>>Matched repeated subrule: [input_block]<< (}
-                    . @$_tok . q{ times)},
-                      
-                      Parse::RecDescent::_tracefirst($text),
-                      q{wsdlblock},
-                      $tracelevel)
-                        if defined $::RD_TRACE;
-        $item{q{input_block(s?)}} = $_tok;
-        push @item, $_tok;
-        
-
-
-        Parse::RecDescent::_trace(q{Trying repeated subrule: [return_block]},
-                  Parse::RecDescent::_tracefirst($text),
-                  q{wsdlblock},
-                  $tracelevel)
-                    if defined $::RD_TRACE;
-        $expectation->is(q{return_block})->at($text);
-        
-        unless (defined ($_tok = $thisparser->_parserepeat($text, \&Parse::RecDescent::Pod::WSDL2::Parser::return_block, 0, 1, $_noactions,$expectation,sub { \@arg }))) 
-        {
-            Parse::RecDescent::_trace(q{<<Didn't match repeated subrule: [return_block]>>},
-                          Parse::RecDescent::_tracefirst($text),
-                          q{wsdlblock},
-                          $tracelevel)
-                            if defined $::RD_TRACE;
-            last;
-        }
-        Parse::RecDescent::_trace(q{>>Matched repeated subrule: [return_block]<< (}
-                    . @$_tok . q{ times)},
-                      
-                      Parse::RecDescent::_tracefirst($text),
-                      q{wsdlblock},
-                      $tracelevel)
-                        if defined $::RD_TRACE;
-        $item{q{return_block(?)}} = $_tok;
-        push @item, $_tok;
-        
-
-
-        Parse::RecDescent::_trace(q{Trying repeated subrule: [fault_block]},
-                  Parse::RecDescent::_tracefirst($text),
-                  q{wsdlblock},
-                  $tracelevel)
-                    if defined $::RD_TRACE;
-        $expectation->is(q{fault_block})->at($text);
-        
-        unless (defined ($_tok = $thisparser->_parserepeat($text, \&Parse::RecDescent::Pod::WSDL2::Parser::fault_block, 0, 100000000, $_noactions,$expectation,sub { \@arg }))) 
-        {
-            Parse::RecDescent::_trace(q{<<Didn't match repeated subrule: [fault_block]>>},
-                          Parse::RecDescent::_tracefirst($text),
-                          q{wsdlblock},
-                          $tracelevel)
-                            if defined $::RD_TRACE;
-            last;
-        }
-        Parse::RecDescent::_trace(q{>>Matched repeated subrule: [fault_block]<< (}
-                    . @$_tok . q{ times)},
-                      
-                      Parse::RecDescent::_tracefirst($text),
-                      q{wsdlblock},
-                      $tracelevel)
-                        if defined $::RD_TRACE;
-        $item{q{fault_block(s?)}} = $_tok;
+        $item{q{command_block(s?)}} = $_tok;
         push @item, $_tok;
         
 
@@ -768,12 +681,16 @@ sub Parse::RecDescent::Pod::WSDL2::Parser::wsdlblock
 
         $_tok = ($_noactions) ? 0 : do {
 	$return = {
-		'docs'   => $item[1]->[0],
-		'oneway' => $item[2]->[0],
-		'inputs' => $item[3],
-		'return' => $item[4]->[0],
-		'faults' => $item[5]
+		'docs' => Pod::WSDL2::Doc->new(join('',@{$item[1]}))
 	};
+
+	foreach (@{$item[2]}) {
+		if    (ref($_) eq 'Pod::WSDL2::Fault')  { push(@{$return->{'faults'}}, $_) }
+		elsif (ref($_) eq 'Pod::WSDL2::Param')  { push(@{$return->{'inputs'}}, $_) }
+		elsif (ref($_) eq 'Pod::WSDL2::Return') { $return->{'return'} = $_ }
+		elsif ($_ eq "oneway")                  { $return->{'oneway'} = 1; }
+	}
+	1;
 };
         unless (defined $_tok)
         {
@@ -790,7 +707,7 @@ sub Parse::RecDescent::Pod::WSDL2::Parser::wsdlblock
         
 
 
-        Parse::RecDescent::_trace(q{>>Matched production: [doc_block one_way input_block return_block fault_block eofile]<<},
+        Parse::RecDescent::_trace(q{>>Matched production: [doc_line command_block eofile]<<},
                       Parse::RecDescent::_tracefirst($text),
                       q{wsdlblock},
                       $tracelevel)
@@ -1390,7 +1307,7 @@ sub Parse::RecDescent::Pod::WSDL2::Parser::commands
     my $text;
     my $lastsep="";
     my $current_match;
-    my $expectation = new Parse::RecDescent::Expectation(q{'_DOC', or input_type, or one_way, or '_RETURN', or '_FAULT'});
+    my $expectation = new Parse::RecDescent::Expectation(q{input_type, or one_way, or '_RETURN', or '_FAULT'});
     $expectation->at($_[1]);
     
     my $thisline;
@@ -1401,66 +1318,12 @@ sub Parse::RecDescent::Pod::WSDL2::Parser::commands
     while (!$_matched && !$commit)
     {
         
-        Parse::RecDescent::_trace(q{Trying production: ['_DOC']},
-                      Parse::RecDescent::_tracefirst($_[1]),
-                      q{commands},
-                      $tracelevel)
-                        if defined $::RD_TRACE;
-        my $thisprod = $thisrule->{"prods"}[0];
-        $text = $_[1];
-        my $_savetext;
-        @item = (q{commands});
-        %item = (__RULE__ => q{commands});
-        my $repcount = 0;
-
-
-        Parse::RecDescent::_trace(q{Trying terminal: ['_DOC']},
-                      Parse::RecDescent::_tracefirst($text),
-                      q{commands},
-                      $tracelevel)
-                        if defined $::RD_TRACE;
-        $lastsep = "";
-        $expectation->is(q{})->at($text);
-        
-
-        unless ($text =~ s/\A($skip)/$lastsep=$1 and ""/e and   $text =~ m/\A_DOC/)
-        {
-            
-            $expectation->failed();
-            Parse::RecDescent::_trace(qq{<<Didn't match terminal>>},
-                          Parse::RecDescent::_tracefirst($text))
-                            if defined $::RD_TRACE;
-            last;
-        }
-		$current_match = substr($text, $-[0], $+[0] - $-[0]);
-        substr($text,0,length($current_match),q{});
-        Parse::RecDescent::_trace(q{>>Matched terminal<< (return value: [}
-                        . $current_match . q{])},
-                          Parse::RecDescent::_tracefirst($text))
-                            if defined $::RD_TRACE;
-        push @item, $item{__STRING1__}=$current_match;
-        
-
-
-        Parse::RecDescent::_trace(q{>>Matched production: ['_DOC']<<},
-                      Parse::RecDescent::_tracefirst($text),
-                      q{commands},
-                      $tracelevel)
-                        if defined $::RD_TRACE;
-        $_matched = 1;
-        last;
-    }
-
-
-    while (!$_matched && !$commit)
-    {
-        
         Parse::RecDescent::_trace(q{Trying production: [input_type]},
                       Parse::RecDescent::_tracefirst($_[1]),
                       q{commands},
                       $tracelevel)
                         if defined $::RD_TRACE;
-        my $thisprod = $thisrule->{"prods"}[1];
+        my $thisprod = $thisrule->{"prods"}[0];
         $text = $_[1];
         my $_savetext;
         @item = (q{commands});
@@ -1517,7 +1380,7 @@ sub Parse::RecDescent::Pod::WSDL2::Parser::commands
                       q{commands},
                       $tracelevel)
                         if defined $::RD_TRACE;
-        my $thisprod = $thisrule->{"prods"}[2];
+        my $thisprod = $thisrule->{"prods"}[1];
         $text = $_[1];
         my $_savetext;
         @item = (q{commands});
@@ -1574,7 +1437,7 @@ sub Parse::RecDescent::Pod::WSDL2::Parser::commands
                       q{commands},
                       $tracelevel)
                         if defined $::RD_TRACE;
-        my $thisprod = $thisrule->{"prods"}[3];
+        my $thisprod = $thisrule->{"prods"}[2];
         $text = $_[1];
         my $_savetext;
         @item = (q{commands});
@@ -1628,7 +1491,7 @@ sub Parse::RecDescent::Pod::WSDL2::Parser::commands
                       q{commands},
                       $tracelevel)
                         if defined $::RD_TRACE;
-        my $thisprod = $thisrule->{"prods"}[4];
+        my $thisprod = $thisrule->{"prods"}[3];
         $text = $_[1];
         my $_savetext;
         @item = (q{commands});
@@ -2099,6 +1962,194 @@ sub Parse::RecDescent::Pod::WSDL2::Parser::sigul
 }
 
 # ARGS ARE: ($parser, $text; $repeating, $_noactions, \@args)
+sub Parse::RecDescent::Pod::WSDL2::Parser::doc_line
+{
+	my $thisparser = $_[0];
+	use vars q{$tracelevel};
+	local $tracelevel = ($tracelevel||0)+1;
+	$ERRORS = 0;
+    my $thisrule = $thisparser->{"rules"}{"doc_line"};
+    
+    Parse::RecDescent::_trace(q{Trying rule: [doc_line]},
+                  Parse::RecDescent::_tracefirst($_[1]),
+                  q{doc_line},
+                  $tracelevel)
+                    if defined $::RD_TRACE;
+
+    
+    my $err_at = @{$thisparser->{errors}};
+
+    my $score;
+    my $score_return;
+    my $_tok;
+    my $return = undef;
+    my $_matched=0;
+    my $commit=0;
+    my @item = ();
+    my %item = ();
+    my $repeating =  defined($_[2]) && $_[2];
+    my $_noactions = defined($_[3]) && $_[3];
+    my @arg =    defined $_[4] ? @{ &{$_[4]} } : ();
+    my %arg =    ($#arg & 01) ? @arg : (@arg, undef);
+    my $text;
+    my $lastsep="";
+    my $current_match;
+    my $expectation = new Parse::RecDescent::Expectation(q{commands});
+    $expectation->at($_[1]);
+    
+    my $thisline;
+    tie $thisline, q{Parse::RecDescent::LineCounter}, \$text, $thisparser;
+
+    
+
+    while (!$_matched && !$commit)
+    {
+        
+        Parse::RecDescent::_trace(q{Trying production: [commands comment]},
+                      Parse::RecDescent::_tracefirst($_[1]),
+                      q{doc_line},
+                      $tracelevel)
+                        if defined $::RD_TRACE;
+        my $thisprod = $thisrule->{"prods"}[0];
+        $text = $_[1];
+        my $_savetext;
+        @item = (q{doc_line});
+        %item = (__RULE__ => q{doc_line});
+        my $repcount = 0;
+
+
+        Parse::RecDescent::_trace(q{Trying subrule: [commands]},
+                  Parse::RecDescent::_tracefirst($text),
+                  q{doc_line},
+                  $tracelevel)
+                    if defined $::RD_TRACE;
+        if (1) { no strict qw{refs};
+        $expectation->is(q{})->at($text);
+        $_savetext = $text;if (defined ($_tok = Parse::RecDescent::Pod::WSDL2::Parser::commands($thisparser,$text,$repeating,1,sub { \@arg })))
+        {
+            $text = $_savetext;
+            Parse::RecDescent::_trace(q{<<Didn't match subrule: [commands]>>},
+                          Parse::RecDescent::_tracefirst($text),
+                          q{doc_line},
+                          $tracelevel)
+                            if defined $::RD_TRACE;
+            $expectation->failed();
+            last;
+        }
+        Parse::RecDescent::_trace(q{>>Matched subrule: [commands]<< (return value: [}
+                    . $_tok . q{]},
+                      
+                      Parse::RecDescent::_tracefirst($text),
+                      q{doc_line},
+                      $tracelevel)
+                        if defined $::RD_TRACE;
+        $item{q{commands}} = $_tok;
+        push @item, $_tok;
+        $text = $_savetext;
+        }
+
+        Parse::RecDescent::_trace(q{Trying subrule: [comment]},
+                  Parse::RecDescent::_tracefirst($text),
+                  q{doc_line},
+                  $tracelevel)
+                    if defined $::RD_TRACE;
+        if (1) { no strict qw{refs};
+        $expectation->is(q{comment})->at($text);
+        unless (defined ($_tok = Parse::RecDescent::Pod::WSDL2::Parser::comment($thisparser,$text,$repeating,$_noactions,sub { \@arg })))
+        {
+            
+            Parse::RecDescent::_trace(q{<<Didn't match subrule: [comment]>>},
+                          Parse::RecDescent::_tracefirst($text),
+                          q{doc_line},
+                          $tracelevel)
+                            if defined $::RD_TRACE;
+            $expectation->failed();
+            last;
+        }
+        Parse::RecDescent::_trace(q{>>Matched subrule: [comment]<< (return value: [}
+                    . $_tok . q{]},
+                      
+                      Parse::RecDescent::_tracefirst($text),
+                      q{doc_line},
+                      $tracelevel)
+                        if defined $::RD_TRACE;
+        $item{q{comment}} = $_tok;
+        push @item, $_tok;
+        
+        }
+
+        Parse::RecDescent::_trace(q{Trying action},
+                      Parse::RecDescent::_tracefirst($text),
+                      q{doc_line},
+                      $tracelevel)
+                        if defined $::RD_TRACE;
+        
+
+        $_tok = ($_noactions) ? 0 : do { $return = $item[2]; 1; };
+        unless (defined $_tok)
+        {
+            Parse::RecDescent::_trace(q{<<Didn't match action>> (return value: [undef])})
+                    if defined $::RD_TRACE;
+            last;
+        }
+        Parse::RecDescent::_trace(q{>>Matched action<< (return value: [}
+                      . $_tok . q{])},
+                      Parse::RecDescent::_tracefirst($text))
+                        if defined $::RD_TRACE;
+        push @item, $_tok;
+        $item{__ACTION1__}=$_tok;
+        
+
+
+        Parse::RecDescent::_trace(q{>>Matched production: [commands comment]<<},
+                      Parse::RecDescent::_tracefirst($text),
+                      q{doc_line},
+                      $tracelevel)
+                        if defined $::RD_TRACE;
+        $_matched = 1;
+        last;
+    }
+
+
+    unless ( $_matched || defined($score) )
+    {
+        
+
+        $_[1] = $text;  # NOT SURE THIS IS NEEDED
+        Parse::RecDescent::_trace(q{<<Didn't match rule>>},
+                     Parse::RecDescent::_tracefirst($_[1]),
+                     q{doc_line},
+                     $tracelevel)
+                    if defined $::RD_TRACE;
+        return undef;
+    }
+    if (!defined($return) && defined($score))
+    {
+        Parse::RecDescent::_trace(q{>>Accepted scored production<<}, "",
+                      q{doc_line},
+                      $tracelevel)
+                        if defined $::RD_TRACE;
+        $return = $score_return;
+    }
+    splice @{$thisparser->{errors}}, $err_at;
+    $return = $item[$#item] unless defined $return;
+    if (defined $::RD_TRACE)
+    {
+        Parse::RecDescent::_trace(q{>>Matched rule<< (return value: [} .
+                      $return . q{])}, "",
+                      q{doc_line},
+                      $tracelevel);
+        Parse::RecDescent::_trace(q{(consumed: [} .
+                      Parse::RecDescent::_tracemax(substr($_[1],0,-length($text))) . q{])}, 
+                      Parse::RecDescent::_tracefirst($text),
+                      , q{doc_line},
+                      $tracelevel)
+    }
+    $_[1] = $text;
+    return $return;
+}
+
+# ARGS ARE: ($parser, $text; $repeating, $_noactions, \@args)
 sub Parse::RecDescent::Pod::WSDL2::Parser::input_block
 {
 	my $thisparser = $_[0];
@@ -2405,215 +2456,6 @@ sub Parse::RecDescent::Pod::WSDL2::Parser::input_block
 }
 
 # ARGS ARE: ($parser, $text; $repeating, $_noactions, \@args)
-sub Parse::RecDescent::Pod::WSDL2::Parser::doc_block
-{
-	my $thisparser = $_[0];
-	use vars q{$tracelevel};
-	local $tracelevel = ($tracelevel||0)+1;
-	$ERRORS = 0;
-    my $thisrule = $thisparser->{"rules"}{"doc_block"};
-    
-    Parse::RecDescent::_trace(q{Trying rule: [doc_block]},
-                  Parse::RecDescent::_tracefirst($_[1]),
-                  q{doc_block},
-                  $tracelevel)
-                    if defined $::RD_TRACE;
-
-    
-    my $err_at = @{$thisparser->{errors}};
-
-    my $score;
-    my $score_return;
-    my $_tok;
-    my $return = undef;
-    my $_matched=0;
-    my $commit=0;
-    my @item = ();
-    my %item = ();
-    my $repeating =  defined($_[2]) && $_[2];
-    my $_noactions = defined($_[3]) && $_[3];
-    my @arg =    defined $_[4] ? @{ &{$_[4]} } : ();
-    my %arg =    ($#arg & 01) ? @arg : (@arg, undef);
-    my $text;
-    my $lastsep="";
-    my $current_match;
-    my $expectation = new Parse::RecDescent::Expectation(q{'_DOC'});
-    $expectation->at($_[1]);
-    
-    my $thisline;
-    tie $thisline, q{Parse::RecDescent::LineCounter}, \$text, $thisparser;
-
-    
-
-    while (!$_matched && !$commit)
-    {
-        
-        Parse::RecDescent::_trace(q{Trying production: ['_DOC' <commit> docline]},
-                      Parse::RecDescent::_tracefirst($_[1]),
-                      q{doc_block},
-                      $tracelevel)
-                        if defined $::RD_TRACE;
-        my $thisprod = $thisrule->{"prods"}[0];
-        $text = $_[1];
-        my $_savetext;
-        @item = (q{doc_block});
-        %item = (__RULE__ => q{doc_block});
-        my $repcount = 0;
-
-
-        Parse::RecDescent::_trace(q{Trying terminal: ['_DOC']},
-                      Parse::RecDescent::_tracefirst($text),
-                      q{doc_block},
-                      $tracelevel)
-                        if defined $::RD_TRACE;
-        $lastsep = "";
-        $expectation->is(q{})->at($text);
-        
-
-        unless ($text =~ s/\A($skip)/$lastsep=$1 and ""/e and   $text =~ m/\A_DOC/)
-        {
-            
-            $expectation->failed();
-            Parse::RecDescent::_trace(qq{<<Didn't match terminal>>},
-                          Parse::RecDescent::_tracefirst($text))
-                            if defined $::RD_TRACE;
-            last;
-        }
-		$current_match = substr($text, $-[0], $+[0] - $-[0]);
-        substr($text,0,length($current_match),q{});
-        Parse::RecDescent::_trace(q{>>Matched terminal<< (return value: [}
-                        . $current_match . q{])},
-                          Parse::RecDescent::_tracefirst($text))
-                            if defined $::RD_TRACE;
-        push @item, $item{__STRING1__}=$current_match;
-        
-
-        
-
-        Parse::RecDescent::_trace(q{Trying directive: [<commit>]},
-                    Parse::RecDescent::_tracefirst($text),
-                      q{doc_block},
-                      $tracelevel)
-                        if defined $::RD_TRACE; 
-        $_tok = do { $commit = 1 };
-        if (defined($_tok))
-        {
-            Parse::RecDescent::_trace(q{>>Matched directive<< (return value: [}
-                        . $_tok . q{])},
-                        Parse::RecDescent::_tracefirst($text))
-                            if defined $::RD_TRACE;
-        }
-        else
-        {
-            Parse::RecDescent::_trace(q{<<Didn't match directive>>},
-                        Parse::RecDescent::_tracefirst($text))
-                            if defined $::RD_TRACE;
-        }
-        
-        last unless defined $_tok;
-        push @item, $item{__DIRECTIVE1__}=$_tok;
-        
-
-        Parse::RecDescent::_trace(q{Trying repeated subrule: [docline]},
-                  Parse::RecDescent::_tracefirst($text),
-                  q{doc_block},
-                  $tracelevel)
-                    if defined $::RD_TRACE;
-        $expectation->is(q{docline})->at($text);
-        
-        unless (defined ($_tok = $thisparser->_parserepeat($text, \&Parse::RecDescent::Pod::WSDL2::Parser::docline, 1, 100000000, $_noactions,$expectation,sub { \@arg }))) 
-        {
-            Parse::RecDescent::_trace(q{<<Didn't match repeated subrule: [docline]>>},
-                          Parse::RecDescent::_tracefirst($text),
-                          q{doc_block},
-                          $tracelevel)
-                            if defined $::RD_TRACE;
-            last;
-        }
-        Parse::RecDescent::_trace(q{>>Matched repeated subrule: [docline]<< (}
-                    . @$_tok . q{ times)},
-                      
-                      Parse::RecDescent::_tracefirst($text),
-                      q{doc_block},
-                      $tracelevel)
-                        if defined $::RD_TRACE;
-        $item{q{docline(s)}} = $_tok;
-        push @item, $_tok;
-        
-
-
-        Parse::RecDescent::_trace(q{Trying action},
-                      Parse::RecDescent::_tracefirst($text),
-                      q{doc_block},
-                      $tracelevel)
-                        if defined $::RD_TRACE;
-        
-
-        $_tok = ($_noactions) ? 0 : do { $return = Pod::WSDL2::Doc->new(join('',@{$item{'docline(s)'}})) };
-        unless (defined $_tok)
-        {
-            Parse::RecDescent::_trace(q{<<Didn't match action>> (return value: [undef])})
-                    if defined $::RD_TRACE;
-            last;
-        }
-        Parse::RecDescent::_trace(q{>>Matched action<< (return value: [}
-                      . $_tok . q{])},
-                      Parse::RecDescent::_tracefirst($text))
-                        if defined $::RD_TRACE;
-        push @item, $_tok;
-        $item{__ACTION1__}=$_tok;
-        
-
-
-        Parse::RecDescent::_trace(q{>>Matched production: ['_DOC' <commit> docline]<<},
-                      Parse::RecDescent::_tracefirst($text),
-                      q{doc_block},
-                      $tracelevel)
-                        if defined $::RD_TRACE;
-        $_matched = 1;
-        last;
-    }
-
-
-    unless ( $_matched || defined($score) )
-    {
-        
-
-        $_[1] = $text;  # NOT SURE THIS IS NEEDED
-        Parse::RecDescent::_trace(q{<<Didn't match rule>>},
-                     Parse::RecDescent::_tracefirst($_[1]),
-                     q{doc_block},
-                     $tracelevel)
-                    if defined $::RD_TRACE;
-        return undef;
-    }
-    if (!defined($return) && defined($score))
-    {
-        Parse::RecDescent::_trace(q{>>Accepted scored production<<}, "",
-                      q{doc_block},
-                      $tracelevel)
-                        if defined $::RD_TRACE;
-        $return = $score_return;
-    }
-    splice @{$thisparser->{errors}}, $err_at;
-    $return = $item[$#item] unless defined $return;
-    if (defined $::RD_TRACE)
-    {
-        Parse::RecDescent::_trace(q{>>Matched rule<< (return value: [} .
-                      $return . q{])}, "",
-                      q{doc_block},
-                      $tracelevel);
-        Parse::RecDescent::_trace(q{(consumed: [} .
-                      Parse::RecDescent::_tracemax(substr($_[1],0,-length($text))) . q{])}, 
-                      Parse::RecDescent::_tracefirst($text),
-                      , q{doc_block},
-                      $tracelevel)
-    }
-    $_[1] = $text;
-    return $return;
-}
-
-# ARGS ARE: ($parser, $text; $repeating, $_noactions, \@args)
 sub Parse::RecDescent::Pod::WSDL2::Parser::array
 {
 	my $thisparser = $_[0];
@@ -2825,217 +2667,6 @@ sub Parse::RecDescent::Pod::WSDL2::Parser::array
                       Parse::RecDescent::_tracemax(substr($_[1],0,-length($text))) . q{])}, 
                       Parse::RecDescent::_tracefirst($text),
                       , q{array},
-                      $tracelevel)
-    }
-    $_[1] = $text;
-    return $return;
-}
-
-# ARGS ARE: ($parser, $text; $repeating, $_noactions, \@args)
-sub Parse::RecDescent::Pod::WSDL2::Parser::docline
-{
-	my $thisparser = $_[0];
-	use vars q{$tracelevel};
-	local $tracelevel = ($tracelevel||0)+1;
-	$ERRORS = 0;
-    my $thisrule = $thisparser->{"rules"}{"docline"};
-    
-    Parse::RecDescent::_trace(q{Trying rule: [docline]},
-                  Parse::RecDescent::_tracefirst($_[1]),
-                  q{docline},
-                  $tracelevel)
-                    if defined $::RD_TRACE;
-
-    
-    my $err_at = @{$thisparser->{errors}};
-
-    my $score;
-    my $score_return;
-    my $_tok;
-    my $return = undef;
-    my $_matched=0;
-    my $commit=0;
-    my @item = ();
-    my %item = ();
-    my $repeating =  defined($_[2]) && $_[2];
-    my $_noactions = defined($_[3]) && $_[3];
-    my @arg =    defined $_[4] ? @{ &{$_[4]} } : ();
-    my %arg =    ($#arg & 01) ? @arg : (@arg, undef);
-    my $text;
-    my $lastsep="";
-    my $current_match;
-    my $expectation = new Parse::RecDescent::Expectation(q{commands});
-    $expectation->at($_[1]);
-    
-    my $thisline;
-    tie $thisline, q{Parse::RecDescent::LineCounter}, \$text, $thisparser;
-
-    
-
-    while (!$_matched && !$commit)
-    {
-        local $skip = defined($skip) ? $skip : $Parse::RecDescent::skip;
-        Parse::RecDescent::_trace(q{Trying production: [commands <skip:'[ \t]*'> /.*\\n+/]},
-                      Parse::RecDescent::_tracefirst($_[1]),
-                      q{docline},
-                      $tracelevel)
-                        if defined $::RD_TRACE;
-        my $thisprod = $thisrule->{"prods"}[0];
-        $text = $_[1];
-        my $_savetext;
-        @item = (q{docline});
-        %item = (__RULE__ => q{docline});
-        my $repcount = 0;
-
-
-        Parse::RecDescent::_trace(q{Trying subrule: [commands]},
-                  Parse::RecDescent::_tracefirst($text),
-                  q{docline},
-                  $tracelevel)
-                    if defined $::RD_TRACE;
-        if (1) { no strict qw{refs};
-        $expectation->is(q{})->at($text);
-        $_savetext = $text;if (defined ($_tok = Parse::RecDescent::Pod::WSDL2::Parser::commands($thisparser,$text,$repeating,1,sub { \@arg })))
-        {
-            $text = $_savetext;
-            Parse::RecDescent::_trace(q{<<Didn't match subrule: [commands]>>},
-                          Parse::RecDescent::_tracefirst($text),
-                          q{docline},
-                          $tracelevel)
-                            if defined $::RD_TRACE;
-            $expectation->failed();
-            last;
-        }
-        Parse::RecDescent::_trace(q{>>Matched subrule: [commands]<< (return value: [}
-                    . $_tok . q{]},
-                      
-                      Parse::RecDescent::_tracefirst($text),
-                      q{docline},
-                      $tracelevel)
-                        if defined $::RD_TRACE;
-        $item{q{commands}} = $_tok;
-        push @item, $_tok;
-        $text = $_savetext;
-        }
-
-        
-
-        Parse::RecDescent::_trace(q{Trying directive: [<skip:'[ \t]*'>]},
-                    Parse::RecDescent::_tracefirst($text),
-                      q{docline},
-                      $tracelevel)
-                        if defined $::RD_TRACE; 
-        $_tok = do { my $oldskip = $skip; $skip='[ \t]*'; $oldskip };
-        if (defined($_tok))
-        {
-            Parse::RecDescent::_trace(q{>>Matched directive<< (return value: [}
-                        . $_tok . q{])},
-                        Parse::RecDescent::_tracefirst($text))
-                            if defined $::RD_TRACE;
-        }
-        else
-        {
-            Parse::RecDescent::_trace(q{<<Didn't match directive>>},
-                        Parse::RecDescent::_tracefirst($text))
-                            if defined $::RD_TRACE;
-        }
-        
-        last unless defined $_tok;
-        push @item, $item{__DIRECTIVE1__}=$_tok;
-        
-
-        Parse::RecDescent::_trace(q{Trying terminal: [/.*\\n+/]}, Parse::RecDescent::_tracefirst($text),
-                      q{docline},
-                      $tracelevel)
-                        if defined $::RD_TRACE;
-        $lastsep = "";
-        $expectation->is(q{/.*\\n+/})->at($text);
-        
-
-        unless ($text =~ s/\A($skip)/$lastsep=$1 and ""/e and   $text =~ m/\A(?:.*\n+)/)
-        {
-            
-            $expectation->failed();
-            Parse::RecDescent::_trace(q{<<Didn't match terminal>>},
-                          Parse::RecDescent::_tracefirst($text))
-                    if defined $::RD_TRACE;
-
-            last;
-        }
-		$current_match = substr($text, $-[0], $+[0] - $-[0]);
-        substr($text,0,length($current_match),q{});
-        Parse::RecDescent::_trace(q{>>Matched terminal<< (return value: [}
-                        . $current_match . q{])},
-                          Parse::RecDescent::_tracefirst($text))
-                    if defined $::RD_TRACE;
-        push @item, $item{__PATTERN1__}=$current_match;
-        
-
-        Parse::RecDescent::_trace(q{Trying action},
-                      Parse::RecDescent::_tracefirst($text),
-                      q{docline},
-                      $tracelevel)
-                        if defined $::RD_TRACE;
-        
-
-        $_tok = ($_noactions) ? 0 : do { $return = $item[3]; 1; };
-        unless (defined $_tok)
-        {
-            Parse::RecDescent::_trace(q{<<Didn't match action>> (return value: [undef])})
-                    if defined $::RD_TRACE;
-            last;
-        }
-        Parse::RecDescent::_trace(q{>>Matched action<< (return value: [}
-                      . $_tok . q{])},
-                      Parse::RecDescent::_tracefirst($text))
-                        if defined $::RD_TRACE;
-        push @item, $_tok;
-        $item{__ACTION1__}=$_tok;
-        
-
-
-        Parse::RecDescent::_trace(q{>>Matched production: [commands <skip:'[ \t]*'> /.*\\n+/]<<},
-                      Parse::RecDescent::_tracefirst($text),
-                      q{docline},
-                      $tracelevel)
-                        if defined $::RD_TRACE;
-        $_matched = 1;
-        last;
-    }
-
-
-    unless ( $_matched || defined($score) )
-    {
-        
-
-        $_[1] = $text;  # NOT SURE THIS IS NEEDED
-        Parse::RecDescent::_trace(q{<<Didn't match rule>>},
-                     Parse::RecDescent::_tracefirst($_[1]),
-                     q{docline},
-                     $tracelevel)
-                    if defined $::RD_TRACE;
-        return undef;
-    }
-    if (!defined($return) && defined($score))
-    {
-        Parse::RecDescent::_trace(q{>>Accepted scored production<<}, "",
-                      q{docline},
-                      $tracelevel)
-                        if defined $::RD_TRACE;
-        $return = $score_return;
-    }
-    splice @{$thisparser->{errors}}, $err_at;
-    $return = $item[$#item] unless defined $return;
-    if (defined $::RD_TRACE)
-    {
-        Parse::RecDescent::_trace(q{>>Matched rule<< (return value: [} .
-                      $return . q{])}, "",
-                      q{docline},
-                      $tracelevel);
-        Parse::RecDescent::_trace(q{(consumed: [} .
-                      Parse::RecDescent::_tracemax(substr($_[1],0,-length($text))) . q{])}, 
-                      Parse::RecDescent::_tracefirst($text),
-                      , q{docline},
                       $tracelevel)
     }
     $_[1] = $text;
@@ -4464,6 +4095,164 @@ sub Parse::RecDescent::Pod::WSDL2::Parser::_alternation_1_of_production_1_of_rul
 }
 
 # ARGS ARE: ($parser, $text; $repeating, $_noactions, \@args)
+sub Parse::RecDescent::Pod::WSDL2::Parser::command_block
+{
+	my $thisparser = $_[0];
+	use vars q{$tracelevel};
+	local $tracelevel = ($tracelevel||0)+1;
+	$ERRORS = 0;
+    my $thisrule = $thisparser->{"rules"}{"command_block"};
+    
+    Parse::RecDescent::_trace(q{Trying rule: [command_block]},
+                  Parse::RecDescent::_tracefirst($_[1]),
+                  q{command_block},
+                  $tracelevel)
+                    if defined $::RD_TRACE;
+
+    
+    my $err_at = @{$thisparser->{errors}};
+
+    my $score;
+    my $score_return;
+    my $_tok;
+    my $return = undef;
+    my $_matched=0;
+    my $commit=0;
+    my @item = ();
+    my %item = ();
+    my $repeating =  defined($_[2]) && $_[2];
+    my $_noactions = defined($_[3]) && $_[3];
+    my @arg =    defined $_[4] ? @{ &{$_[4]} } : ();
+    my %arg =    ($#arg & 01) ? @arg : (@arg, undef);
+    my $text;
+    my $lastsep="";
+    my $current_match;
+    my $expectation = new Parse::RecDescent::Expectation(q{one_way, or input_block, or return_block, or fault_block});
+    $expectation->at($_[1]);
+    
+    my $thisline;
+    tie $thisline, q{Parse::RecDescent::LineCounter}, \$text, $thisparser;
+
+    
+
+    while (!$_matched && !$commit)
+    {
+        
+        Parse::RecDescent::_trace(q{Trying production: [one_way, or input_block, or return_block, or fault_block]},
+                      Parse::RecDescent::_tracefirst($_[1]),
+                      q{command_block},
+                      $tracelevel)
+                        if defined $::RD_TRACE;
+        my $thisprod = $thisrule->{"prods"}[0];
+        $text = $_[1];
+        my $_savetext;
+        @item = (q{command_block});
+        %item = (__RULE__ => q{command_block});
+        my $repcount = 0;
+
+
+        Parse::RecDescent::_trace(q{Trying subrule: [_alternation_1_of_production_1_of_rule_command_block]},
+                  Parse::RecDescent::_tracefirst($text),
+                  q{command_block},
+                  $tracelevel)
+                    if defined $::RD_TRACE;
+        if (1) { no strict qw{refs};
+        $expectation->is(q{})->at($text);
+        unless (defined ($_tok = Parse::RecDescent::Pod::WSDL2::Parser::_alternation_1_of_production_1_of_rule_command_block($thisparser,$text,$repeating,$_noactions,sub { \@arg })))
+        {
+            
+            Parse::RecDescent::_trace(q{<<Didn't match subrule: [_alternation_1_of_production_1_of_rule_command_block]>>},
+                          Parse::RecDescent::_tracefirst($text),
+                          q{command_block},
+                          $tracelevel)
+                            if defined $::RD_TRACE;
+            $expectation->failed();
+            last;
+        }
+        Parse::RecDescent::_trace(q{>>Matched subrule: [_alternation_1_of_production_1_of_rule_command_block]<< (return value: [}
+                    . $_tok . q{]},
+                      
+                      Parse::RecDescent::_tracefirst($text),
+                      q{command_block},
+                      $tracelevel)
+                        if defined $::RD_TRACE;
+        $item{q{_alternation_1_of_production_1_of_rule_command_block}} = $_tok;
+        push @item, $_tok;
+        
+        }
+
+        Parse::RecDescent::_trace(q{Trying action},
+                      Parse::RecDescent::_tracefirst($text),
+                      q{command_block},
+                      $tracelevel)
+                        if defined $::RD_TRACE;
+        
+
+        $_tok = ($_noactions) ? 0 : do { $return = $item[1]; };
+        unless (defined $_tok)
+        {
+            Parse::RecDescent::_trace(q{<<Didn't match action>> (return value: [undef])})
+                    if defined $::RD_TRACE;
+            last;
+        }
+        Parse::RecDescent::_trace(q{>>Matched action<< (return value: [}
+                      . $_tok . q{])},
+                      Parse::RecDescent::_tracefirst($text))
+                        if defined $::RD_TRACE;
+        push @item, $_tok;
+        $item{__ACTION1__}=$_tok;
+        
+
+
+        Parse::RecDescent::_trace(q{>>Matched production: [one_way, or input_block, or return_block, or fault_block]<<},
+                      Parse::RecDescent::_tracefirst($text),
+                      q{command_block},
+                      $tracelevel)
+                        if defined $::RD_TRACE;
+        $_matched = 1;
+        last;
+    }
+
+
+    unless ( $_matched || defined($score) )
+    {
+        
+
+        $_[1] = $text;  # NOT SURE THIS IS NEEDED
+        Parse::RecDescent::_trace(q{<<Didn't match rule>>},
+                     Parse::RecDescent::_tracefirst($_[1]),
+                     q{command_block},
+                     $tracelevel)
+                    if defined $::RD_TRACE;
+        return undef;
+    }
+    if (!defined($return) && defined($score))
+    {
+        Parse::RecDescent::_trace(q{>>Accepted scored production<<}, "",
+                      q{command_block},
+                      $tracelevel)
+                        if defined $::RD_TRACE;
+        $return = $score_return;
+    }
+    splice @{$thisparser->{errors}}, $err_at;
+    $return = $item[$#item] unless defined $return;
+    if (defined $::RD_TRACE)
+    {
+        Parse::RecDescent::_trace(q{>>Matched rule<< (return value: [} .
+                      $return . q{])}, "",
+                      q{command_block},
+                      $tracelevel);
+        Parse::RecDescent::_trace(q{(consumed: [} .
+                      Parse::RecDescent::_tracemax(substr($_[1],0,-length($text))) . q{])}, 
+                      Parse::RecDescent::_tracefirst($text),
+                      , q{command_block},
+                      $tracelevel)
+    }
+    $_[1] = $text;
+    return $return;
+}
+
+# ARGS ARE: ($parser, $text; $repeating, $_noactions, \@args)
 sub Parse::RecDescent::Pod::WSDL2::Parser::_alternation_1_of_production_1_of_rule_input_block
 {
 	my $thisparser = $_[0];
@@ -4714,6 +4503,313 @@ sub Parse::RecDescent::Pod::WSDL2::Parser::_alternation_1_of_production_1_of_rul
 }
 
 # ARGS ARE: ($parser, $text; $repeating, $_noactions, \@args)
+sub Parse::RecDescent::Pod::WSDL2::Parser::_alternation_1_of_production_1_of_rule_command_block
+{
+	my $thisparser = $_[0];
+	use vars q{$tracelevel};
+	local $tracelevel = ($tracelevel||0)+1;
+	$ERRORS = 0;
+    my $thisrule = $thisparser->{"rules"}{"_alternation_1_of_production_1_of_rule_command_block"};
+    
+    Parse::RecDescent::_trace(q{Trying rule: [_alternation_1_of_production_1_of_rule_command_block]},
+                  Parse::RecDescent::_tracefirst($_[1]),
+                  q{_alternation_1_of_production_1_of_rule_command_block},
+                  $tracelevel)
+                    if defined $::RD_TRACE;
+
+    
+    my $err_at = @{$thisparser->{errors}};
+
+    my $score;
+    my $score_return;
+    my $_tok;
+    my $return = undef;
+    my $_matched=0;
+    my $commit=0;
+    my @item = ();
+    my %item = ();
+    my $repeating =  defined($_[2]) && $_[2];
+    my $_noactions = defined($_[3]) && $_[3];
+    my @arg =    defined $_[4] ? @{ &{$_[4]} } : ();
+    my %arg =    ($#arg & 01) ? @arg : (@arg, undef);
+    my $text;
+    my $lastsep="";
+    my $current_match;
+    my $expectation = new Parse::RecDescent::Expectation(q{one_way, or input_block, or return_block, or fault_block});
+    $expectation->at($_[1]);
+    
+    my $thisline;
+    tie $thisline, q{Parse::RecDescent::LineCounter}, \$text, $thisparser;
+
+    
+
+    while (!$_matched && !$commit)
+    {
+        
+        Parse::RecDescent::_trace(q{Trying production: [one_way]},
+                      Parse::RecDescent::_tracefirst($_[1]),
+                      q{_alternation_1_of_production_1_of_rule_command_block},
+                      $tracelevel)
+                        if defined $::RD_TRACE;
+        my $thisprod = $thisrule->{"prods"}[0];
+        $text = $_[1];
+        my $_savetext;
+        @item = (q{_alternation_1_of_production_1_of_rule_command_block});
+        %item = (__RULE__ => q{_alternation_1_of_production_1_of_rule_command_block});
+        my $repcount = 0;
+
+
+        Parse::RecDescent::_trace(q{Trying subrule: [one_way]},
+                  Parse::RecDescent::_tracefirst($text),
+                  q{_alternation_1_of_production_1_of_rule_command_block},
+                  $tracelevel)
+                    if defined $::RD_TRACE;
+        if (1) { no strict qw{refs};
+        $expectation->is(q{})->at($text);
+        unless (defined ($_tok = Parse::RecDescent::Pod::WSDL2::Parser::one_way($thisparser,$text,$repeating,$_noactions,sub { \@arg })))
+        {
+            
+            Parse::RecDescent::_trace(q{<<Didn't match subrule: [one_way]>>},
+                          Parse::RecDescent::_tracefirst($text),
+                          q{_alternation_1_of_production_1_of_rule_command_block},
+                          $tracelevel)
+                            if defined $::RD_TRACE;
+            $expectation->failed();
+            last;
+        }
+        Parse::RecDescent::_trace(q{>>Matched subrule: [one_way]<< (return value: [}
+                    . $_tok . q{]},
+                      
+                      Parse::RecDescent::_tracefirst($text),
+                      q{_alternation_1_of_production_1_of_rule_command_block},
+                      $tracelevel)
+                        if defined $::RD_TRACE;
+        $item{q{one_way}} = $_tok;
+        push @item, $_tok;
+        
+        }
+
+
+        Parse::RecDescent::_trace(q{>>Matched production: [one_way]<<},
+                      Parse::RecDescent::_tracefirst($text),
+                      q{_alternation_1_of_production_1_of_rule_command_block},
+                      $tracelevel)
+                        if defined $::RD_TRACE;
+        $_matched = 1;
+        last;
+    }
+
+
+    while (!$_matched && !$commit)
+    {
+        
+        Parse::RecDescent::_trace(q{Trying production: [input_block]},
+                      Parse::RecDescent::_tracefirst($_[1]),
+                      q{_alternation_1_of_production_1_of_rule_command_block},
+                      $tracelevel)
+                        if defined $::RD_TRACE;
+        my $thisprod = $thisrule->{"prods"}[1];
+        $text = $_[1];
+        my $_savetext;
+        @item = (q{_alternation_1_of_production_1_of_rule_command_block});
+        %item = (__RULE__ => q{_alternation_1_of_production_1_of_rule_command_block});
+        my $repcount = 0;
+
+
+        Parse::RecDescent::_trace(q{Trying subrule: [input_block]},
+                  Parse::RecDescent::_tracefirst($text),
+                  q{_alternation_1_of_production_1_of_rule_command_block},
+                  $tracelevel)
+                    if defined $::RD_TRACE;
+        if (1) { no strict qw{refs};
+        $expectation->is(q{})->at($text);
+        unless (defined ($_tok = Parse::RecDescent::Pod::WSDL2::Parser::input_block($thisparser,$text,$repeating,$_noactions,sub { \@arg })))
+        {
+            
+            Parse::RecDescent::_trace(q{<<Didn't match subrule: [input_block]>>},
+                          Parse::RecDescent::_tracefirst($text),
+                          q{_alternation_1_of_production_1_of_rule_command_block},
+                          $tracelevel)
+                            if defined $::RD_TRACE;
+            $expectation->failed();
+            last;
+        }
+        Parse::RecDescent::_trace(q{>>Matched subrule: [input_block]<< (return value: [}
+                    . $_tok . q{]},
+                      
+                      Parse::RecDescent::_tracefirst($text),
+                      q{_alternation_1_of_production_1_of_rule_command_block},
+                      $tracelevel)
+                        if defined $::RD_TRACE;
+        $item{q{input_block}} = $_tok;
+        push @item, $_tok;
+        
+        }
+
+
+        Parse::RecDescent::_trace(q{>>Matched production: [input_block]<<},
+                      Parse::RecDescent::_tracefirst($text),
+                      q{_alternation_1_of_production_1_of_rule_command_block},
+                      $tracelevel)
+                        if defined $::RD_TRACE;
+        $_matched = 1;
+        last;
+    }
+
+
+    while (!$_matched && !$commit)
+    {
+        
+        Parse::RecDescent::_trace(q{Trying production: [return_block]},
+                      Parse::RecDescent::_tracefirst($_[1]),
+                      q{_alternation_1_of_production_1_of_rule_command_block},
+                      $tracelevel)
+                        if defined $::RD_TRACE;
+        my $thisprod = $thisrule->{"prods"}[2];
+        $text = $_[1];
+        my $_savetext;
+        @item = (q{_alternation_1_of_production_1_of_rule_command_block});
+        %item = (__RULE__ => q{_alternation_1_of_production_1_of_rule_command_block});
+        my $repcount = 0;
+
+
+        Parse::RecDescent::_trace(q{Trying subrule: [return_block]},
+                  Parse::RecDescent::_tracefirst($text),
+                  q{_alternation_1_of_production_1_of_rule_command_block},
+                  $tracelevel)
+                    if defined $::RD_TRACE;
+        if (1) { no strict qw{refs};
+        $expectation->is(q{})->at($text);
+        unless (defined ($_tok = Parse::RecDescent::Pod::WSDL2::Parser::return_block($thisparser,$text,$repeating,$_noactions,sub { \@arg })))
+        {
+            
+            Parse::RecDescent::_trace(q{<<Didn't match subrule: [return_block]>>},
+                          Parse::RecDescent::_tracefirst($text),
+                          q{_alternation_1_of_production_1_of_rule_command_block},
+                          $tracelevel)
+                            if defined $::RD_TRACE;
+            $expectation->failed();
+            last;
+        }
+        Parse::RecDescent::_trace(q{>>Matched subrule: [return_block]<< (return value: [}
+                    . $_tok . q{]},
+                      
+                      Parse::RecDescent::_tracefirst($text),
+                      q{_alternation_1_of_production_1_of_rule_command_block},
+                      $tracelevel)
+                        if defined $::RD_TRACE;
+        $item{q{return_block}} = $_tok;
+        push @item, $_tok;
+        
+        }
+
+
+        Parse::RecDescent::_trace(q{>>Matched production: [return_block]<<},
+                      Parse::RecDescent::_tracefirst($text),
+                      q{_alternation_1_of_production_1_of_rule_command_block},
+                      $tracelevel)
+                        if defined $::RD_TRACE;
+        $_matched = 1;
+        last;
+    }
+
+
+    while (!$_matched && !$commit)
+    {
+        
+        Parse::RecDescent::_trace(q{Trying production: [fault_block]},
+                      Parse::RecDescent::_tracefirst($_[1]),
+                      q{_alternation_1_of_production_1_of_rule_command_block},
+                      $tracelevel)
+                        if defined $::RD_TRACE;
+        my $thisprod = $thisrule->{"prods"}[3];
+        $text = $_[1];
+        my $_savetext;
+        @item = (q{_alternation_1_of_production_1_of_rule_command_block});
+        %item = (__RULE__ => q{_alternation_1_of_production_1_of_rule_command_block});
+        my $repcount = 0;
+
+
+        Parse::RecDescent::_trace(q{Trying subrule: [fault_block]},
+                  Parse::RecDescent::_tracefirst($text),
+                  q{_alternation_1_of_production_1_of_rule_command_block},
+                  $tracelevel)
+                    if defined $::RD_TRACE;
+        if (1) { no strict qw{refs};
+        $expectation->is(q{})->at($text);
+        unless (defined ($_tok = Parse::RecDescent::Pod::WSDL2::Parser::fault_block($thisparser,$text,$repeating,$_noactions,sub { \@arg })))
+        {
+            
+            Parse::RecDescent::_trace(q{<<Didn't match subrule: [fault_block]>>},
+                          Parse::RecDescent::_tracefirst($text),
+                          q{_alternation_1_of_production_1_of_rule_command_block},
+                          $tracelevel)
+                            if defined $::RD_TRACE;
+            $expectation->failed();
+            last;
+        }
+        Parse::RecDescent::_trace(q{>>Matched subrule: [fault_block]<< (return value: [}
+                    . $_tok . q{]},
+                      
+                      Parse::RecDescent::_tracefirst($text),
+                      q{_alternation_1_of_production_1_of_rule_command_block},
+                      $tracelevel)
+                        if defined $::RD_TRACE;
+        $item{q{fault_block}} = $_tok;
+        push @item, $_tok;
+        
+        }
+
+
+        Parse::RecDescent::_trace(q{>>Matched production: [fault_block]<<},
+                      Parse::RecDescent::_tracefirst($text),
+                      q{_alternation_1_of_production_1_of_rule_command_block},
+                      $tracelevel)
+                        if defined $::RD_TRACE;
+        $_matched = 1;
+        last;
+    }
+
+
+    unless ( $_matched || defined($score) )
+    {
+        
+
+        $_[1] = $text;  # NOT SURE THIS IS NEEDED
+        Parse::RecDescent::_trace(q{<<Didn't match rule>>},
+                     Parse::RecDescent::_tracefirst($_[1]),
+                     q{_alternation_1_of_production_1_of_rule_command_block},
+                     $tracelevel)
+                    if defined $::RD_TRACE;
+        return undef;
+    }
+    if (!defined($return) && defined($score))
+    {
+        Parse::RecDescent::_trace(q{>>Accepted scored production<<}, "",
+                      q{_alternation_1_of_production_1_of_rule_command_block},
+                      $tracelevel)
+                        if defined $::RD_TRACE;
+        $return = $score_return;
+    }
+    splice @{$thisparser->{errors}}, $err_at;
+    $return = $item[$#item] unless defined $return;
+    if (defined $::RD_TRACE)
+    {
+        Parse::RecDescent::_trace(q{>>Matched rule<< (return value: [} .
+                      $return . q{])}, "",
+                      q{_alternation_1_of_production_1_of_rule_command_block},
+                      $tracelevel);
+        Parse::RecDescent::_trace(q{(consumed: [} .
+                      Parse::RecDescent::_tracemax(substr($_[1],0,-length($text))) . q{])}, 
+                      Parse::RecDescent::_tracefirst($text),
+                      , q{_alternation_1_of_production_1_of_rule_command_block},
+                      $tracelevel)
+    }
+    $_[1] = $text;
+    return $return;
+}
+
+# ARGS ARE: ($parser, $text; $repeating, $_noactions, \@args)
 sub Parse::RecDescent::Pod::WSDL2::Parser::fault_type
 {
 	my $thisparser = $_[0];
@@ -4757,7 +4853,7 @@ sub Parse::RecDescent::Pod::WSDL2::Parser::fault_type
     while (!$_matched && !$commit)
     {
         
-        Parse::RecDescent::_trace(q{Trying production: [data_type docline]},
+        Parse::RecDescent::_trace(q{Trying production: [data_type comment]},
                       Parse::RecDescent::_tracefirst($_[1]),
                       q{fault_type},
                       $tracelevel)
@@ -4800,30 +4896,30 @@ sub Parse::RecDescent::Pod::WSDL2::Parser::fault_type
         
         }
 
-        Parse::RecDescent::_trace(q{Trying repeated subrule: [docline]},
+        Parse::RecDescent::_trace(q{Trying repeated subrule: [comment]},
                   Parse::RecDescent::_tracefirst($text),
                   q{fault_type},
                   $tracelevel)
                     if defined $::RD_TRACE;
-        $expectation->is(q{docline})->at($text);
+        $expectation->is(q{comment})->at($text);
         
-        unless (defined ($_tok = $thisparser->_parserepeat($text, \&Parse::RecDescent::Pod::WSDL2::Parser::docline, 0, 1, $_noactions,$expectation,sub { \@arg }))) 
+        unless (defined ($_tok = $thisparser->_parserepeat($text, \&Parse::RecDescent::Pod::WSDL2::Parser::comment, 0, 1, $_noactions,$expectation,sub { \@arg }))) 
         {
-            Parse::RecDescent::_trace(q{<<Didn't match repeated subrule: [docline]>>},
+            Parse::RecDescent::_trace(q{<<Didn't match repeated subrule: [comment]>>},
                           Parse::RecDescent::_tracefirst($text),
                           q{fault_type},
                           $tracelevel)
                             if defined $::RD_TRACE;
             last;
         }
-        Parse::RecDescent::_trace(q{>>Matched repeated subrule: [docline]<< (}
+        Parse::RecDescent::_trace(q{>>Matched repeated subrule: [comment]<< (}
                     . @$_tok . q{ times)},
                       
                       Parse::RecDescent::_tracefirst($text),
                       q{fault_type},
                       $tracelevel)
                         if defined $::RD_TRACE;
-        $item{q{docline(?)}} = $_tok;
+        $item{q{comment(?)}} = $_tok;
         push @item, $_tok;
         
 
@@ -4838,7 +4934,7 @@ sub Parse::RecDescent::Pod::WSDL2::Parser::fault_type
         $_tok = ($_noactions) ? 0 : do {
 	$return = {
 		type => $item[1],
-		docs => $item[2]->[0]
+		docs => Pod::WSDL2::Doc->new($item[2]->[0])
 	};
 };
         unless (defined $_tok)
@@ -4856,7 +4952,7 @@ sub Parse::RecDescent::Pod::WSDL2::Parser::fault_type
         
 
 
-        Parse::RecDescent::_trace(q{>>Matched production: [data_type docline]<<},
+        Parse::RecDescent::_trace(q{>>Matched production: [data_type comment]<<},
                       Parse::RecDescent::_tracefirst($text),
                       q{fault_type},
                       $tracelevel)
@@ -5276,6 +5372,187 @@ sub Parse::RecDescent::Pod::WSDL2::Parser::one_way
 }
 
 # ARGS ARE: ($parser, $text; $repeating, $_noactions, \@args)
+sub Parse::RecDescent::Pod::WSDL2::Parser::comment
+{
+	my $thisparser = $_[0];
+	use vars q{$tracelevel};
+	local $tracelevel = ($tracelevel||0)+1;
+	$ERRORS = 0;
+    my $thisrule = $thisparser->{"rules"}{"comment"};
+    
+    Parse::RecDescent::_trace(q{Trying rule: [comment]},
+                  Parse::RecDescent::_tracefirst($_[1]),
+                  q{comment},
+                  $tracelevel)
+                    if defined $::RD_TRACE;
+
+    
+    my $err_at = @{$thisparser->{errors}};
+
+    my $score;
+    my $score_return;
+    my $_tok;
+    my $return = undef;
+    my $_matched=0;
+    my $commit=0;
+    my @item = ();
+    my %item = ();
+    my $repeating =  defined($_[2]) && $_[2];
+    my $_noactions = defined($_[3]) && $_[3];
+    my @arg =    defined $_[4] ? @{ &{$_[4]} } : ();
+    my %arg =    ($#arg & 01) ? @arg : (@arg, undef);
+    my $text;
+    my $lastsep="";
+    my $current_match;
+    my $expectation = new Parse::RecDescent::Expectation(q{});
+    $expectation->at($_[1]);
+    
+    my $thisline;
+    tie $thisline, q{Parse::RecDescent::LineCounter}, \$text, $thisparser;
+
+    
+
+    while (!$_matched && !$commit)
+    {
+        local $skip = defined($skip) ? $skip : $Parse::RecDescent::skip;
+        Parse::RecDescent::_trace(q{Trying production: [<skip:'[ \t]*'> /.*\\n+/]},
+                      Parse::RecDescent::_tracefirst($_[1]),
+                      q{comment},
+                      $tracelevel)
+                        if defined $::RD_TRACE;
+        my $thisprod = $thisrule->{"prods"}[0];
+        $text = $_[1];
+        my $_savetext;
+        @item = (q{comment});
+        %item = (__RULE__ => q{comment});
+        my $repcount = 0;
+
+
+        
+
+        Parse::RecDescent::_trace(q{Trying directive: [<skip:'[ \t]*'>]},
+                    Parse::RecDescent::_tracefirst($text),
+                      q{comment},
+                      $tracelevel)
+                        if defined $::RD_TRACE; 
+        $_tok = do { my $oldskip = $skip; $skip='[ \t]*'; $oldskip };
+        if (defined($_tok))
+        {
+            Parse::RecDescent::_trace(q{>>Matched directive<< (return value: [}
+                        . $_tok . q{])},
+                        Parse::RecDescent::_tracefirst($text))
+                            if defined $::RD_TRACE;
+        }
+        else
+        {
+            Parse::RecDescent::_trace(q{<<Didn't match directive>>},
+                        Parse::RecDescent::_tracefirst($text))
+                            if defined $::RD_TRACE;
+        }
+        
+        last unless defined $_tok;
+        push @item, $item{__DIRECTIVE1__}=$_tok;
+        
+
+        Parse::RecDescent::_trace(q{Trying terminal: [/.*\\n+/]}, Parse::RecDescent::_tracefirst($text),
+                      q{comment},
+                      $tracelevel)
+                        if defined $::RD_TRACE;
+        $lastsep = "";
+        $expectation->is(q{/.*\\n+/})->at($text);
+        
+
+        unless ($text =~ s/\A($skip)/$lastsep=$1 and ""/e and   $text =~ m/\A(?:.*\n+)/)
+        {
+            
+            $expectation->failed();
+            Parse::RecDescent::_trace(q{<<Didn't match terminal>>},
+                          Parse::RecDescent::_tracefirst($text))
+                    if defined $::RD_TRACE;
+
+            last;
+        }
+		$current_match = substr($text, $-[0], $+[0] - $-[0]);
+        substr($text,0,length($current_match),q{});
+        Parse::RecDescent::_trace(q{>>Matched terminal<< (return value: [}
+                        . $current_match . q{])},
+                          Parse::RecDescent::_tracefirst($text))
+                    if defined $::RD_TRACE;
+        push @item, $item{__PATTERN1__}=$current_match;
+        
+
+        Parse::RecDescent::_trace(q{Trying action},
+                      Parse::RecDescent::_tracefirst($text),
+                      q{comment},
+                      $tracelevel)
+                        if defined $::RD_TRACE;
+        
+
+        $_tok = ($_noactions) ? 0 : do { $return = $item[2]; 1; };
+        unless (defined $_tok)
+        {
+            Parse::RecDescent::_trace(q{<<Didn't match action>> (return value: [undef])})
+                    if defined $::RD_TRACE;
+            last;
+        }
+        Parse::RecDescent::_trace(q{>>Matched action<< (return value: [}
+                      . $_tok . q{])},
+                      Parse::RecDescent::_tracefirst($text))
+                        if defined $::RD_TRACE;
+        push @item, $_tok;
+        $item{__ACTION1__}=$_tok;
+        
+
+
+        Parse::RecDescent::_trace(q{>>Matched production: [<skip:'[ \t]*'> /.*\\n+/]<<},
+                      Parse::RecDescent::_tracefirst($text),
+                      q{comment},
+                      $tracelevel)
+                        if defined $::RD_TRACE;
+        $_matched = 1;
+        last;
+    }
+
+
+    unless ( $_matched || defined($score) )
+    {
+        
+
+        $_[1] = $text;  # NOT SURE THIS IS NEEDED
+        Parse::RecDescent::_trace(q{<<Didn't match rule>>},
+                     Parse::RecDescent::_tracefirst($_[1]),
+                     q{comment},
+                     $tracelevel)
+                    if defined $::RD_TRACE;
+        return undef;
+    }
+    if (!defined($return) && defined($score))
+    {
+        Parse::RecDescent::_trace(q{>>Accepted scored production<<}, "",
+                      q{comment},
+                      $tracelevel)
+                        if defined $::RD_TRACE;
+        $return = $score_return;
+    }
+    splice @{$thisparser->{errors}}, $err_at;
+    $return = $item[$#item] unless defined $return;
+    if (defined $::RD_TRACE)
+    {
+        Parse::RecDescent::_trace(q{>>Matched rule<< (return value: [} .
+                      $return . q{])}, "",
+                      q{comment},
+                      $tracelevel);
+        Parse::RecDescent::_trace(q{(consumed: [} .
+                      Parse::RecDescent::_tracemax(substr($_[1],0,-length($text))) . q{])}, 
+                      Parse::RecDescent::_tracefirst($text),
+                      , q{comment},
+                      $tracelevel)
+    }
+    $_[1] = $text;
+    return $return;
+}
+
+# ARGS ARE: ($parser, $text; $repeating, $_noactions, \@args)
 sub Parse::RecDescent::Pod::WSDL2::Parser::simple
 {
 	my $thisparser = $_[0];
@@ -5319,7 +5596,7 @@ sub Parse::RecDescent::Pod::WSDL2::Parser::simple
     while (!$_matched && !$commit)
     {
         
-        Parse::RecDescent::_trace(q{Trying production: [sigul <commit> data_type optional docline]},
+        Parse::RecDescent::_trace(q{Trying production: [sigul <commit> data_type optional comment]},
                       Parse::RecDescent::_tracefirst($_[1]),
                       q{simple},
                       $tracelevel)
@@ -5446,30 +5723,30 @@ sub Parse::RecDescent::Pod::WSDL2::Parser::simple
         
 
 
-        Parse::RecDescent::_trace(q{Trying repeated subrule: [docline]},
+        Parse::RecDescent::_trace(q{Trying repeated subrule: [comment]},
                   Parse::RecDescent::_tracefirst($text),
                   q{simple},
                   $tracelevel)
                     if defined $::RD_TRACE;
-        $expectation->is(q{docline})->at($text);
+        $expectation->is(q{comment})->at($text);
         
-        unless (defined ($_tok = $thisparser->_parserepeat($text, \&Parse::RecDescent::Pod::WSDL2::Parser::docline, 0, 1, $_noactions,$expectation,sub { \@arg }))) 
+        unless (defined ($_tok = $thisparser->_parserepeat($text, \&Parse::RecDescent::Pod::WSDL2::Parser::comment, 0, 1, $_noactions,$expectation,sub { \@arg }))) 
         {
-            Parse::RecDescent::_trace(q{<<Didn't match repeated subrule: [docline]>>},
+            Parse::RecDescent::_trace(q{<<Didn't match repeated subrule: [comment]>>},
                           Parse::RecDescent::_tracefirst($text),
                           q{simple},
                           $tracelevel)
                             if defined $::RD_TRACE;
             last;
         }
-        Parse::RecDescent::_trace(q{>>Matched repeated subrule: [docline]<< (}
+        Parse::RecDescent::_trace(q{>>Matched repeated subrule: [comment]<< (}
                     . @$_tok . q{ times)},
                       
                       Parse::RecDescent::_tracefirst($text),
                       q{simple},
                       $tracelevel)
                         if defined $::RD_TRACE;
-        $item{q{docline(?)}} = $_tok;
+        $item{q{comment(?)}} = $_tok;
         push @item, $_tok;
         
 
@@ -5487,7 +5764,7 @@ sub Parse::RecDescent::Pod::WSDL2::Parser::simple
 		multiple => $item{'sigul'},
 		type     => $item{'data_type'},
 		optional => $item{'optional(?)'}->[0],
-		docs     => Pod::WSDL2::Doc->new(join('',@{$item{'docline(?)'}}))
+		docs     => Pod::WSDL2::Doc->new($item{'comment(?)'}->[0])
 	};
 };
         unless (defined $_tok)
@@ -5505,7 +5782,7 @@ sub Parse::RecDescent::Pod::WSDL2::Parser::simple
         
 
 
-        Parse::RecDescent::_trace(q{>>Matched production: [sigul <commit> data_type optional docline]<<},
+        Parse::RecDescent::_trace(q{>>Matched production: [sigul <commit> data_type optional comment]<<},
                       Parse::RecDescent::_tracefirst($text),
                       q{simple},
                       $tracelevel)
@@ -5584,7 +5861,7 @@ package Pod::WSDL2::Parser; sub new { my $self = bless( {
                                                                                                                                             'implicit' => undef,
                                                                                                                                             'argcode' => undef,
                                                                                                                                             'lookahead' => 0,
-                                                                                                                                            'line' => 105
+                                                                                                                                            'line' => 95
                                                                                                                                           }, 'Parse::RecDescent::Subrule' )
                                                                                                                                  ],
                                                                                                                       'line' => undef
@@ -5604,10 +5881,10 @@ package Pod::WSDL2::Parser; sub new { my $self = bless( {
                                                                                                                                             'implicit' => undef,
                                                                                                                                             'argcode' => undef,
                                                                                                                                             'lookahead' => 0,
-                                                                                                                                            'line' => 105
+                                                                                                                                            'line' => 95
                                                                                                                                           }, 'Parse::RecDescent::Subrule' )
                                                                                                                                  ],
-                                                                                                                      'line' => 105
+                                                                                                                      'line' => 95
                                                                                                                     }, 'Parse::RecDescent::Production' ),
                                                                                                              bless( {
                                                                                                                       'number' => '2',
@@ -5624,15 +5901,15 @@ package Pod::WSDL2::Parser; sub new { my $self = bless( {
                                                                                                                                             'implicit' => undef,
                                                                                                                                             'argcode' => undef,
                                                                                                                                             'lookahead' => 0,
-                                                                                                                                            'line' => 105
+                                                                                                                                            'line' => 95
                                                                                                                                           }, 'Parse::RecDescent::Subrule' )
                                                                                                                                  ],
-                                                                                                                      'line' => 105
+                                                                                                                      'line' => 95
                                                                                                                     }, 'Parse::RecDescent::Production' )
                                                                                                            ],
                                                                                                 'name' => '_alternation_1_of_production_1_of_rule_hash_element',
                                                                                                 'vars' => '',
-                                                                                                'line' => 105
+                                                                                                'line' => 95
                                                                                               }, 'Parse::RecDescent::Rule' ),
                               '_alternation_1_of_production_1_of_rule_return_block' => bless( {
                                                                                                 'impcount' => 0,
@@ -5659,7 +5936,7 @@ package Pod::WSDL2::Parser; sub new { my $self = bless( {
                                                                                                                                             'implicit' => undef,
                                                                                                                                             'argcode' => undef,
                                                                                                                                             'lookahead' => 0,
-                                                                                                                                            'line' => 105
+                                                                                                                                            'line' => 95
                                                                                                                                           }, 'Parse::RecDescent::Subrule' )
                                                                                                                                  ],
                                                                                                                       'line' => undef
@@ -5679,10 +5956,10 @@ package Pod::WSDL2::Parser; sub new { my $self = bless( {
                                                                                                                                             'implicit' => undef,
                                                                                                                                             'argcode' => undef,
                                                                                                                                             'lookahead' => 0,
-                                                                                                                                            'line' => 105
+                                                                                                                                            'line' => 95
                                                                                                                                           }, 'Parse::RecDescent::Subrule' )
                                                                                                                                  ],
-                                                                                                                      'line' => 105
+                                                                                                                      'line' => 95
                                                                                                                     }, 'Parse::RecDescent::Production' ),
                                                                                                              bless( {
                                                                                                                       'number' => '2',
@@ -5699,24 +5976,21 @@ package Pod::WSDL2::Parser; sub new { my $self = bless( {
                                                                                                                                             'implicit' => undef,
                                                                                                                                             'argcode' => undef,
                                                                                                                                             'lookahead' => 0,
-                                                                                                                                            'line' => 105
+                                                                                                                                            'line' => 95
                                                                                                                                           }, 'Parse::RecDescent::Subrule' )
                                                                                                                                  ],
-                                                                                                                      'line' => 105
+                                                                                                                      'line' => 95
                                                                                                                     }, 'Parse::RecDescent::Production' )
                                                                                                            ],
                                                                                                 'name' => '_alternation_1_of_production_1_of_rule_return_block',
                                                                                                 'vars' => '',
-                                                                                                'line' => 105
+                                                                                                'line' => 95
                                                                                               }, 'Parse::RecDescent::Rule' ),
                               'wsdlblock' => bless( {
                                                       'impcount' => 0,
                                                       'calls' => [
-                                                                   'doc_block',
-                                                                   'one_way',
-                                                                   'input_block',
-                                                                   'return_block',
-                                                                   'fault_block',
+                                                                   'doc_line',
+                                                                   'command_block',
                                                                    'eofile'
                                                                  ],
                                                       'changed' => 0,
@@ -5732,29 +6006,7 @@ package Pod::WSDL2::Parser; sub new { my $self = bless( {
                                                                             'actcount' => 1,
                                                                             'items' => [
                                                                                          bless( {
-                                                                                                  'subrule' => 'doc_block',
-                                                                                                  'expected' => undef,
-                                                                                                  'min' => 0,
-                                                                                                  'argcode' => undef,
-                                                                                                  'max' => 1,
-                                                                                                  'matchrule' => 0,
-                                                                                                  'repspec' => '?',
-                                                                                                  'lookahead' => 0,
-                                                                                                  'line' => 11
-                                                                                                }, 'Parse::RecDescent::Repetition' ),
-                                                                                         bless( {
-                                                                                                  'subrule' => 'one_way',
-                                                                                                  'expected' => undef,
-                                                                                                  'min' => 0,
-                                                                                                  'argcode' => undef,
-                                                                                                  'max' => 1,
-                                                                                                  'matchrule' => 0,
-                                                                                                  'repspec' => '?',
-                                                                                                  'lookahead' => 0,
-                                                                                                  'line' => 11
-                                                                                                }, 'Parse::RecDescent::Repetition' ),
-                                                                                         bless( {
-                                                                                                  'subrule' => 'input_block',
+                                                                                                  'subrule' => 'doc_line',
                                                                                                   'expected' => undef,
                                                                                                   'min' => 0,
                                                                                                   'argcode' => undef,
@@ -5762,21 +6014,10 @@ package Pod::WSDL2::Parser; sub new { my $self = bless( {
                                                                                                   'matchrule' => 0,
                                                                                                   'repspec' => 's?',
                                                                                                   'lookahead' => 0,
-                                                                                                  'line' => 11
+                                                                                                  'line' => 8
                                                                                                 }, 'Parse::RecDescent::Repetition' ),
                                                                                          bless( {
-                                                                                                  'subrule' => 'return_block',
-                                                                                                  'expected' => undef,
-                                                                                                  'min' => 0,
-                                                                                                  'argcode' => undef,
-                                                                                                  'max' => 1,
-                                                                                                  'matchrule' => 0,
-                                                                                                  'repspec' => '?',
-                                                                                                  'lookahead' => 0,
-                                                                                                  'line' => 11
-                                                                                                }, 'Parse::RecDescent::Repetition' ),
-                                                                                         bless( {
-                                                                                                  'subrule' => 'fault_block',
+                                                                                                  'subrule' => 'command_block',
                                                                                                   'expected' => undef,
                                                                                                   'min' => 0,
                                                                                                   'argcode' => undef,
@@ -5784,7 +6025,7 @@ package Pod::WSDL2::Parser; sub new { my $self = bless( {
                                                                                                   'matchrule' => 0,
                                                                                                   'repspec' => 's?',
                                                                                                   'lookahead' => 0,
-                                                                                                  'line' => 11
+                                                                                                  'line' => 8
                                                                                                 }, 'Parse::RecDescent::Repetition' ),
                                                                                          bless( {
                                                                                                   'subrule' => 'eofile',
@@ -5792,20 +6033,24 @@ package Pod::WSDL2::Parser; sub new { my $self = bless( {
                                                                                                   'implicit' => undef,
                                                                                                   'argcode' => undef,
                                                                                                   'lookahead' => 0,
-                                                                                                  'line' => 11
+                                                                                                  'line' => 8
                                                                                                 }, 'Parse::RecDescent::Subrule' ),
                                                                                          bless( {
                                                                                                   'hashname' => '__ACTION1__',
                                                                                                   'lookahead' => 0,
-                                                                                                  'line' => 11,
+                                                                                                  'line' => 8,
                                                                                                   'code' => '{
 	$return = {
-		\'docs\'   => $item[1]->[0],
-		\'oneway\' => $item[2]->[0],
-		\'inputs\' => $item[3],
-		\'return\' => $item[4]->[0],
-		\'faults\' => $item[5]
+		\'docs\' => Pod::WSDL2::Doc->new(join(\'\',@{$item[1]}))
 	};
+
+	foreach (@{$item[2]}) {
+		if    (ref($_) eq \'Pod::WSDL2::Fault\')  { push(@{$return->{\'faults\'}}, $_) }
+		elsif (ref($_) eq \'Pod::WSDL2::Param\')  { push(@{$return->{\'inputs\'}}, $_) }
+		elsif (ref($_) eq \'Pod::WSDL2::Return\') { $return->{\'return\'} = $_ }
+		elsif ($_ eq "oneway")                  { $return->{\'oneway\'} = 1; }
+	}
+	1;
 }'
                                                                                                 }, 'Parse::RecDescent::Action' )
                                                                                        ],
@@ -5825,15 +6070,15 @@ package Pod::WSDL2::Parser; sub new { my $self = bless( {
                                                                                                   'hashname' => '__DIRECTIVE1__',
                                                                                                   'commitonly' => '',
                                                                                                   'lookahead' => 0,
-                                                                                                  'line' => 20
+                                                                                                  'line' => 21
                                                                                                 }, 'Parse::RecDescent::Error' )
                                                                                        ],
-                                                                            'line' => 20
+                                                                            'line' => 21
                                                                           }, 'Parse::RecDescent::Production' )
                                                                  ],
                                                       'name' => 'wsdlblock',
                                                       'vars' => '',
-                                                      'line' => 11
+                                                      'line' => 8
                                                     }, 'Parse::RecDescent::Rule' ),
                               'return_block' => bless( {
                                                          'impcount' => 1,
@@ -5857,13 +6102,13 @@ package Pod::WSDL2::Parser; sub new { my $self = bless( {
                                                                                                      'hashname' => '__STRING1__',
                                                                                                      'description' => '\'_RETURN\'',
                                                                                                      'lookahead' => 0,
-                                                                                                     'line' => 33
+                                                                                                     'line' => 34
                                                                                                    }, 'Parse::RecDescent::Literal' ),
                                                                                             bless( {
                                                                                                      'hashname' => '__DIRECTIVE1__',
                                                                                                      'name' => '<commit>',
                                                                                                      'lookahead' => 0,
-                                                                                                     'line' => 33,
+                                                                                                     'line' => 34,
                                                                                                      'code' => '$commit = 1'
                                                                                                    }, 'Parse::RecDescent::Directive' ),
                                                                                             bless( {
@@ -5872,12 +6117,12 @@ package Pod::WSDL2::Parser; sub new { my $self = bless( {
                                                                                                      'implicit' => 'hash, or array, or simple',
                                                                                                      'argcode' => undef,
                                                                                                      'lookahead' => 0,
-                                                                                                     'line' => 33
+                                                                                                     'line' => 34
                                                                                                    }, 'Parse::RecDescent::Subrule' ),
                                                                                             bless( {
                                                                                                      'hashname' => '__ACTION1__',
                                                                                                      'lookahead' => 0,
-                                                                                                     'line' => 33,
+                                                                                                     'line' => 34,
                                                                                                      'code' => '{ $return = Pod::WSDL2::Return->new($item[3]); }'
                                                                                                    }, 'Parse::RecDescent::Action' )
                                                                                           ],
@@ -5886,7 +6131,7 @@ package Pod::WSDL2::Parser; sub new { my $self = bless( {
                                                                     ],
                                                          'name' => 'return_block',
                                                          'vars' => '',
-                                                         'line' => 33
+                                                         'line' => 34
                                                        }, 'Parse::RecDescent::Rule' ),
                               '_alternation_1_of_production_1_of_rule_fault_block' => bless( {
                                                                                                'impcount' => 0,
@@ -5913,7 +6158,7 @@ package Pod::WSDL2::Parser; sub new { my $self = bless( {
                                                                                                                                            'implicit' => undef,
                                                                                                                                            'argcode' => undef,
                                                                                                                                            'lookahead' => 0,
-                                                                                                                                           'line' => 105
+                                                                                                                                           'line' => 95
                                                                                                                                          }, 'Parse::RecDescent::Subrule' )
                                                                                                                                 ],
                                                                                                                      'line' => undef
@@ -5933,10 +6178,10 @@ package Pod::WSDL2::Parser; sub new { my $self = bless( {
                                                                                                                                            'implicit' => undef,
                                                                                                                                            'argcode' => undef,
                                                                                                                                            'lookahead' => 0,
-                                                                                                                                           'line' => 105
+                                                                                                                                           'line' => 95
                                                                                                                                          }, 'Parse::RecDescent::Subrule' )
                                                                                                                                 ],
-                                                                                                                     'line' => 105
+                                                                                                                     'line' => 95
                                                                                                                    }, 'Parse::RecDescent::Production' ),
                                                                                                             bless( {
                                                                                                                      'number' => '2',
@@ -5953,15 +6198,15 @@ package Pod::WSDL2::Parser; sub new { my $self = bless( {
                                                                                                                                            'implicit' => undef,
                                                                                                                                            'argcode' => undef,
                                                                                                                                            'lookahead' => 0,
-                                                                                                                                           'line' => 105
+                                                                                                                                           'line' => 95
                                                                                                                                          }, 'Parse::RecDescent::Subrule' )
                                                                                                                                 ],
-                                                                                                                     'line' => 105
+                                                                                                                     'line' => 95
                                                                                                                    }, 'Parse::RecDescent::Production' )
                                                                                                           ],
                                                                                                'name' => '_alternation_1_of_production_1_of_rule_fault_block',
                                                                                                'vars' => '',
-                                                                                               'line' => 105
+                                                                                               'line' => 95
                                                                                              }, 'Parse::RecDescent::Rule' ),
                               'commands' => bless( {
                                                      'impcount' => 0,
@@ -5974,25 +6219,6 @@ package Pod::WSDL2::Parser; sub new { my $self = bless( {
                                                      'prods' => [
                                                                   bless( {
                                                                            'number' => '0',
-                                                                           'strcount' => 1,
-                                                                           'dircount' => 0,
-                                                                           'uncommit' => undef,
-                                                                           'error' => undef,
-                                                                           'patcount' => 0,
-                                                                           'actcount' => 0,
-                                                                           'items' => [
-                                                                                        bless( {
-                                                                                                 'pattern' => '_DOC',
-                                                                                                 'hashname' => '__STRING1__',
-                                                                                                 'description' => '\'_DOC\'',
-                                                                                                 'lookahead' => 0,
-                                                                                                 'line' => 88
-                                                                                               }, 'Parse::RecDescent::Literal' )
-                                                                                      ],
-                                                                           'line' => undef
-                                                                         }, 'Parse::RecDescent::Production' ),
-                                                                  bless( {
-                                                                           'number' => '1',
                                                                            'strcount' => 0,
                                                                            'dircount' => 0,
                                                                            'uncommit' => undef,
@@ -6006,13 +6232,13 @@ package Pod::WSDL2::Parser; sub new { my $self = bless( {
                                                                                                  'implicit' => undef,
                                                                                                  'argcode' => undef,
                                                                                                  'lookahead' => 0,
-                                                                                                 'line' => 88
+                                                                                                 'line' => 90
                                                                                                }, 'Parse::RecDescent::Subrule' )
                                                                                       ],
-                                                                           'line' => 88
+                                                                           'line' => undef
                                                                          }, 'Parse::RecDescent::Production' ),
                                                                   bless( {
-                                                                           'number' => '2',
+                                                                           'number' => '1',
                                                                            'strcount' => 0,
                                                                            'dircount' => 0,
                                                                            'uncommit' => undef,
@@ -6026,13 +6252,13 @@ package Pod::WSDL2::Parser; sub new { my $self = bless( {
                                                                                                  'implicit' => undef,
                                                                                                  'argcode' => undef,
                                                                                                  'lookahead' => 0,
-                                                                                                 'line' => 88
+                                                                                                 'line' => 90
                                                                                                }, 'Parse::RecDescent::Subrule' )
                                                                                       ],
-                                                                           'line' => 88
+                                                                           'line' => 90
                                                                          }, 'Parse::RecDescent::Production' ),
                                                                   bless( {
-                                                                           'number' => '3',
+                                                                           'number' => '2',
                                                                            'strcount' => 1,
                                                                            'dircount' => 0,
                                                                            'uncommit' => undef,
@@ -6045,13 +6271,13 @@ package Pod::WSDL2::Parser; sub new { my $self = bless( {
                                                                                                  'hashname' => '__STRING1__',
                                                                                                  'description' => '\'_RETURN\'',
                                                                                                  'lookahead' => 0,
-                                                                                                 'line' => 88
+                                                                                                 'line' => 90
                                                                                                }, 'Parse::RecDescent::Literal' )
                                                                                       ],
-                                                                           'line' => 88
+                                                                           'line' => 90
                                                                          }, 'Parse::RecDescent::Production' ),
                                                                   bless( {
-                                                                           'number' => '4',
+                                                                           'number' => '3',
                                                                            'strcount' => 1,
                                                                            'dircount' => 0,
                                                                            'uncommit' => undef,
@@ -6064,15 +6290,15 @@ package Pod::WSDL2::Parser; sub new { my $self = bless( {
                                                                                                  'hashname' => '__STRING1__',
                                                                                                  'description' => '\'_FAULT\'',
                                                                                                  'lookahead' => 0,
-                                                                                                 'line' => 88
+                                                                                                 'line' => 90
                                                                                                }, 'Parse::RecDescent::Literal' )
                                                                                       ],
-                                                                           'line' => 88
+                                                                           'line' => 90
                                                                          }, 'Parse::RecDescent::Production' )
                                                                 ],
                                                      'name' => 'commands',
                                                      'vars' => '',
-                                                     'line' => 88
+                                                     'line' => 90
                                                    }, 'Parse::RecDescent::Rule' ),
                               'optional' => bless( {
                                                      'impcount' => 0,
@@ -6094,12 +6320,12 @@ package Pod::WSDL2::Parser; sub new { my $self = bless( {
                                                                                                  'hashname' => '__STRING1__',
                                                                                                  'description' => '\'OPTIONAL\'',
                                                                                                  'lookahead' => 0,
-                                                                                                 'line' => 86
+                                                                                                 'line' => 88
                                                                                                }, 'Parse::RecDescent::Literal' ),
                                                                                         bless( {
                                                                                                  'hashname' => '__ACTION1__',
                                                                                                  'lookahead' => 0,
-                                                                                                 'line' => 86,
+                                                                                                 'line' => 88,
                                                                                                  'code' => '{ $return = 1; }'
                                                                                                }, 'Parse::RecDescent::Action' )
                                                                                       ],
@@ -6108,7 +6334,7 @@ package Pod::WSDL2::Parser; sub new { my $self = bless( {
                                                                 ],
                                                      'name' => 'optional',
                                                      'vars' => '',
-                                                     'line' => 86
+                                                     'line' => 88
                                                    }, 'Parse::RecDescent::Rule' ),
                               'sigul' => bless( {
                                                   'impcount' => 0,
@@ -6130,12 +6356,12 @@ package Pod::WSDL2::Parser; sub new { my $self = bless( {
                                                                                               'hashname' => '__STRING1__',
                                                                                               'description' => '\'$\'',
                                                                                               'lookahead' => 0,
-                                                                                              'line' => 53
+                                                                                              'line' => 55
                                                                                             }, 'Parse::RecDescent::Literal' ),
                                                                                      bless( {
                                                                                               'hashname' => '__ACTION1__',
                                                                                               'lookahead' => 0,
-                                                                                              'line' => 53,
+                                                                                              'line' => 55,
                                                                                               'code' => '{ $return = 0; 1;}'
                                                                                             }, 'Parse::RecDescent::Action' )
                                                                                    ],
@@ -6155,22 +6381,70 @@ package Pod::WSDL2::Parser; sub new { my $self = bless( {
                                                                                               'hashname' => '__STRING1__',
                                                                                               'description' => '\'@\'',
                                                                                               'lookahead' => 0,
-                                                                                              'line' => 54
+                                                                                              'line' => 56
                                                                                             }, 'Parse::RecDescent::Literal' ),
                                                                                      bless( {
                                                                                               'hashname' => '__ACTION1__',
                                                                                               'lookahead' => 0,
-                                                                                              'line' => 54,
+                                                                                              'line' => 56,
                                                                                               'code' => '{ $return = 1;   }'
                                                                                             }, 'Parse::RecDescent::Action' )
                                                                                    ],
-                                                                        'line' => 54
+                                                                        'line' => 56
                                                                       }, 'Parse::RecDescent::Production' )
                                                              ],
                                                   'name' => 'sigul',
                                                   'vars' => '',
-                                                  'line' => 53
+                                                  'line' => 55
                                                 }, 'Parse::RecDescent::Rule' ),
+                              'doc_line' => bless( {
+                                                     'impcount' => 0,
+                                                     'calls' => [
+                                                                  'commands',
+                                                                  'comment'
+                                                                ],
+                                                     'changed' => 0,
+                                                     'opcount' => 0,
+                                                     'prods' => [
+                                                                  bless( {
+                                                                           'number' => '0',
+                                                                           'strcount' => 0,
+                                                                           'dircount' => 0,
+                                                                           'uncommit' => undef,
+                                                                           'error' => undef,
+                                                                           'patcount' => 0,
+                                                                           'actcount' => 1,
+                                                                           'items' => [
+                                                                                        bless( {
+                                                                                                 'subrule' => 'commands',
+                                                                                                 'matchrule' => 0,
+                                                                                                 'implicit' => undef,
+                                                                                                 'argcode' => undef,
+                                                                                                 'lookahead' => -1,
+                                                                                                 'line' => 39
+                                                                                               }, 'Parse::RecDescent::Subrule' ),
+                                                                                        bless( {
+                                                                                                 'subrule' => 'comment',
+                                                                                                 'matchrule' => 0,
+                                                                                                 'implicit' => undef,
+                                                                                                 'argcode' => undef,
+                                                                                                 'lookahead' => 0,
+                                                                                                 'line' => 39
+                                                                                               }, 'Parse::RecDescent::Subrule' ),
+                                                                                        bless( {
+                                                                                                 'hashname' => '__ACTION1__',
+                                                                                                 'lookahead' => 0,
+                                                                                                 'line' => 39,
+                                                                                                 'code' => '{ $return = $item[2]; 1; }'
+                                                                                               }, 'Parse::RecDescent::Action' )
+                                                                                      ],
+                                                                           'line' => undef
+                                                                         }, 'Parse::RecDescent::Production' )
+                                                                ],
+                                                     'name' => 'doc_line',
+                                                     'vars' => '',
+                                                     'line' => 39
+                                                   }, 'Parse::RecDescent::Rule' ),
                               'input_block' => bless( {
                                                         'impcount' => 0,
                                                         'calls' => [
@@ -6196,13 +6470,13 @@ package Pod::WSDL2::Parser; sub new { my $self = bless( {
                                                                                                     'implicit' => undef,
                                                                                                     'argcode' => undef,
                                                                                                     'lookahead' => 0,
-                                                                                                    'line' => 24
+                                                                                                    'line' => 25
                                                                                                   }, 'Parse::RecDescent::Subrule' ),
                                                                                            bless( {
                                                                                                     'hashname' => '__DIRECTIVE1__',
                                                                                                     'name' => '<commit>',
                                                                                                     'lookahead' => 0,
-                                                                                                    'line' => 24,
+                                                                                                    'line' => 25,
                                                                                                     'code' => '$commit = 1'
                                                                                                   }, 'Parse::RecDescent::Directive' ),
                                                                                            bless( {
@@ -6211,7 +6485,7 @@ package Pod::WSDL2::Parser; sub new { my $self = bless( {
                                                                                                     'implicit' => undef,
                                                                                                     'argcode' => undef,
                                                                                                     'lookahead' => 0,
-                                                                                                    'line' => 24
+                                                                                                    'line' => 25
                                                                                                   }, 'Parse::RecDescent::Subrule' ),
                                                                                            bless( {
                                                                                                     'subrule' => '_alternation_1_of_production_1_of_rule_input_block',
@@ -6219,12 +6493,12 @@ package Pod::WSDL2::Parser; sub new { my $self = bless( {
                                                                                                     'implicit' => 'hash, or array, or simple',
                                                                                                     'argcode' => undef,
                                                                                                     'lookahead' => 0,
-                                                                                                    'line' => 24
+                                                                                                    'line' => 25
                                                                                                   }, 'Parse::RecDescent::Subrule' ),
                                                                                            bless( {
                                                                                                     'hashname' => '__ACTION1__',
                                                                                                     'lookahead' => 0,
-                                                                                                    'line' => 24,
+                                                                                                    'line' => 25,
                                                                                                     'code' => '{
 	$item[4]->{input_type} = $item[1];
 	$item[4]->{name}       = $item[3];
@@ -6248,72 +6522,16 @@ package Pod::WSDL2::Parser; sub new { my $self = bless( {
                                                                                                     'hashname' => '__DIRECTIVE1__',
                                                                                                     'commitonly' => '',
                                                                                                     'lookahead' => 0,
-                                                                                                    'line' => 29
+                                                                                                    'line' => 30
                                                                                                   }, 'Parse::RecDescent::Error' )
                                                                                          ],
-                                                                              'line' => 29
+                                                                              'line' => 30
                                                                             }, 'Parse::RecDescent::Production' )
                                                                    ],
                                                         'name' => 'input_block',
                                                         'vars' => '',
-                                                        'line' => 24
+                                                        'line' => 25
                                                       }, 'Parse::RecDescent::Rule' ),
-                              'doc_block' => bless( {
-                                                      'impcount' => 0,
-                                                      'calls' => [
-                                                                   'docline'
-                                                                 ],
-                                                      'changed' => 0,
-                                                      'opcount' => 0,
-                                                      'prods' => [
-                                                                   bless( {
-                                                                            'number' => '0',
-                                                                            'strcount' => 1,
-                                                                            'dircount' => 1,
-                                                                            'uncommit' => undef,
-                                                                            'error' => undef,
-                                                                            'patcount' => 0,
-                                                                            'actcount' => 1,
-                                                                            'items' => [
-                                                                                         bless( {
-                                                                                                  'pattern' => '_DOC',
-                                                                                                  'hashname' => '__STRING1__',
-                                                                                                  'description' => '\'_DOC\'',
-                                                                                                  'lookahead' => 0,
-                                                                                                  'line' => 22
-                                                                                                }, 'Parse::RecDescent::Literal' ),
-                                                                                         bless( {
-                                                                                                  'hashname' => '__DIRECTIVE1__',
-                                                                                                  'name' => '<commit>',
-                                                                                                  'lookahead' => 0,
-                                                                                                  'line' => 22,
-                                                                                                  'code' => '$commit = 1'
-                                                                                                }, 'Parse::RecDescent::Directive' ),
-                                                                                         bless( {
-                                                                                                  'subrule' => 'docline',
-                                                                                                  'expected' => undef,
-                                                                                                  'min' => 1,
-                                                                                                  'argcode' => undef,
-                                                                                                  'max' => 100000000,
-                                                                                                  'matchrule' => 0,
-                                                                                                  'repspec' => 's',
-                                                                                                  'lookahead' => 0,
-                                                                                                  'line' => 22
-                                                                                                }, 'Parse::RecDescent::Repetition' ),
-                                                                                         bless( {
-                                                                                                  'hashname' => '__ACTION1__',
-                                                                                                  'lookahead' => 0,
-                                                                                                  'line' => 22,
-                                                                                                  'code' => '{ $return = Pod::WSDL2::Doc->new(join(\'\',@{$item{\'docline(s)\'}})) }'
-                                                                                                }, 'Parse::RecDescent::Action' )
-                                                                                       ],
-                                                                            'line' => undef
-                                                                          }, 'Parse::RecDescent::Production' )
-                                                                 ],
-                                                      'name' => 'doc_block',
-                                                      'vars' => '',
-                                                      'line' => 22
-                                                    }, 'Parse::RecDescent::Rule' ),
                               'array' => bless( {
                                                   'impcount' => 1,
                                                   'calls' => [
@@ -6336,7 +6554,7 @@ package Pod::WSDL2::Parser; sub new { my $self = bless( {
                                                                                               'hashname' => '__STRING1__',
                                                                                               'description' => '\'[\'',
                                                                                               'lookahead' => 0,
-                                                                                              'line' => 71
+                                                                                              'line' => 73
                                                                                             }, 'Parse::RecDescent::Literal' ),
                                                                                      bless( {
                                                                                               'subrule' => '_alternation_1_of_production_1_of_rule_array',
@@ -6344,19 +6562,19 @@ package Pod::WSDL2::Parser; sub new { my $self = bless( {
                                                                                               'implicit' => 'hash, or array, or simple',
                                                                                               'argcode' => undef,
                                                                                               'lookahead' => 0,
-                                                                                              'line' => 71
+                                                                                              'line' => 73
                                                                                             }, 'Parse::RecDescent::Subrule' ),
                                                                                      bless( {
                                                                                               'pattern' => ']',
                                                                                               'hashname' => '__STRING2__',
                                                                                               'description' => '\']\'',
                                                                                               'lookahead' => 0,
-                                                                                              'line' => 71
+                                                                                              'line' => 73
                                                                                             }, 'Parse::RecDescent::Literal' ),
                                                                                      bless( {
                                                                                               'hashname' => '__ACTION1__',
                                                                                               'lookahead' => 0,
-                                                                                              'line' => 71,
+                                                                                              'line' => 73,
                                                                                               'code' => '{
 	$return = { 
 		simple   => 0, 
@@ -6371,64 +6589,8 @@ package Pod::WSDL2::Parser; sub new { my $self = bless( {
                                                              ],
                                                   'name' => 'array',
                                                   'vars' => '',
-                                                  'line' => 71
+                                                  'line' => 73
                                                 }, 'Parse::RecDescent::Rule' ),
-                              'docline' => bless( {
-                                                    'impcount' => 0,
-                                                    'calls' => [
-                                                                 'commands'
-                                                               ],
-                                                    'changed' => 0,
-                                                    'opcount' => 0,
-                                                    'prods' => [
-                                                                 bless( {
-                                                                          'number' => '0',
-                                                                          'strcount' => 0,
-                                                                          'dircount' => 1,
-                                                                          'uncommit' => undef,
-                                                                          'error' => undef,
-                                                                          'patcount' => 1,
-                                                                          'actcount' => 1,
-                                                                          'items' => [
-                                                                                       bless( {
-                                                                                                'subrule' => 'commands',
-                                                                                                'matchrule' => 0,
-                                                                                                'implicit' => undef,
-                                                                                                'argcode' => undef,
-                                                                                                'lookahead' => -1,
-                                                                                                'line' => 38
-                                                                                              }, 'Parse::RecDescent::Subrule' ),
-                                                                                       bless( {
-                                                                                                'hashname' => '__DIRECTIVE1__',
-                                                                                                'name' => '<skip:\'[ \\t]*\'>',
-                                                                                                'lookahead' => 0,
-                                                                                                'line' => 38,
-                                                                                                'code' => 'my $oldskip = $skip; $skip=\'[ \\t]*\'; $oldskip'
-                                                                                              }, 'Parse::RecDescent::Directive' ),
-                                                                                       bless( {
-                                                                                                'pattern' => '.*\\n+',
-                                                                                                'hashname' => '__PATTERN1__',
-                                                                                                'description' => '/.*\\\\n+/',
-                                                                                                'lookahead' => 0,
-                                                                                                'rdelim' => '/',
-                                                                                                'line' => 38,
-                                                                                                'mod' => '',
-                                                                                                'ldelim' => '/'
-                                                                                              }, 'Parse::RecDescent::Token' ),
-                                                                                       bless( {
-                                                                                                'hashname' => '__ACTION1__',
-                                                                                                'lookahead' => 0,
-                                                                                                'line' => 38,
-                                                                                                'code' => '{ $return = $item[3]; 1; }'
-                                                                                              }, 'Parse::RecDescent::Action' )
-                                                                                     ],
-                                                                          'line' => undef
-                                                                        }, 'Parse::RecDescent::Production' )
-                                                               ],
-                                                    'name' => 'docline',
-                                                    'vars' => '',
-                                                    'line' => 38
-                                                  }, 'Parse::RecDescent::Rule' ),
                               'data_type' => bless( {
                                                       'impcount' => 0,
                                                       'calls' => [],
@@ -6450,14 +6612,14 @@ package Pod::WSDL2::Parser; sub new { my $self = bless( {
                                                                                                   'description' => '/\\\\w+(::\\\\w+)*/',
                                                                                                   'lookahead' => 0,
                                                                                                   'rdelim' => '/',
-                                                                                                  'line' => 92,
+                                                                                                  'line' => 94,
                                                                                                   'mod' => '',
                                                                                                   'ldelim' => '/'
                                                                                                 }, 'Parse::RecDescent::Token' ),
                                                                                          bless( {
                                                                                                   'hashname' => '__ACTION1__',
                                                                                                   'lookahead' => 0,
-                                                                                                  'line' => 92,
+                                                                                                  'line' => 94,
                                                                                                   'code' => '{ $return = $item[1]; }'
                                                                                                 }, 'Parse::RecDescent::Action' )
                                                                                        ],
@@ -6466,7 +6628,7 @@ package Pod::WSDL2::Parser; sub new { my $self = bless( {
                                                                  ],
                                                       'name' => 'data_type',
                                                       'vars' => '',
-                                                      'line' => 92
+                                                      'line' => 94
                                                     }, 'Parse::RecDescent::Rule' ),
                               'fault_block' => bless( {
                                                         'impcount' => 1,
@@ -6490,13 +6652,13 @@ package Pod::WSDL2::Parser; sub new { my $self = bless( {
                                                                                                     'hashname' => '__STRING1__',
                                                                                                     'description' => '\'_FAULT\'',
                                                                                                     'lookahead' => 0,
-                                                                                                    'line' => 34
+                                                                                                    'line' => 35
                                                                                                   }, 'Parse::RecDescent::Literal' ),
                                                                                            bless( {
                                                                                                     'hashname' => '__DIRECTIVE1__',
                                                                                                     'name' => '<commit>',
                                                                                                     'lookahead' => 0,
-                                                                                                    'line' => 34,
+                                                                                                    'line' => 35,
                                                                                                     'code' => '$commit = 1'
                                                                                                   }, 'Parse::RecDescent::Directive' ),
                                                                                            bless( {
@@ -6505,12 +6667,12 @@ package Pod::WSDL2::Parser; sub new { my $self = bless( {
                                                                                                     'implicit' => 'hash, or array, or fault_type',
                                                                                                     'argcode' => undef,
                                                                                                     'lookahead' => 0,
-                                                                                                    'line' => 34
+                                                                                                    'line' => 35
                                                                                                   }, 'Parse::RecDescent::Subrule' ),
                                                                                            bless( {
                                                                                                     'hashname' => '__ACTION1__',
                                                                                                     'lookahead' => 0,
-                                                                                                    'line' => 34,
+                                                                                                    'line' => 35,
                                                                                                     'code' => '{ $return = Pod::WSDL2::Fault->new( $item[3]); }'
                                                                                                   }, 'Parse::RecDescent::Action' )
                                                                                          ],
@@ -6519,7 +6681,7 @@ package Pod::WSDL2::Parser; sub new { my $self = bless( {
                                                                    ],
                                                         'name' => 'fault_block',
                                                         'vars' => '',
-                                                        'line' => 34
+                                                        'line' => 35
                                                       }, 'Parse::RecDescent::Rule' ),
                               'input_type' => bless( {
                                                        'impcount' => 0,
@@ -6541,7 +6703,7 @@ package Pod::WSDL2::Parser; sub new { my $self = bless( {
                                                                                                    'hashname' => '__STRING1__',
                                                                                                    'description' => '\'_INOUT\'',
                                                                                                    'lookahead' => 0,
-                                                                                                   'line' => 31
+                                                                                                   'line' => 32
                                                                                                  }, 'Parse::RecDescent::Literal' )
                                                                                         ],
                                                                              'line' => undef
@@ -6560,10 +6722,10 @@ package Pod::WSDL2::Parser; sub new { my $self = bless( {
                                                                                                    'hashname' => '__STRING1__',
                                                                                                    'description' => '\'_IN\'',
                                                                                                    'lookahead' => 0,
-                                                                                                   'line' => 31
+                                                                                                   'line' => 32
                                                                                                  }, 'Parse::RecDescent::Literal' )
                                                                                         ],
-                                                                             'line' => 31
+                                                                             'line' => 32
                                                                            }, 'Parse::RecDescent::Production' ),
                                                                     bless( {
                                                                              'number' => '2',
@@ -6579,15 +6741,15 @@ package Pod::WSDL2::Parser; sub new { my $self = bless( {
                                                                                                    'hashname' => '__STRING1__',
                                                                                                    'description' => '\'_OUT\'',
                                                                                                    'lookahead' => 0,
-                                                                                                   'line' => 31
+                                                                                                   'line' => 32
                                                                                                  }, 'Parse::RecDescent::Literal' )
                                                                                         ],
-                                                                             'line' => 31
+                                                                             'line' => 32
                                                                            }, 'Parse::RecDescent::Production' )
                                                                   ],
                                                        'name' => 'input_type',
                                                        'vars' => '',
-                                                       'line' => 31
+                                                       'line' => 32
                                                      }, 'Parse::RecDescent::Rule' ),
                               'field_name' => bless( {
                                                        'impcount' => 0,
@@ -6610,14 +6772,14 @@ package Pod::WSDL2::Parser; sub new { my $self = bless( {
                                                                                                    'description' => '/[\\\\w-]+/',
                                                                                                    'lookahead' => 0,
                                                                                                    'rdelim' => '/',
-                                                                                                   'line' => 40,
+                                                                                                   'line' => 42,
                                                                                                    'mod' => '',
                                                                                                    'ldelim' => '/'
                                                                                                  }, 'Parse::RecDescent::Token' ),
                                                                                           bless( {
                                                                                                    'hashname' => '__ACTION1__',
                                                                                                    'lookahead' => 0,
-                                                                                                   'line' => 40,
+                                                                                                   'line' => 42,
                                                                                                    'code' => '{ $return = $item[1]; 1; }'
                                                                                                  }, 'Parse::RecDescent::Action' )
                                                                                         ],
@@ -6637,15 +6799,15 @@ package Pod::WSDL2::Parser; sub new { my $self = bless( {
                                                                                                    'hashname' => '__DIRECTIVE1__',
                                                                                                    'commitonly' => '',
                                                                                                    'lookahead' => 0,
-                                                                                                   'line' => 41
+                                                                                                   'line' => 43
                                                                                                  }, 'Parse::RecDescent::Error' )
                                                                                         ],
-                                                                             'line' => 41
+                                                                             'line' => 43
                                                                            }, 'Parse::RecDescent::Production' )
                                                                   ],
                                                        'name' => 'field_name',
                                                        'vars' => '',
-                                                       'line' => 40
+                                                       'line' => 42
                                                      }, 'Parse::RecDescent::Rule' ),
                               'eofile' => bless( {
                                                    'impcount' => 0,
@@ -6668,7 +6830,7 @@ package Pod::WSDL2::Parser; sub new { my $self = bless( {
                                                                                                'description' => '/^\\\\Z/',
                                                                                                'lookahead' => 0,
                                                                                                'rdelim' => '/',
-                                                                                               'line' => 36,
+                                                                                               'line' => 37,
                                                                                                'mod' => '',
                                                                                                'ldelim' => '/'
                                                                                              }, 'Parse::RecDescent::Token' )
@@ -6678,7 +6840,7 @@ package Pod::WSDL2::Parser; sub new { my $self = bless( {
                                                               ],
                                                    'name' => 'eofile',
                                                    'vars' => '',
-                                                   'line' => 36
+                                                   'line' => 37
                                                  }, 'Parse::RecDescent::Rule' ),
                               'hash_element' => bless( {
                                                          'impcount' => 1,
@@ -6704,14 +6866,14 @@ package Pod::WSDL2::Parser; sub new { my $self = bless( {
                                                                                                      'implicit' => undef,
                                                                                                      'argcode' => undef,
                                                                                                      'lookahead' => 0,
-                                                                                                     'line' => 79
+                                                                                                     'line' => 81
                                                                                                    }, 'Parse::RecDescent::Subrule' ),
                                                                                             bless( {
                                                                                                      'pattern' => '=>',
                                                                                                      'hashname' => '__STRING1__',
                                                                                                      'description' => '\'=>\'',
                                                                                                      'lookahead' => 0,
-                                                                                                     'line' => 79
+                                                                                                     'line' => 81
                                                                                                    }, 'Parse::RecDescent::Literal' ),
                                                                                             bless( {
                                                                                                      'subrule' => '_alternation_1_of_production_1_of_rule_hash_element',
@@ -6719,12 +6881,12 @@ package Pod::WSDL2::Parser; sub new { my $self = bless( {
                                                                                                      'implicit' => 'hash, or array, or simple',
                                                                                                      'argcode' => undef,
                                                                                                      'lookahead' => 0,
-                                                                                                     'line' => 79
+                                                                                                     'line' => 81
                                                                                                    }, 'Parse::RecDescent::Subrule' ),
                                                                                             bless( {
                                                                                                      'hashname' => '__ACTION1__',
                                                                                                      'lookahead' => 0,
-                                                                                                     'line' => 79,
+                                                                                                     'line' => 81,
                                                                                                      'code' => '{
 	$return = {
 		\'name\' => $item{field_name},
@@ -6738,7 +6900,7 @@ package Pod::WSDL2::Parser; sub new { my $self = bless( {
                                                                     ],
                                                          'name' => 'hash_element',
                                                          'vars' => '',
-                                                         'line' => 79
+                                                         'line' => 81
                                                        }, 'Parse::RecDescent::Rule' ),
                               '_alternation_1_of_production_1_of_rule_array' => bless( {
                                                                                          'impcount' => 0,
@@ -6765,7 +6927,7 @@ package Pod::WSDL2::Parser; sub new { my $self = bless( {
                                                                                                                                      'implicit' => undef,
                                                                                                                                      'argcode' => undef,
                                                                                                                                      'lookahead' => 0,
-                                                                                                                                     'line' => 105
+                                                                                                                                     'line' => 95
                                                                                                                                    }, 'Parse::RecDescent::Subrule' )
                                                                                                                           ],
                                                                                                                'line' => undef
@@ -6785,10 +6947,10 @@ package Pod::WSDL2::Parser; sub new { my $self = bless( {
                                                                                                                                      'implicit' => undef,
                                                                                                                                      'argcode' => undef,
                                                                                                                                      'lookahead' => 0,
-                                                                                                                                     'line' => 105
+                                                                                                                                     'line' => 95
                                                                                                                                    }, 'Parse::RecDescent::Subrule' )
                                                                                                                           ],
-                                                                                                               'line' => 105
+                                                                                                               'line' => 95
                                                                                                              }, 'Parse::RecDescent::Production' ),
                                                                                                       bless( {
                                                                                                                'number' => '2',
@@ -6808,16 +6970,55 @@ package Pod::WSDL2::Parser; sub new { my $self = bless( {
                                                                                                                                      'matchrule' => 0,
                                                                                                                                      'repspec' => 's',
                                                                                                                                      'lookahead' => 0,
-                                                                                                                                     'line' => 105
+                                                                                                                                     'line' => 95
                                                                                                                                    }, 'Parse::RecDescent::Repetition' )
                                                                                                                           ],
-                                                                                                               'line' => 105
+                                                                                                               'line' => 95
                                                                                                              }, 'Parse::RecDescent::Production' )
                                                                                                     ],
                                                                                          'name' => '_alternation_1_of_production_1_of_rule_array',
                                                                                          'vars' => '',
-                                                                                         'line' => 105
+                                                                                         'line' => 95
                                                                                        }, 'Parse::RecDescent::Rule' ),
+                              'command_block' => bless( {
+                                                          'impcount' => 1,
+                                                          'calls' => [
+                                                                       '_alternation_1_of_production_1_of_rule_command_block'
+                                                                     ],
+                                                          'changed' => 0,
+                                                          'opcount' => 0,
+                                                          'prods' => [
+                                                                       bless( {
+                                                                                'number' => '0',
+                                                                                'strcount' => 0,
+                                                                                'dircount' => 0,
+                                                                                'uncommit' => undef,
+                                                                                'error' => undef,
+                                                                                'patcount' => 0,
+                                                                                'actcount' => 1,
+                                                                                'items' => [
+                                                                                             bless( {
+                                                                                                      'subrule' => '_alternation_1_of_production_1_of_rule_command_block',
+                                                                                                      'matchrule' => 0,
+                                                                                                      'implicit' => 'one_way, or input_block, or return_block, or fault_block',
+                                                                                                      'argcode' => undef,
+                                                                                                      'lookahead' => 0,
+                                                                                                      'line' => 23
+                                                                                                    }, 'Parse::RecDescent::Subrule' ),
+                                                                                             bless( {
+                                                                                                      'hashname' => '__ACTION1__',
+                                                                                                      'lookahead' => 0,
+                                                                                                      'line' => 23,
+                                                                                                      'code' => '{ $return = $item[1]; }'
+                                                                                                    }, 'Parse::RecDescent::Action' )
+                                                                                           ],
+                                                                                'line' => undef
+                                                                              }, 'Parse::RecDescent::Production' )
+                                                                     ],
+                                                          'name' => 'command_block',
+                                                          'vars' => '',
+                                                          'line' => 23
+                                                        }, 'Parse::RecDescent::Rule' ),
                               '_alternation_1_of_production_1_of_rule_input_block' => bless( {
                                                                                                'impcount' => 0,
                                                                                                'calls' => [
@@ -6843,7 +7044,7 @@ package Pod::WSDL2::Parser; sub new { my $self = bless( {
                                                                                                                                            'implicit' => undef,
                                                                                                                                            'argcode' => undef,
                                                                                                                                            'lookahead' => 0,
-                                                                                                                                           'line' => 105
+                                                                                                                                           'line' => 95
                                                                                                                                          }, 'Parse::RecDescent::Subrule' )
                                                                                                                                 ],
                                                                                                                      'line' => undef
@@ -6863,10 +7064,10 @@ package Pod::WSDL2::Parser; sub new { my $self = bless( {
                                                                                                                                            'implicit' => undef,
                                                                                                                                            'argcode' => undef,
                                                                                                                                            'lookahead' => 0,
-                                                                                                                                           'line' => 105
+                                                                                                                                           'line' => 95
                                                                                                                                          }, 'Parse::RecDescent::Subrule' )
                                                                                                                                 ],
-                                                                                                                     'line' => 105
+                                                                                                                     'line' => 95
                                                                                                                    }, 'Parse::RecDescent::Production' ),
                                                                                                             bless( {
                                                                                                                      'number' => '2',
@@ -6883,21 +7084,117 @@ package Pod::WSDL2::Parser; sub new { my $self = bless( {
                                                                                                                                            'implicit' => undef,
                                                                                                                                            'argcode' => undef,
                                                                                                                                            'lookahead' => 0,
-                                                                                                                                           'line' => 105
+                                                                                                                                           'line' => 95
                                                                                                                                          }, 'Parse::RecDescent::Subrule' )
                                                                                                                                 ],
-                                                                                                                     'line' => 105
+                                                                                                                     'line' => 95
                                                                                                                    }, 'Parse::RecDescent::Production' )
                                                                                                           ],
                                                                                                'name' => '_alternation_1_of_production_1_of_rule_input_block',
                                                                                                'vars' => '',
-                                                                                               'line' => 105
+                                                                                               'line' => 95
                                                                                              }, 'Parse::RecDescent::Rule' ),
+                              '_alternation_1_of_production_1_of_rule_command_block' => bless( {
+                                                                                                 'impcount' => 0,
+                                                                                                 'calls' => [
+                                                                                                              'one_way',
+                                                                                                              'input_block',
+                                                                                                              'return_block',
+                                                                                                              'fault_block'
+                                                                                                            ],
+                                                                                                 'changed' => 0,
+                                                                                                 'opcount' => 0,
+                                                                                                 'prods' => [
+                                                                                                              bless( {
+                                                                                                                       'number' => '0',
+                                                                                                                       'strcount' => 0,
+                                                                                                                       'dircount' => 0,
+                                                                                                                       'uncommit' => undef,
+                                                                                                                       'error' => undef,
+                                                                                                                       'patcount' => 0,
+                                                                                                                       'actcount' => 0,
+                                                                                                                       'items' => [
+                                                                                                                                    bless( {
+                                                                                                                                             'subrule' => 'one_way',
+                                                                                                                                             'matchrule' => 0,
+                                                                                                                                             'implicit' => undef,
+                                                                                                                                             'argcode' => undef,
+                                                                                                                                             'lookahead' => 0,
+                                                                                                                                             'line' => 95
+                                                                                                                                           }, 'Parse::RecDescent::Subrule' )
+                                                                                                                                  ],
+                                                                                                                       'line' => undef
+                                                                                                                     }, 'Parse::RecDescent::Production' ),
+                                                                                                              bless( {
+                                                                                                                       'number' => '1',
+                                                                                                                       'strcount' => 0,
+                                                                                                                       'dircount' => 0,
+                                                                                                                       'uncommit' => undef,
+                                                                                                                       'error' => undef,
+                                                                                                                       'patcount' => 0,
+                                                                                                                       'actcount' => 0,
+                                                                                                                       'items' => [
+                                                                                                                                    bless( {
+                                                                                                                                             'subrule' => 'input_block',
+                                                                                                                                             'matchrule' => 0,
+                                                                                                                                             'implicit' => undef,
+                                                                                                                                             'argcode' => undef,
+                                                                                                                                             'lookahead' => 0,
+                                                                                                                                             'line' => 95
+                                                                                                                                           }, 'Parse::RecDescent::Subrule' )
+                                                                                                                                  ],
+                                                                                                                       'line' => 95
+                                                                                                                     }, 'Parse::RecDescent::Production' ),
+                                                                                                              bless( {
+                                                                                                                       'number' => '2',
+                                                                                                                       'strcount' => 0,
+                                                                                                                       'dircount' => 0,
+                                                                                                                       'uncommit' => undef,
+                                                                                                                       'error' => undef,
+                                                                                                                       'patcount' => 0,
+                                                                                                                       'actcount' => 0,
+                                                                                                                       'items' => [
+                                                                                                                                    bless( {
+                                                                                                                                             'subrule' => 'return_block',
+                                                                                                                                             'matchrule' => 0,
+                                                                                                                                             'implicit' => undef,
+                                                                                                                                             'argcode' => undef,
+                                                                                                                                             'lookahead' => 0,
+                                                                                                                                             'line' => 95
+                                                                                                                                           }, 'Parse::RecDescent::Subrule' )
+                                                                                                                                  ],
+                                                                                                                       'line' => 95
+                                                                                                                     }, 'Parse::RecDescent::Production' ),
+                                                                                                              bless( {
+                                                                                                                       'number' => '3',
+                                                                                                                       'strcount' => 0,
+                                                                                                                       'dircount' => 0,
+                                                                                                                       'uncommit' => undef,
+                                                                                                                       'error' => undef,
+                                                                                                                       'patcount' => 0,
+                                                                                                                       'actcount' => 0,
+                                                                                                                       'items' => [
+                                                                                                                                    bless( {
+                                                                                                                                             'subrule' => 'fault_block',
+                                                                                                                                             'matchrule' => 0,
+                                                                                                                                             'implicit' => undef,
+                                                                                                                                             'argcode' => undef,
+                                                                                                                                             'lookahead' => 0,
+                                                                                                                                             'line' => 95
+                                                                                                                                           }, 'Parse::RecDescent::Subrule' )
+                                                                                                                                  ],
+                                                                                                                       'line' => 95
+                                                                                                                     }, 'Parse::RecDescent::Production' )
+                                                                                                            ],
+                                                                                                 'name' => '_alternation_1_of_production_1_of_rule_command_block',
+                                                                                                 'vars' => '',
+                                                                                                 'line' => 95
+                                                                                               }, 'Parse::RecDescent::Rule' ),
                               'fault_type' => bless( {
                                                        'impcount' => 0,
                                                        'calls' => [
                                                                     'data_type',
-                                                                    'docline'
+                                                                    'comment'
                                                                   ],
                                                        'changed' => 0,
                                                        'opcount' => 0,
@@ -6917,10 +7214,10 @@ package Pod::WSDL2::Parser; sub new { my $self = bless( {
                                                                                                    'implicit' => undef,
                                                                                                    'argcode' => undef,
                                                                                                    'lookahead' => 0,
-                                                                                                   'line' => 56
+                                                                                                   'line' => 58
                                                                                                  }, 'Parse::RecDescent::Subrule' ),
                                                                                           bless( {
-                                                                                                   'subrule' => 'docline',
+                                                                                                   'subrule' => 'comment',
                                                                                                    'expected' => undef,
                                                                                                    'min' => 0,
                                                                                                    'argcode' => undef,
@@ -6928,16 +7225,16 @@ package Pod::WSDL2::Parser; sub new { my $self = bless( {
                                                                                                    'matchrule' => 0,
                                                                                                    'repspec' => '?',
                                                                                                    'lookahead' => 0,
-                                                                                                   'line' => 56
+                                                                                                   'line' => 58
                                                                                                  }, 'Parse::RecDescent::Repetition' ),
                                                                                           bless( {
                                                                                                    'hashname' => '__ACTION1__',
                                                                                                    'lookahead' => 0,
-                                                                                                   'line' => 56,
+                                                                                                   'line' => 58,
                                                                                                    'code' => '{
 	$return = {
 		type => $item[1],
-		docs => $item[2]->[0]
+		docs => Pod::WSDL2::Doc->new($item[2]->[0])
 	};
 }'
                                                                                                  }, 'Parse::RecDescent::Action' )
@@ -6947,7 +7244,7 @@ package Pod::WSDL2::Parser; sub new { my $self = bless( {
                                                                   ],
                                                        'name' => 'fault_type',
                                                        'vars' => '',
-                                                       'line' => 56
+                                                       'line' => 58
                                                      }, 'Parse::RecDescent::Rule' ),
                               'hash' => bless( {
                                                  'impcount' => 0,
@@ -6971,7 +7268,7 @@ package Pod::WSDL2::Parser; sub new { my $self = bless( {
                                                                                              'hashname' => '__STRING1__',
                                                                                              'description' => '\'\\{\'',
                                                                                              'lookahead' => 0,
-                                                                                             'line' => 63
+                                                                                             'line' => 65
                                                                                            }, 'Parse::RecDescent::Literal' ),
                                                                                     bless( {
                                                                                              'subrule' => 'hash_element',
@@ -6982,19 +7279,19 @@ package Pod::WSDL2::Parser; sub new { my $self = bless( {
                                                                                              'matchrule' => 0,
                                                                                              'repspec' => 's',
                                                                                              'lookahead' => 0,
-                                                                                             'line' => 63
+                                                                                             'line' => 65
                                                                                            }, 'Parse::RecDescent::Repetition' ),
                                                                                     bless( {
                                                                                              'pattern' => '}',
                                                                                              'hashname' => '__STRING2__',
                                                                                              'description' => '\'\\}\'',
                                                                                              'lookahead' => 0,
-                                                                                             'line' => 63
+                                                                                             'line' => 65
                                                                                            }, 'Parse::RecDescent::Literal' ),
                                                                                     bless( {
                                                                                              'hashname' => '__ACTION1__',
                                                                                              'lookahead' => 0,
-                                                                                             'line' => 63,
+                                                                                             'line' => 65,
                                                                                              'code' => '{  
 	$return = { 
 		simple   => 0, 
@@ -7009,7 +7306,7 @@ package Pod::WSDL2::Parser; sub new { my $self = bless( {
                                                             ],
                                                  'name' => 'hash',
                                                  'vars' => '',
-                                                 'line' => 63
+                                                 'line' => 65
                                                }, 'Parse::RecDescent::Rule' ),
                               'one_way' => bless( {
                                                     'impcount' => 0,
@@ -7031,12 +7328,12 @@ package Pod::WSDL2::Parser; sub new { my $self = bless( {
                                                                                                 'hashname' => '__STRING1__',
                                                                                                 'description' => '\'_ONEWAY\'',
                                                                                                 'lookahead' => 0,
-                                                                                                'line' => 90
+                                                                                                'line' => 92
                                                                                               }, 'Parse::RecDescent::Literal' ),
                                                                                        bless( {
                                                                                                 'hashname' => '__ACTION1__',
                                                                                                 'lookahead' => 0,
-                                                                                                'line' => 90,
+                                                                                                'line' => 92,
                                                                                                 'code' => '{ $return = \'oneway\'; }'
                                                                                               }, 'Parse::RecDescent::Action' )
                                                                                      ],
@@ -7045,7 +7342,53 @@ package Pod::WSDL2::Parser; sub new { my $self = bless( {
                                                                ],
                                                     'name' => 'one_way',
                                                     'vars' => '',
-                                                    'line' => 90
+                                                    'line' => 92
+                                                  }, 'Parse::RecDescent::Rule' ),
+                              'comment' => bless( {
+                                                    'impcount' => 0,
+                                                    'calls' => [],
+                                                    'changed' => 0,
+                                                    'opcount' => 0,
+                                                    'prods' => [
+                                                                 bless( {
+                                                                          'number' => '0',
+                                                                          'strcount' => 0,
+                                                                          'dircount' => 1,
+                                                                          'uncommit' => undef,
+                                                                          'error' => undef,
+                                                                          'patcount' => 1,
+                                                                          'actcount' => 1,
+                                                                          'items' => [
+                                                                                       bless( {
+                                                                                                'hashname' => '__DIRECTIVE1__',
+                                                                                                'name' => '<skip:\'[ \\t]*\'>',
+                                                                                                'lookahead' => 0,
+                                                                                                'line' => 40,
+                                                                                                'code' => 'my $oldskip = $skip; $skip=\'[ \\t]*\'; $oldskip'
+                                                                                              }, 'Parse::RecDescent::Directive' ),
+                                                                                       bless( {
+                                                                                                'pattern' => '.*\\n+',
+                                                                                                'hashname' => '__PATTERN1__',
+                                                                                                'description' => '/.*\\\\n+/',
+                                                                                                'lookahead' => 0,
+                                                                                                'rdelim' => '/',
+                                                                                                'line' => 40,
+                                                                                                'mod' => '',
+                                                                                                'ldelim' => '/'
+                                                                                              }, 'Parse::RecDescent::Token' ),
+                                                                                       bless( {
+                                                                                                'hashname' => '__ACTION1__',
+                                                                                                'lookahead' => 0,
+                                                                                                'line' => 40,
+                                                                                                'code' => '{ $return = $item[2]; 1; }'
+                                                                                              }, 'Parse::RecDescent::Action' )
+                                                                                     ],
+                                                                          'line' => undef
+                                                                        }, 'Parse::RecDescent::Production' )
+                                                               ],
+                                                    'name' => 'comment',
+                                                    'vars' => '',
+                                                    'line' => 40
                                                   }, 'Parse::RecDescent::Rule' ),
                               'simple' => bless( {
                                                    'impcount' => 0,
@@ -7053,7 +7396,7 @@ package Pod::WSDL2::Parser; sub new { my $self = bless( {
                                                                 'sigul',
                                                                 'data_type',
                                                                 'optional',
-                                                                'docline'
+                                                                'comment'
                                                               ],
                                                    'changed' => 0,
                                                    'opcount' => 0,
@@ -7073,13 +7416,13 @@ package Pod::WSDL2::Parser; sub new { my $self = bless( {
                                                                                                'implicit' => undef,
                                                                                                'argcode' => undef,
                                                                                                'lookahead' => 0,
-                                                                                               'line' => 43
+                                                                                               'line' => 45
                                                                                              }, 'Parse::RecDescent::Subrule' ),
                                                                                       bless( {
                                                                                                'hashname' => '__DIRECTIVE1__',
                                                                                                'name' => '<commit>',
                                                                                                'lookahead' => 0,
-                                                                                               'line' => 43,
+                                                                                               'line' => 45,
                                                                                                'code' => '$commit = 1'
                                                                                              }, 'Parse::RecDescent::Directive' ),
                                                                                       bless( {
@@ -7088,7 +7431,7 @@ package Pod::WSDL2::Parser; sub new { my $self = bless( {
                                                                                                'implicit' => undef,
                                                                                                'argcode' => undef,
                                                                                                'lookahead' => 0,
-                                                                                               'line' => 43
+                                                                                               'line' => 45
                                                                                              }, 'Parse::RecDescent::Subrule' ),
                                                                                       bless( {
                                                                                                'subrule' => 'optional',
@@ -7099,10 +7442,10 @@ package Pod::WSDL2::Parser; sub new { my $self = bless( {
                                                                                                'matchrule' => 0,
                                                                                                'repspec' => '?',
                                                                                                'lookahead' => 0,
-                                                                                               'line' => 43
+                                                                                               'line' => 45
                                                                                              }, 'Parse::RecDescent::Repetition' ),
                                                                                       bless( {
-                                                                                               'subrule' => 'docline',
+                                                                                               'subrule' => 'comment',
                                                                                                'expected' => undef,
                                                                                                'min' => 0,
                                                                                                'argcode' => undef,
@@ -7110,19 +7453,19 @@ package Pod::WSDL2::Parser; sub new { my $self = bless( {
                                                                                                'matchrule' => 0,
                                                                                                'repspec' => '?',
                                                                                                'lookahead' => 0,
-                                                                                               'line' => 43
+                                                                                               'line' => 45
                                                                                              }, 'Parse::RecDescent::Repetition' ),
                                                                                       bless( {
                                                                                                'hashname' => '__ACTION1__',
                                                                                                'lookahead' => 0,
-                                                                                               'line' => 43,
+                                                                                               'line' => 45,
                                                                                                'code' => '{ 
 	$return = {
 		simple   => 1,
 		multiple => $item{\'sigul\'},
 		type     => $item{\'data_type\'},
 		optional => $item{\'optional(?)\'}->[0],
-		docs     => Pod::WSDL2::Doc->new(join(\'\',@{$item{\'docline(?)\'}}))
+		docs     => Pod::WSDL2::Doc->new($item{\'comment(?)\'}->[0])
 	};
 }'
                                                                                              }, 'Parse::RecDescent::Action' )
@@ -7132,7 +7475,7 @@ package Pod::WSDL2::Parser; sub new { my $self = bless( {
                                                               ],
                                                    'name' => 'simple',
                                                    'vars' => '',
-                                                   'line' => 43
+                                                   'line' => 45
                                                  }, 'Parse::RecDescent::Rule' )
                             },
                  '_AUTOTREE' => undef,

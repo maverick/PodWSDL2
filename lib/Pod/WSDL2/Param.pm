@@ -24,6 +24,8 @@ sub new {
 		$paramType = $str->{'input_type'};
 		$simple    = $str->{'simple'};
 		$optional  = $str->{'optional'};
+
+		$paramType =~ s/^_//;
 	}
 	else {
 		$str =~ s/\s*_(INOUT|IN|OUT)\s*//i or die "Input string '$str' does not begin with '_IN', '_OUT' or '_INOUT'";

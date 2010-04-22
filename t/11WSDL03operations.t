@@ -53,5 +53,3 @@ ok(!$xp->exists('/wsdl:definitions/wsdl:portType[@name = "MyOperationTestHandler
 
 # test method without wsdl pod
 ok(!$xp->exists('/wsdl:definitions/wsdl:message[@name = "testWithoutPodRequest"]') && !$xp->exists('/wsdl:definitions/wsdl:message[@name = "testWithoutPodResponse"]'), 'Non pod messages not found xml output.');
-
-print $xmlOutput;

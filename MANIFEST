@@ -1,11 +1,12 @@
 Changes
+lib/Pod/WSDL2.pm
 lib/Pod/WSDL2/Attr.pm
-lib/Pod/WSDL2/AUTOLOAD.pm
 lib/Pod/WSDL2/Doc.pm
 lib/Pod/WSDL2/Fault.pm
+lib/Pod/WSDL2/grammar.prd
 lib/Pod/WSDL2/Method.pm
 lib/Pod/WSDL2/Param.pm
-lib/Pod/WSDL2.pm
+lib/Pod/WSDL2/Parser.pm
 lib/Pod/WSDL2/Return.pm
 lib/Pod/WSDL2/Type.pm
 lib/Pod/WSDL2/Utils.pm
@@ -13,9 +14,8 @@ lib/Pod/WSDL2/Writer.pm
 Makefile.PL
 MANIFEST
 META.yml
+pm_to_blib
 README
-t/01AUTOLOAD01basic.t
-t/01AUTOLOAD02forbiddenmethods.t
 t/02Utils01basic.t
 t/03Writer01basic.t
 t/04Attr01basic.t
