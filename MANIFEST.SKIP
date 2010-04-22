@@ -1,0 +1,13 @@
+~$
+.git
+.svn
+.swp$
+.bak$
+.old$
+^MANIFEST\.
+^Makefile$
+^blib/
+^pm_to_blib/
+.tar.gz$
+\#
+^experimental
