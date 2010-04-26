@@ -2609,6 +2609,16 @@ sub Parse::RecDescent::Pod::WSDL2::Parser::array
 		type     => 'array', 
 		elements => $item[2]
 	};
+
+	# This is a temporary hack to make hashs return anyType so that
+	# we can move forward with using the new syntax while I work on the actual
+	# implmentation
+	$return = {
+		simple => 1,
+		multiple => 0,
+		type => 'anyType',
+		optional => 1,
+	};
 };
         unless (defined $_tok)
         {
@@ -5152,6 +5162,16 @@ sub Parse::RecDescent::Pod::WSDL2::Parser::hash
 		type     => 'hash',
 		elements => $item{'hash_element(s)'}
 	};
+
+	# This is a temporary hack to make hashs return anyType so that
+	# we can move forward with using the new syntax while I work on the actual
+	# implmentation
+	$return = {
+		simple => 1,
+		multiple => 0,
+		type => 'anyType',
+		optional => 1,
+	};
 };
         unless (defined $_tok)
         {
@@ -5763,7 +5783,7 @@ sub Parse::RecDescent::Pod::WSDL2::Parser::simple
 		simple   => 1,
 		multiple => $item{'sigul'},
 		type     => $item{'data_type'},
-		optional => $item{'optional(?)'}->[0],
+		optional => ($item{'optional(?)'}->[0])?1:0,
 		docs     => Pod::WSDL2::Doc->new($item{'comment(?)'}->[0])
 	};
 };
@@ -5861,7 +5881,7 @@ package Pod::WSDL2::Parser; sub new { my $self = bless( {
                                                                                                                                             'implicit' => undef,
                                                                                                                                             'argcode' => undef,
                                                                                                                                             'lookahead' => 0,
-                                                                                                                                            'line' => 95
+                                                                                                                                            'line' => 115
                                                                                                                                           }, 'Parse::RecDescent::Subrule' )
                                                                                                                                  ],
                                                                                                                       'line' => undef
@@ -5881,10 +5901,10 @@ package Pod::WSDL2::Parser; sub new { my $self = bless( {
                                                                                                                                             'implicit' => undef,
                                                                                                                                             'argcode' => undef,
                                                                                                                                             'lookahead' => 0,
-                                                                                                                                            'line' => 95
+                                                                                                                                            'line' => 115
                                                                                                                                           }, 'Parse::RecDescent::Subrule' )
                                                                                                                                  ],
-                                                                                                                      'line' => 95
+                                                                                                                      'line' => 115
                                                                                                                     }, 'Parse::RecDescent::Production' ),
                                                                                                              bless( {
                                                                                                                       'number' => '2',
@@ -5901,15 +5921,15 @@ package Pod::WSDL2::Parser; sub new { my $self = bless( {
                                                                                                                                             'implicit' => undef,
                                                                                                                                             'argcode' => undef,
                                                                                                                                             'lookahead' => 0,
-                                                                                                                                            'line' => 95
+                                                                                                                                            'line' => 115
                                                                                                                                           }, 'Parse::RecDescent::Subrule' )
                                                                                                                                  ],
-                                                                                                                      'line' => 95
+                                                                                                                      'line' => 115
                                                                                                                     }, 'Parse::RecDescent::Production' )
                                                                                                            ],
                                                                                                 'name' => '_alternation_1_of_production_1_of_rule_hash_element',
                                                                                                 'vars' => '',
-                                                                                                'line' => 95
+                                                                                                'line' => 115
                                                                                               }, 'Parse::RecDescent::Rule' ),
                               '_alternation_1_of_production_1_of_rule_return_block' => bless( {
                                                                                                 'impcount' => 0,
@@ -5936,7 +5956,7 @@ package Pod::WSDL2::Parser; sub new { my $self = bless( {
                                                                                                                                             'implicit' => undef,
                                                                                                                                             'argcode' => undef,
                                                                                                                                             'lookahead' => 0,
-                                                                                                                                            'line' => 95
+                                                                                                                                            'line' => 115
                                                                                                                                           }, 'Parse::RecDescent::Subrule' )
                                                                                                                                  ],
                                                                                                                       'line' => undef
@@ -5956,10 +5976,10 @@ package Pod::WSDL2::Parser; sub new { my $self = bless( {
                                                                                                                                             'implicit' => undef,
                                                                                                                                             'argcode' => undef,
                                                                                                                                             'lookahead' => 0,
-                                                                                                                                            'line' => 95
+                                                                                                                                            'line' => 115
                                                                                                                                           }, 'Parse::RecDescent::Subrule' )
                                                                                                                                  ],
-                                                                                                                      'line' => 95
+                                                                                                                      'line' => 115
                                                                                                                     }, 'Parse::RecDescent::Production' ),
                                                                                                              bless( {
                                                                                                                       'number' => '2',
@@ -5976,15 +5996,15 @@ package Pod::WSDL2::Parser; sub new { my $self = bless( {
                                                                                                                                             'implicit' => undef,
                                                                                                                                             'argcode' => undef,
                                                                                                                                             'lookahead' => 0,
-                                                                                                                                            'line' => 95
+                                                                                                                                            'line' => 115
                                                                                                                                           }, 'Parse::RecDescent::Subrule' )
                                                                                                                                  ],
-                                                                                                                      'line' => 95
+                                                                                                                      'line' => 115
                                                                                                                     }, 'Parse::RecDescent::Production' )
                                                                                                            ],
                                                                                                 'name' => '_alternation_1_of_production_1_of_rule_return_block',
                                                                                                 'vars' => '',
-                                                                                                'line' => 95
+                                                                                                'line' => 115
                                                                                               }, 'Parse::RecDescent::Rule' ),
                               'wsdlblock' => bless( {
                                                       'impcount' => 0,
@@ -6158,7 +6178,7 @@ package Pod::WSDL2::Parser; sub new { my $self = bless( {
                                                                                                                                            'implicit' => undef,
                                                                                                                                            'argcode' => undef,
                                                                                                                                            'lookahead' => 0,
-                                                                                                                                           'line' => 95
+                                                                                                                                           'line' => 115
                                                                                                                                          }, 'Parse::RecDescent::Subrule' )
                                                                                                                                 ],
                                                                                                                      'line' => undef
@@ -6178,10 +6198,10 @@ package Pod::WSDL2::Parser; sub new { my $self = bless( {
                                                                                                                                            'implicit' => undef,
                                                                                                                                            'argcode' => undef,
                                                                                                                                            'lookahead' => 0,
-                                                                                                                                           'line' => 95
+                                                                                                                                           'line' => 115
                                                                                                                                          }, 'Parse::RecDescent::Subrule' )
                                                                                                                                 ],
-                                                                                                                     'line' => 95
+                                                                                                                     'line' => 115
                                                                                                                    }, 'Parse::RecDescent::Production' ),
                                                                                                             bless( {
                                                                                                                      'number' => '2',
@@ -6198,15 +6218,15 @@ package Pod::WSDL2::Parser; sub new { my $self = bless( {
                                                                                                                                            'implicit' => undef,
                                                                                                                                            'argcode' => undef,
                                                                                                                                            'lookahead' => 0,
-                                                                                                                                           'line' => 95
+                                                                                                                                           'line' => 115
                                                                                                                                          }, 'Parse::RecDescent::Subrule' )
                                                                                                                                 ],
-                                                                                                                     'line' => 95
+                                                                                                                     'line' => 115
                                                                                                                    }, 'Parse::RecDescent::Production' )
                                                                                                           ],
                                                                                                'name' => '_alternation_1_of_production_1_of_rule_fault_block',
                                                                                                'vars' => '',
-                                                                                               'line' => 95
+                                                                                               'line' => 115
                                                                                              }, 'Parse::RecDescent::Rule' ),
                               'commands' => bless( {
                                                      'impcount' => 0,
@@ -6232,7 +6252,7 @@ package Pod::WSDL2::Parser; sub new { my $self = bless( {
                                                                                                  'implicit' => undef,
                                                                                                  'argcode' => undef,
                                                                                                  'lookahead' => 0,
-                                                                                                 'line' => 90
+                                                                                                 'line' => 110
                                                                                                }, 'Parse::RecDescent::Subrule' )
                                                                                       ],
                                                                            'line' => undef
@@ -6252,10 +6272,10 @@ package Pod::WSDL2::Parser; sub new { my $self = bless( {
                                                                                                  'implicit' => undef,
                                                                                                  'argcode' => undef,
                                                                                                  'lookahead' => 0,
-                                                                                                 'line' => 90
+                                                                                                 'line' => 110
                                                                                                }, 'Parse::RecDescent::Subrule' )
                                                                                       ],
-                                                                           'line' => 90
+                                                                           'line' => 110
                                                                          }, 'Parse::RecDescent::Production' ),
                                                                   bless( {
                                                                            'number' => '2',
@@ -6271,10 +6291,10 @@ package Pod::WSDL2::Parser; sub new { my $self = bless( {
                                                                                                  'hashname' => '__STRING1__',
                                                                                                  'description' => '\'_RETURN\'',
                                                                                                  'lookahead' => 0,
-                                                                                                 'line' => 90
+                                                                                                 'line' => 110
                                                                                                }, 'Parse::RecDescent::Literal' )
                                                                                       ],
-                                                                           'line' => 90
+                                                                           'line' => 110
                                                                          }, 'Parse::RecDescent::Production' ),
                                                                   bless( {
                                                                            'number' => '3',
@@ -6290,15 +6310,15 @@ package Pod::WSDL2::Parser; sub new { my $self = bless( {
                                                                                                  'hashname' => '__STRING1__',
                                                                                                  'description' => '\'_FAULT\'',
                                                                                                  'lookahead' => 0,
-                                                                                                 'line' => 90
+                                                                                                 'line' => 110
                                                                                                }, 'Parse::RecDescent::Literal' )
                                                                                       ],
-                                                                           'line' => 90
+                                                                           'line' => 110
                                                                          }, 'Parse::RecDescent::Production' )
                                                                 ],
                                                      'name' => 'commands',
                                                      'vars' => '',
-                                                     'line' => 90
+                                                     'line' => 110
                                                    }, 'Parse::RecDescent::Rule' ),
                               'optional' => bless( {
                                                      'impcount' => 0,
@@ -6320,12 +6340,12 @@ package Pod::WSDL2::Parser; sub new { my $self = bless( {
                                                                                                  'hashname' => '__STRING1__',
                                                                                                  'description' => '\'OPTIONAL\'',
                                                                                                  'lookahead' => 0,
-                                                                                                 'line' => 88
+                                                                                                 'line' => 108
                                                                                                }, 'Parse::RecDescent::Literal' ),
                                                                                         bless( {
                                                                                                  'hashname' => '__ACTION1__',
                                                                                                  'lookahead' => 0,
-                                                                                                 'line' => 88,
+                                                                                                 'line' => 108,
                                                                                                  'code' => '{ $return = 1; }'
                                                                                                }, 'Parse::RecDescent::Action' )
                                                                                       ],
@@ -6334,7 +6354,7 @@ package Pod::WSDL2::Parser; sub new { my $self = bless( {
                                                                 ],
                                                      'name' => 'optional',
                                                      'vars' => '',
-                                                     'line' => 88
+                                                     'line' => 108
                                                    }, 'Parse::RecDescent::Rule' ),
                               'sigul' => bless( {
                                                   'impcount' => 0,
@@ -6554,7 +6574,7 @@ package Pod::WSDL2::Parser; sub new { my $self = bless( {
                                                                                               'hashname' => '__STRING1__',
                                                                                               'description' => '\'[\'',
                                                                                               'lookahead' => 0,
-                                                                                              'line' => 73
+                                                                                              'line' => 83
                                                                                             }, 'Parse::RecDescent::Literal' ),
                                                                                      bless( {
                                                                                               'subrule' => '_alternation_1_of_production_1_of_rule_array',
@@ -6562,24 +6582,34 @@ package Pod::WSDL2::Parser; sub new { my $self = bless( {
                                                                                               'implicit' => 'hash, or array, or simple',
                                                                                               'argcode' => undef,
                                                                                               'lookahead' => 0,
-                                                                                              'line' => 73
+                                                                                              'line' => 83
                                                                                             }, 'Parse::RecDescent::Subrule' ),
                                                                                      bless( {
                                                                                               'pattern' => ']',
                                                                                               'hashname' => '__STRING2__',
                                                                                               'description' => '\']\'',
                                                                                               'lookahead' => 0,
-                                                                                              'line' => 73
+                                                                                              'line' => 83
                                                                                             }, 'Parse::RecDescent::Literal' ),
                                                                                      bless( {
                                                                                               'hashname' => '__ACTION1__',
                                                                                               'lookahead' => 0,
-                                                                                              'line' => 73,
+                                                                                              'line' => 83,
                                                                                               'code' => '{
 	$return = { 
 		simple   => 0, 
 		type     => \'array\', 
 		elements => $item[2]
+	};
+
+	# This is a temporary hack to make hashs return anyType so that
+	# we can move forward with using the new syntax while I work on the actual
+	# implmentation
+	$return = {
+		simple => 1,
+		multiple => 0,
+		type => \'anyType\',
+		optional => 1,
 	};
 }'
                                                                                             }, 'Parse::RecDescent::Action' )
@@ -6589,7 +6619,7 @@ package Pod::WSDL2::Parser; sub new { my $self = bless( {
                                                              ],
                                                   'name' => 'array',
                                                   'vars' => '',
-                                                  'line' => 73
+                                                  'line' => 83
                                                 }, 'Parse::RecDescent::Rule' ),
                               'data_type' => bless( {
                                                       'impcount' => 0,
@@ -6612,14 +6642,14 @@ package Pod::WSDL2::Parser; sub new { my $self = bless( {
                                                                                                   'description' => '/\\\\w+(::\\\\w+)*/',
                                                                                                   'lookahead' => 0,
                                                                                                   'rdelim' => '/',
-                                                                                                  'line' => 94,
+                                                                                                  'line' => 114,
                                                                                                   'mod' => '',
                                                                                                   'ldelim' => '/'
                                                                                                 }, 'Parse::RecDescent::Token' ),
                                                                                          bless( {
                                                                                                   'hashname' => '__ACTION1__',
                                                                                                   'lookahead' => 0,
-                                                                                                  'line' => 94,
+                                                                                                  'line' => 114,
                                                                                                   'code' => '{ $return = $item[1]; }'
                                                                                                 }, 'Parse::RecDescent::Action' )
                                                                                        ],
@@ -6628,7 +6658,7 @@ package Pod::WSDL2::Parser; sub new { my $self = bless( {
                                                                  ],
                                                       'name' => 'data_type',
                                                       'vars' => '',
-                                                      'line' => 94
+                                                      'line' => 114
                                                     }, 'Parse::RecDescent::Rule' ),
                               'fault_block' => bless( {
                                                         'impcount' => 1,
@@ -6866,14 +6896,14 @@ package Pod::WSDL2::Parser; sub new { my $self = bless( {
                                                                                                      'implicit' => undef,
                                                                                                      'argcode' => undef,
                                                                                                      'lookahead' => 0,
-                                                                                                     'line' => 81
+                                                                                                     'line' => 101
                                                                                                    }, 'Parse::RecDescent::Subrule' ),
                                                                                             bless( {
                                                                                                      'pattern' => '=>',
                                                                                                      'hashname' => '__STRING1__',
                                                                                                      'description' => '\'=>\'',
                                                                                                      'lookahead' => 0,
-                                                                                                     'line' => 81
+                                                                                                     'line' => 101
                                                                                                    }, 'Parse::RecDescent::Literal' ),
                                                                                             bless( {
                                                                                                      'subrule' => '_alternation_1_of_production_1_of_rule_hash_element',
@@ -6881,12 +6911,12 @@ package Pod::WSDL2::Parser; sub new { my $self = bless( {
                                                                                                      'implicit' => 'hash, or array, or simple',
                                                                                                      'argcode' => undef,
                                                                                                      'lookahead' => 0,
-                                                                                                     'line' => 81
+                                                                                                     'line' => 101
                                                                                                    }, 'Parse::RecDescent::Subrule' ),
                                                                                             bless( {
                                                                                                      'hashname' => '__ACTION1__',
                                                                                                      'lookahead' => 0,
-                                                                                                     'line' => 81,
+                                                                                                     'line' => 101,
                                                                                                      'code' => '{
 	$return = {
 		\'name\' => $item{field_name},
@@ -6900,7 +6930,7 @@ package Pod::WSDL2::Parser; sub new { my $self = bless( {
                                                                     ],
                                                          'name' => 'hash_element',
                                                          'vars' => '',
-                                                         'line' => 81
+                                                         'line' => 101
                                                        }, 'Parse::RecDescent::Rule' ),
                               '_alternation_1_of_production_1_of_rule_array' => bless( {
                                                                                          'impcount' => 0,
@@ -6927,7 +6957,7 @@ package Pod::WSDL2::Parser; sub new { my $self = bless( {
                                                                                                                                      'implicit' => undef,
                                                                                                                                      'argcode' => undef,
                                                                                                                                      'lookahead' => 0,
-                                                                                                                                     'line' => 95
+                                                                                                                                     'line' => 115
                                                                                                                                    }, 'Parse::RecDescent::Subrule' )
                                                                                                                           ],
                                                                                                                'line' => undef
@@ -6947,10 +6977,10 @@ package Pod::WSDL2::Parser; sub new { my $self = bless( {
                                                                                                                                      'implicit' => undef,
                                                                                                                                      'argcode' => undef,
                                                                                                                                      'lookahead' => 0,
-                                                                                                                                     'line' => 95
+                                                                                                                                     'line' => 115
                                                                                                                                    }, 'Parse::RecDescent::Subrule' )
                                                                                                                           ],
-                                                                                                               'line' => 95
+                                                                                                               'line' => 115
                                                                                                              }, 'Parse::RecDescent::Production' ),
                                                                                                       bless( {
                                                                                                                'number' => '2',
@@ -6970,15 +7000,15 @@ package Pod::WSDL2::Parser; sub new { my $self = bless( {
                                                                                                                                      'matchrule' => 0,
                                                                                                                                      'repspec' => 's',
                                                                                                                                      'lookahead' => 0,
-                                                                                                                                     'line' => 95
+                                                                                                                                     'line' => 115
                                                                                                                                    }, 'Parse::RecDescent::Repetition' )
                                                                                                                           ],
-                                                                                                               'line' => 95
+                                                                                                               'line' => 115
                                                                                                              }, 'Parse::RecDescent::Production' )
                                                                                                     ],
                                                                                          'name' => '_alternation_1_of_production_1_of_rule_array',
                                                                                          'vars' => '',
-                                                                                         'line' => 95
+                                                                                         'line' => 115
                                                                                        }, 'Parse::RecDescent::Rule' ),
                               'command_block' => bless( {
                                                           'impcount' => 1,
@@ -7044,7 +7074,7 @@ package Pod::WSDL2::Parser; sub new { my $self = bless( {
                                                                                                                                            'implicit' => undef,
                                                                                                                                            'argcode' => undef,
                                                                                                                                            'lookahead' => 0,
-                                                                                                                                           'line' => 95
+                                                                                                                                           'line' => 115
                                                                                                                                          }, 'Parse::RecDescent::Subrule' )
                                                                                                                                 ],
                                                                                                                      'line' => undef
@@ -7064,10 +7094,10 @@ package Pod::WSDL2::Parser; sub new { my $self = bless( {
                                                                                                                                            'implicit' => undef,
                                                                                                                                            'argcode' => undef,
                                                                                                                                            'lookahead' => 0,
-                                                                                                                                           'line' => 95
+                                                                                                                                           'line' => 115
                                                                                                                                          }, 'Parse::RecDescent::Subrule' )
                                                                                                                                 ],
-                                                                                                                     'line' => 95
+                                                                                                                     'line' => 115
                                                                                                                    }, 'Parse::RecDescent::Production' ),
                                                                                                             bless( {
                                                                                                                      'number' => '2',
@@ -7084,15 +7114,15 @@ package Pod::WSDL2::Parser; sub new { my $self = bless( {
                                                                                                                                            'implicit' => undef,
                                                                                                                                            'argcode' => undef,
                                                                                                                                            'lookahead' => 0,
-                                                                                                                                           'line' => 95
+                                                                                                                                           'line' => 115
                                                                                                                                          }, 'Parse::RecDescent::Subrule' )
                                                                                                                                 ],
-                                                                                                                     'line' => 95
+                                                                                                                     'line' => 115
                                                                                                                    }, 'Parse::RecDescent::Production' )
                                                                                                           ],
                                                                                                'name' => '_alternation_1_of_production_1_of_rule_input_block',
                                                                                                'vars' => '',
-                                                                                               'line' => 95
+                                                                                               'line' => 115
                                                                                              }, 'Parse::RecDescent::Rule' ),
                               '_alternation_1_of_production_1_of_rule_command_block' => bless( {
                                                                                                  'impcount' => 0,
@@ -7120,7 +7150,7 @@ package Pod::WSDL2::Parser; sub new { my $self = bless( {
                                                                                                                                              'implicit' => undef,
                                                                                                                                              'argcode' => undef,
                                                                                                                                              'lookahead' => 0,
-                                                                                                                                             'line' => 95
+                                                                                                                                             'line' => 115
                                                                                                                                            }, 'Parse::RecDescent::Subrule' )
                                                                                                                                   ],
                                                                                                                        'line' => undef
@@ -7140,10 +7170,10 @@ package Pod::WSDL2::Parser; sub new { my $self = bless( {
                                                                                                                                              'implicit' => undef,
                                                                                                                                              'argcode' => undef,
                                                                                                                                              'lookahead' => 0,
-                                                                                                                                             'line' => 95
+                                                                                                                                             'line' => 115
                                                                                                                                            }, 'Parse::RecDescent::Subrule' )
                                                                                                                                   ],
-                                                                                                                       'line' => 95
+                                                                                                                       'line' => 115
                                                                                                                      }, 'Parse::RecDescent::Production' ),
                                                                                                               bless( {
                                                                                                                        'number' => '2',
@@ -7160,10 +7190,10 @@ package Pod::WSDL2::Parser; sub new { my $self = bless( {
                                                                                                                                              'implicit' => undef,
                                                                                                                                              'argcode' => undef,
                                                                                                                                              'lookahead' => 0,
-                                                                                                                                             'line' => 95
+                                                                                                                                             'line' => 115
                                                                                                                                            }, 'Parse::RecDescent::Subrule' )
                                                                                                                                   ],
-                                                                                                                       'line' => 95
+                                                                                                                       'line' => 115
                                                                                                                      }, 'Parse::RecDescent::Production' ),
                                                                                                               bless( {
                                                                                                                        'number' => '3',
@@ -7180,15 +7210,15 @@ package Pod::WSDL2::Parser; sub new { my $self = bless( {
                                                                                                                                              'implicit' => undef,
                                                                                                                                              'argcode' => undef,
                                                                                                                                              'lookahead' => 0,
-                                                                                                                                             'line' => 95
+                                                                                                                                             'line' => 115
                                                                                                                                            }, 'Parse::RecDescent::Subrule' )
                                                                                                                                   ],
-                                                                                                                       'line' => 95
+                                                                                                                       'line' => 115
                                                                                                                      }, 'Parse::RecDescent::Production' )
                                                                                                             ],
                                                                                                  'name' => '_alternation_1_of_production_1_of_rule_command_block',
                                                                                                  'vars' => '',
-                                                                                                 'line' => 95
+                                                                                                 'line' => 115
                                                                                                }, 'Parse::RecDescent::Rule' ),
                               'fault_type' => bless( {
                                                        'impcount' => 0,
@@ -7298,6 +7328,16 @@ package Pod::WSDL2::Parser; sub new { my $self = bless( {
 		type     => \'hash\',
 		elements => $item{\'hash_element(s)\'}
 	};
+
+	# This is a temporary hack to make hashs return anyType so that
+	# we can move forward with using the new syntax while I work on the actual
+	# implmentation
+	$return = {
+		simple => 1,
+		multiple => 0,
+		type => \'anyType\',
+		optional => 1,
+	};
 }'
                                                                                            }, 'Parse::RecDescent::Action' )
                                                                                   ],
@@ -7328,12 +7368,12 @@ package Pod::WSDL2::Parser; sub new { my $self = bless( {
                                                                                                 'hashname' => '__STRING1__',
                                                                                                 'description' => '\'_ONEWAY\'',
                                                                                                 'lookahead' => 0,
-                                                                                                'line' => 92
+                                                                                                'line' => 112
                                                                                               }, 'Parse::RecDescent::Literal' ),
                                                                                        bless( {
                                                                                                 'hashname' => '__ACTION1__',
                                                                                                 'lookahead' => 0,
-                                                                                                'line' => 92,
+                                                                                                'line' => 112,
                                                                                                 'code' => '{ $return = \'oneway\'; }'
                                                                                               }, 'Parse::RecDescent::Action' )
                                                                                      ],
@@ -7342,7 +7382,7 @@ package Pod::WSDL2::Parser; sub new { my $self = bless( {
                                                                ],
                                                     'name' => 'one_way',
                                                     'vars' => '',
-                                                    'line' => 92
+                                                    'line' => 112
                                                   }, 'Parse::RecDescent::Rule' ),
                               'comment' => bless( {
                                                     'impcount' => 0,
@@ -7464,7 +7504,7 @@ package Pod::WSDL2::Parser; sub new { my $self = bless( {
 		simple   => 1,
 		multiple => $item{\'sigul\'},
 		type     => $item{\'data_type\'},
-		optional => $item{\'optional(?)\'}->[0],
+		optional => ($item{\'optional(?)\'}->[0])?1:0,
 		docs     => Pod::WSDL2::Doc->new($item{\'comment(?)\'}->[0])
 	};
 }'

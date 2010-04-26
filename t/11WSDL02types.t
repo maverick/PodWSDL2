@@ -112,6 +112,42 @@ $p = new Pod::WSDL2(source => 'My::WrongTypeTest',
 
 ok($@ =~ /Can't find any file 'Non::Existent::Type' and can't locate it as a module in \@INC either \(\@INC contains/, 'Pod::WSDL2 dies on encountering unknown type');
 
+#my $p = new Pod::WSDL2(source => 'My::NestedTypeTest',
+	               #location => 'http://localhost/My/TypeTest',
+	               #pretty => 1,
+	               #withDocumentation => 1);
+#
+#my $xmlOutput = $p->WSDL;
+#my $xp = XML::XPath->new(xml => $xmlOutput);
+#use Data::Dumper;
+#print Dumper $xp;
+
+my $p = new Pod::WSDL2(source => 'My::InlineComplex',
+	               location => 'http://localhost/My/InlineComplex',
+	               pretty => 1,
+	               withDocumentation => 1);
+
+my $xmlOutput = $p->WSDL;
+my $xp = XML::XPath->new(xml => $xmlOutput);
+use Data::Dumper;
+print Dumper $xp;
+
+=pod
+my $foundMethod = 0;
+
+
+for my $m (@{$p->methods}) {
+	if ($m->name eq 'testXSDTypes') {
+		$foundMethod = 1;
+		for (0 .. @xsdTypes - 1) {
+			ok($m->params->[$_]->type eq $xsdTypes[$_], "Recognized xsd type '$xsdTypes[$_]' on method 'testXSDTypes' correctly")
+		}
+	}
+}
+
+fail('Did not find method testXSDTypes in package My::TypeTest') unless $foundMethod;
+=cut
+
 __END__
 This is just to help making tests ...
 

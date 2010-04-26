@@ -8,14 +8,14 @@ use Pod::WSDL2::Doc;
 our $VERSION='0.5';
 
 use base("Class::Accessor::Fast");
-__PACKAGE__->mk_ro_accessors(qw(name type paramType descr array simple optional));
+__PACKAGE__->mk_ro_accessors(qw(name type paramType descr array simple nillable));
 
 sub new {
 	my ($pkg, $str) = @_;
 
 	defined $str or $str = ''; # avoids warnings, dies soon
 	
-	my ($name,$type,$descr,$array,$paramType,$simple,$optional);
+	my ($name,$type,$descr,$array,$paramType,$simple,$optional,$elements);
 	if (ref($str) eq "HASH") {
 		$name      = $str->{'name'};
 		$type      = $str->{'type'};
@@ -24,6 +24,7 @@ sub new {
 		$paramType = $str->{'input_type'};
 		$simple    = $str->{'simple'};
 		$optional  = $str->{'optional'};
+		$elements  = $str->{'elements'};
 
 		$paramType =~ s/^_//;
 	}
@@ -49,7 +50,8 @@ sub new {
 		descr     => $descr || '',
 		array     => $array,
 		simple    => $simple,
-		optional  => $optional
+		nillable  => $optional,
+		elements  => $elements
 	}, $pkg;
 }
 

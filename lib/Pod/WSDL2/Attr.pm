@@ -11,27 +11,41 @@ sub new {
 	my ($pkg, $str) = @_;
 
 	defined $str or $str = ''; # avoids warnings
-	$str =~ s/\s*_ATTR\s*//i or die "Input string '$str' does not begin with '_ATTR'";
-	my ($name, $type, $needed, $descr) = split /\s+/, $str, 4;
-
-	$descr ||= '';
-	
-	if ((uc $needed) ne '_NEEDED') {
-		$descr  = "$needed $descr";
-		$needed = 0;
-	} else {
-		$needed = 1;
+	my ($name, $type, $needed, $descr, $array, $optional);
+	if (ref($str) eq "HASH") {
+		$name      = $str->{'name'};
+		$type      = $str->{'type'};
+		$descr     = $str->{'docs'};
+		$array     = $str->{'multiple'};
+		$optional  = ($str->{'optional'})?'true':undef;
 	}
-	
-	$type =~ /([\$\@])(.*)/;
-	die "Type '$type' must be prefixed with either '\$' or '\@', died" unless $1;
+	else {
+		my $needed;
+		$str =~ s/\s*_ATTR\s*//i or die "Input string '$str' does not begin with '_ATTR'";
+		($name, $type, $needed, $descr) = split /\s+/, $str, 4;
+
+		$descr ||= '';
+		
+		if ((uc $needed) ne '_NEEDED') {
+			$descr  = "$needed $descr";
+			$optional = 'true';
+		} else {
+			$optional = undef; #'false';
+		}
+		
+		$type =~ /([\$\@])(.*)/;
+		die "Type '$type' must be prefixed with either '\$' or '\@', died" unless $1;
+
+		$array = $1 eq '@' ? 1: 0;
+		$type  = $2;
+	}
 	
 	bless {
 		name     => $name,
-		type     => $2,
-		nillable => $needed ? undef : 'true',
+		type     => $type,
+		nillable => $optional,
 		descr    => $descr,
-		array    => $1 eq '@' ? 1 : 0,
+		array    => $array
 	}, $pkg;
 }
 

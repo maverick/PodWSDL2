@@ -24,10 +24,10 @@ sub new {
 		name     => $data{name},
 		wsdlName => ucfirst $wsdlName,
 		array    => $data{array} || 0,
-		attrs    => [],
+		attrs    => $data{attrs} || [],
 		descr    => $data{descr} || '',
 		writer   => $data{writer},
-		reftype  => 'HASH',
+		reftype  => $data{reftpe} || 'HASH',
 	}, $pkg;
 
 	$me->_initPod($data{pod}) if $data{pod};
