@@ -113,22 +113,22 @@ $p = new Pod::WSDL2(source => 'My::WrongTypeTest',
 ok($@ =~ /Can't find any file 'Non::Existent::Type' and can't locate it as a module in \@INC either \(\@INC contains/, 'Pod::WSDL2 dies on encountering unknown type');
 
 use Data::Dumper;
-my $p = new Pod::WSDL2(source => 'My::NestedTypeTest',
+$p = new Pod::WSDL2(source => 'My::NestedTypeTest',
 	               location => 'http://localhost/My/TypeTest',
 	               pretty => 1,
 	               withDocumentation => 1);
 
-my $xmlOutput = $p->WSDL;
-my $xp = XML::XPath->new(xml => $xmlOutput);
+$xmlOutput = $p->WSDL;
+$xp = XML::XPath->new(xml => $xmlOutput);
 print Dumper $xp;
 
-my $p = new Pod::WSDL2(source => 'My::InlineComplex',
+$p = new Pod::WSDL2(source => 'My::InlineComplex',
 	               location => 'http://localhost/My/InlineComplex',
 	               pretty => 1,
 	               withDocumentation => 1);
 
-my $xmlOutput = $p->WSDL;
-my $xp = XML::XPath->new(xml => $xmlOutput);
+$xmlOutput = $p->WSDL;
+$xp = XML::XPath->new(xml => $xmlOutput);
 #print Dumper $xp;
 
 =pod
