@@ -48,7 +48,7 @@ simple: sigul <commit> data_type required(?) comment(?) {
 		multiple => $item{'sigul'},
 		type     => $item{'data_type'},
 		required => ($item{'required(?)'}->[0])?1:0,
-		docs     => Pod::WSDL2::Doc->new($item{'comment(?)'}->[0])
+		docs     => $item{'comment(?)'}->[0]
 	};
 }
 
@@ -58,7 +58,7 @@ sigul: '$' { $return = 0; 1;}
 fault_type: sigul(?) data_type comment(?) {
 	$return = {
 		type => $item{'data_type'},
-		docs => Pod::WSDL2::Doc->new($item{'comment(?)'}->[0])
+		docs => $item{'comment(?)'}->[0]
 	};
 }
 

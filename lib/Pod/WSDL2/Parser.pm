@@ -4972,7 +4972,7 @@ sub Parse::RecDescent::Pod::WSDL2::Parser::fault_type
         $_tok = ($_noactions) ? 0 : do {
 	$return = {
 		type => $item{'data_type'},
-		docs => Pod::WSDL2::Doc->new($item{'comment(?)'}->[0])
+		docs => $item{'comment(?)'}->[0]
 	};
 };
         unless (defined $_tok)
@@ -5812,7 +5812,7 @@ sub Parse::RecDescent::Pod::WSDL2::Parser::simple
 		multiple => $item{'sigul'},
 		type     => $item{'data_type'},
 		required => ($item{'required(?)'}->[0])?1:0,
-		docs     => Pod::WSDL2::Doc->new($item{'comment(?)'}->[0])
+		docs     => $item{'comment(?)'}->[0]
 	};
 };
         unless (defined $_tok)
@@ -7307,7 +7307,7 @@ package Pod::WSDL2::Parser; sub new { my $self = bless( {
                                                                                                    'code' => '{
 	$return = {
 		type => $item{\'data_type\'},
-		docs => Pod::WSDL2::Doc->new($item{\'comment(?)\'}->[0])
+		docs => $item{\'comment(?)\'}->[0]
 	};
 }'
                                                                                                  }, 'Parse::RecDescent::Action' )
@@ -7548,7 +7548,7 @@ package Pod::WSDL2::Parser; sub new { my $self = bless( {
 		multiple => $item{\'sigul\'},
 		type     => $item{\'data_type\'},
 		required => ($item{\'required(?)\'}->[0])?1:0,
-		docs     => Pod::WSDL2::Doc->new($item{\'comment(?)\'}->[0])
+		docs     => $item{\'comment(?)\'}->[0]
 	};
 }'
                                                                                              }, 'Parse::RecDescent::Action' )
