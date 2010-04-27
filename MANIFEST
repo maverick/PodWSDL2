@@ -14,7 +14,6 @@ lib/Pod/WSDL2/Writer.pm
 Makefile.PL
 MANIFEST
 META.yml
-pm_to_blib
 README
 t/02Utils01basic.t
 t/03Writer01basic.t
@@ -35,8 +34,11 @@ t/11WSDL06parsing.t
 t/axistest.pl
 t/My/AxisTest.pm
 t/My/Bar.pm
+t/My/Baz.pm
 t/My/BindingTest.pm
 t/My/Foo.pm
+t/My/InlineComplex.pm
+t/My/NestedTypeTest.pm
 t/My/OperationTest.pm
 t/My/Server.pm
 t/My/ServiceTest.pm
@@ -44,3 +46,4 @@ t/My/TypeTest.pm
 t/My/WrongTypeTest.pm
 t/outputtest001.xml
 t/outputtest002.xml
+update_grammar.sh
