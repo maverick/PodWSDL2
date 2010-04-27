@@ -42,12 +42,12 @@ comment: <skip:'[ \t]*'> /.*\n+/ { $return = $item[2]; 1; }
 field_name: /[\w-]+/ { $return = $item[1]; 1; }
           | <error> 
 
-simple: sigul <commit> data_type optional(?) comment(?) { 
+simple: sigul <commit> data_type required(?) comment(?) { 
 	$return = {
 		simple   => 1,
 		multiple => $item{'sigul'},
 		type     => $item{'data_type'},
-		optional => ($item{'optional(?)'}->[0])?1:0,
+		required => ($item{'required(?)'}->[0])?1:0,
 		docs     => Pod::WSDL2::Doc->new($item{'comment(?)'}->[0])
 	};
 }
@@ -76,7 +76,7 @@ hash: '{' hash_element(s) '}' {
 		simple => 1,
 		multiple => 0,
 		type => 'anyType',
-		optional => 1,
+		required => 1,
 	};
 }
 
@@ -94,7 +94,7 @@ array: '[' ( hash | array | simple(s) ) ']' {
 		simple => 1,
 		multiple => 0,
 		type => 'anyType',
-		optional => 1,
+		required => 1,
 	};
 }
 
@@ -105,7 +105,7 @@ hash_element: field_name '=>' ( hash | array | simple ) {
 	};
 }
 
-optional: 'OPTIONAL' { $return = 1; }
+required: /^REQUIRED$/i { $return = 1; }
 
 commands: input_type | one_way | '_RETURN' | '_FAULT'
 

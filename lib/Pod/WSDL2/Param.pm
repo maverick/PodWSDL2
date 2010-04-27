@@ -15,7 +15,7 @@ sub new {
 
 	defined $str or $str = ''; # avoids warnings, dies soon
 	
-	my ($name,$type,$descr,$array,$paramType,$simple,$optional,$elements);
+	my ($name,$type,$descr,$array,$paramType,$simple,$required,$elements);
 	if (ref($str) eq "HASH") {
 		$name      = $str->{'name'};
 		$type      = $str->{'type'};
@@ -23,7 +23,7 @@ sub new {
 		$array     = $str->{'multiple'};
 		$paramType = $str->{'input_type'};
 		$simple    = $str->{'simple'};
-		$optional  = $str->{'optional'};
+		$required  = $str->{'required'};
 		$elements  = $str->{'elements'};
 
 		$paramType =~ s/^_//;
@@ -50,7 +50,7 @@ sub new {
 		descr     => $descr || '',
 		array     => $array,
 		simple    => $simple,
-		nillable  => $optional,
+		nillable  => ($required)?'false':'true',
 		elements  => $elements
 	}, $pkg;
 }

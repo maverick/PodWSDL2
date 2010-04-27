@@ -11,13 +11,13 @@ sub new {
 	my ($pkg, $str) = @_;
 
 	defined $str or $str = ''; # avoids warnings
-	my ($name, $type, $needed, $descr, $array, $optional);
+	my ($name, $type, $needed, $descr, $array, $required);
 	if (ref($str) eq "HASH") {
 		$name      = $str->{'name'};
 		$type      = $str->{'type'};
 		$descr     = $str->{'docs'};
 		$array     = $str->{'multiple'};
-		$optional  = ($str->{'optional'})?'true':undef;
+		$required  = $str->{'required'};
 	}
 	else {
 		my $needed;
@@ -26,11 +26,11 @@ sub new {
 
 		$descr ||= '';
 		
-		if ((uc $needed) ne '_NEEDED') {
+		if ((uc $needed) eq '_NEEDED') {
+			$required = 1;
+		}
+		else {
 			$descr  = "$needed $descr";
-			$optional = 'true';
-		} else {
-			$optional = undef; #'false';
 		}
 		
 		$type =~ /([\$\@])(.*)/;
@@ -43,7 +43,7 @@ sub new {
 	bless {
 		name     => $name,
 		type     => $type,
-		nillable => $optional,
+		nillable => ($required)?undef:'true',
 		descr    => $descr,
 		array    => $array
 	}, $pkg;
