@@ -55,10 +55,10 @@ simple: sigul <commit> data_type required(?) comment(?) {
 sigul: '$' { $return = 0; 1;}
      | '@' { $return = 1;   }
 
-fault_type: data_type comment(?) {
+fault_type: sigul(?) data_type comment(?) {
 	$return = {
-		type => $item[1],
-		docs => Pod::WSDL2::Doc->new($item[2]->[0])
+		type => $item{'data_type'},
+		docs => Pod::WSDL2::Doc->new($item{'comment(?)'}->[0])
 	};
 }
 

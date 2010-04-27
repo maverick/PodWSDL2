@@ -4852,7 +4852,7 @@ sub Parse::RecDescent::Pod::WSDL2::Parser::fault_type
     my $text;
     my $lastsep="";
     my $current_match;
-    my $expectation = new Parse::RecDescent::Expectation(q{data_type});
+    my $expectation = new Parse::RecDescent::Expectation(q{sigul});
     $expectation->at($_[1]);
     
     my $thisline;
@@ -4863,7 +4863,7 @@ sub Parse::RecDescent::Pod::WSDL2::Parser::fault_type
     while (!$_matched && !$commit)
     {
         
-        Parse::RecDescent::_trace(q{Trying production: [data_type comment]},
+        Parse::RecDescent::_trace(q{Trying production: [sigul data_type comment]},
                       Parse::RecDescent::_tracefirst($_[1]),
                       q{fault_type},
                       $tracelevel)
@@ -4876,13 +4876,41 @@ sub Parse::RecDescent::Pod::WSDL2::Parser::fault_type
         my $repcount = 0;
 
 
+        Parse::RecDescent::_trace(q{Trying repeated subrule: [sigul]},
+                  Parse::RecDescent::_tracefirst($text),
+                  q{fault_type},
+                  $tracelevel)
+                    if defined $::RD_TRACE;
+        $expectation->is(q{})->at($text);
+        
+        unless (defined ($_tok = $thisparser->_parserepeat($text, \&Parse::RecDescent::Pod::WSDL2::Parser::sigul, 0, 1, $_noactions,$expectation,sub { \@arg }))) 
+        {
+            Parse::RecDescent::_trace(q{<<Didn't match repeated subrule: [sigul]>>},
+                          Parse::RecDescent::_tracefirst($text),
+                          q{fault_type},
+                          $tracelevel)
+                            if defined $::RD_TRACE;
+            last;
+        }
+        Parse::RecDescent::_trace(q{>>Matched repeated subrule: [sigul]<< (}
+                    . @$_tok . q{ times)},
+                      
+                      Parse::RecDescent::_tracefirst($text),
+                      q{fault_type},
+                      $tracelevel)
+                        if defined $::RD_TRACE;
+        $item{q{sigul(?)}} = $_tok;
+        push @item, $_tok;
+        
+
+
         Parse::RecDescent::_trace(q{Trying subrule: [data_type]},
                   Parse::RecDescent::_tracefirst($text),
                   q{fault_type},
                   $tracelevel)
                     if defined $::RD_TRACE;
         if (1) { no strict qw{refs};
-        $expectation->is(q{})->at($text);
+        $expectation->is(q{data_type})->at($text);
         unless (defined ($_tok = Parse::RecDescent::Pod::WSDL2::Parser::data_type($thisparser,$text,$repeating,$_noactions,sub { \@arg })))
         {
             
@@ -4943,8 +4971,8 @@ sub Parse::RecDescent::Pod::WSDL2::Parser::fault_type
 
         $_tok = ($_noactions) ? 0 : do {
 	$return = {
-		type => $item[1],
-		docs => Pod::WSDL2::Doc->new($item[2]->[0])
+		type => $item{'data_type'},
+		docs => Pod::WSDL2::Doc->new($item{'comment(?)'}->[0])
 	};
 };
         unless (defined $_tok)
@@ -4962,7 +4990,7 @@ sub Parse::RecDescent::Pod::WSDL2::Parser::fault_type
         
 
 
-        Parse::RecDescent::_trace(q{>>Matched production: [data_type comment]<<},
+        Parse::RecDescent::_trace(q{>>Matched production: [sigul data_type comment]<<},
                       Parse::RecDescent::_tracefirst($text),
                       q{fault_type},
                       $tracelevel)
@@ -7226,6 +7254,7 @@ package Pod::WSDL2::Parser; sub new { my $self = bless( {
                               'fault_type' => bless( {
                                                        'impcount' => 0,
                                                        'calls' => [
+                                                                    'sigul',
                                                                     'data_type',
                                                                     'comment'
                                                                   ],
@@ -7241,6 +7270,17 @@ package Pod::WSDL2::Parser; sub new { my $self = bless( {
                                                                              'patcount' => 0,
                                                                              'actcount' => 1,
                                                                              'items' => [
+                                                                                          bless( {
+                                                                                                   'subrule' => 'sigul',
+                                                                                                   'expected' => undef,
+                                                                                                   'min' => 0,
+                                                                                                   'argcode' => undef,
+                                                                                                   'max' => 1,
+                                                                                                   'matchrule' => 0,
+                                                                                                   'repspec' => '?',
+                                                                                                   'lookahead' => 0,
+                                                                                                   'line' => 58
+                                                                                                 }, 'Parse::RecDescent::Repetition' ),
                                                                                           bless( {
                                                                                                    'subrule' => 'data_type',
                                                                                                    'matchrule' => 0,
@@ -7266,8 +7306,8 @@ package Pod::WSDL2::Parser; sub new { my $self = bless( {
                                                                                                    'line' => 58,
                                                                                                    'code' => '{
 	$return = {
-		type => $item[1],
-		docs => Pod::WSDL2::Doc->new($item[2]->[0])
+		type => $item{\'data_type\'},
+		docs => Pod::WSDL2::Doc->new($item{\'comment(?)\'}->[0])
 	};
 }'
                                                                                                  }, 'Parse::RecDescent::Action' )
