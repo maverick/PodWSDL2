@@ -6,10 +6,10 @@ use warnings;
 our $VERSION = "0.05";
 
 use Pod::WSDL2::Attr;
-use Pod::WSDL2::Utils qw(:writexml :namespaces :types);
+# use Pod::WSDL2::Utils qw(:writexml :namespaces :types);
 
 use base("Class::Accessor::Fast");
-__PACKAGE__->mk_ro_accessors(qw(writer attrs descr wsdlName name reftype));
+__PACKAGE__->mk_ro_accessors(qw(attrs descr wsdlName name reftype));
 __PACKAGE__->mk_accessors(qw(array));
 
 sub new {
@@ -26,8 +26,7 @@ sub new {
 		array    => $data{array} || 0,
 		attrs    => $data{attrs} || [],
 		descr    => $data{descr} || '',
-		writer   => $data{writer},
-		reftype  => $data{reftpe} || 'HASH',
+		reftype  => $data{reftype} || 'HASH',
 	}, $pkg;
 
 	$me->_initPod($data{pod}) if $data{pod};
@@ -64,51 +63,6 @@ sub _initPod {
 		} elsif (/^\s*_REFTYPE\s+(HASH|ARRAY)/i) {
 			$me->reftype(uc $1);
 		}
-	}
-		
-}
-
-sub writeComplexType {
-	my $me = shift;
-	my $ownTypes = shift;
-
-	$me->writer->wrElem($START_PREFIX_NAME, "complexType",  name => $me->wsdlName);
-	$me->writer->wrDoc($me->descr, useAnnotation => 1);
-	
-	if ($me->reftype eq 'HASH') {
-		
-		$me->writer->wrElem($START_PREFIX_NAME, "sequence");
-	
-		for my $attr (@{$me->attrs}) {
-			my %tmpArgs = (name => $attr->name, 
-				type => Pod::WSDL2::Utils::getTypeDescr($attr->type, $attr->array, $ownTypes->{$attr->type}));
-			
-			$tmpArgs{nillable} = $attr->nillable if $attr->nillable;
-			
-			$me->writer->wrElem($START_PREFIX_NAME, "element", %tmpArgs);
-			$me->writer->wrDoc($attr->descr, useAnnotation => 1);
-			$me->writer->wrElem($END_PREFIX_NAME, "element");
-		}
-	
-		$me->writer->wrElem($END_PREFIX_NAME, "sequence");
-	} elsif ($me->reftype eq 'ARRAY') {
-		$me->writer->wrElem($START_PREFIX_NAME, "complexContent");
-		$me->writer->wrElem($START_PREFIX_NAME, "restriction",  base => "soapenc:Array");
-		$me->writer->wrElem($EMPTY_PREFIX_NAME, "attribute",  ref => $TARGET_NS_DECL . ':' . $me->wsdlName, "wsdl:arrayType" => 'xsd:anyType[]');
-		$me->writer->wrElem($END_PREFIX_NAME, "restriction");
-		$me->writer->wrElem($END_PREFIX_NAME, "complexContent");
-	}
-	
-	$me->writer->wrElem($END_PREFIX_NAME, "complexType");
-
-	if ($me->array) {
-		$me->writer->wrElem($START_PREFIX_NAME, "complexType",  name => $ARRAY_PREFIX_NAME . ucfirst $me->wsdlName);
-		$me->writer->wrElem($START_PREFIX_NAME, "complexContent");
-		$me->writer->wrElem($START_PREFIX_NAME, "restriction",  base => "soapenc:Array");
-		$me->writer->wrElem($EMPTY_PREFIX_NAME, "attribute",  ref => "soapenc:arrayType", "wsdl:arrayType" => $TARGET_NS_DECL . ':' . $me->wsdlName . '[]');
-		$me->writer->wrElem($END_PREFIX_NAME, "restriction");
-		$me->writer->wrElem($END_PREFIX_NAME, "complexContent");
-		$me->writer->wrElem($END_PREFIX_NAME, "complexType");
 	}
 }
 

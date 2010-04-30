@@ -181,14 +181,14 @@ sub _initSource {
 sub _initTypes {
 	my $me = shift;
 
-	
 	for my $method (@{$me->{methods}}) {
-    for my $param (@{$method->params},$method->return) {
-      next unless $param;
-			unless (exists $XSD_STANDARD_TYPE_MAP{$param->type}) {				
+		for my $param (@{$method->params},$method->return) {
+			next unless $param;
+
+			if (!exists $XSD_STANDARD_TYPE_MAP{$param->type}) {				
 				$me->_addType($param->type, $param->array);
-			} elsif ($param->array) {
-				
+			}
+			elsif ($param->array) {
 				#AHICOX: 10/10/2006
 				#changed to _standardTypeArrays (was singular)
 				$me->{standardTypeArrays}->{$param->type} = 1;
@@ -201,7 +201,6 @@ sub _initTypes {
 			}
 		}
 	}
-
 }
 
 sub _addType {
@@ -236,13 +235,13 @@ sub _addType {
 		
 	new Pod::Text()->parse_from_filehandle($IN, $OUT);
 		
-	$me->types->{$name} = new Pod::WSDL2::Type(name => $name, array => $array, pod => $pod, descr => $out, writer => $me->writer);
+	$me->types->{$name} = new Pod::WSDL2::Type(name => $name, array => $array, pod => $pod, descr => $out);
 	
 	for my $attr (@{$me->types->{$name}->attrs}) {
-		unless (exists $XSD_STANDARD_TYPE_MAP{$attr->type}) {
+		if (!exists $XSD_STANDARD_TYPE_MAP{$attr->type}) {
 			$me->_addType($attr->type, $attr->array);
-		} elsif ($attr->array) {
-			
+		}
+		elsif ($attr->array) {
 			#AHICOX: 10/10/2006
 			#changed to _standardTypeArrays (was singular)
 			$me->{standardTypeArrays}->{$attr->type} = 1;
@@ -437,7 +436,7 @@ sub _writeTypes {
 	}
 
 	for my $type (values %{$me->types}) {
-		$type->writeComplexType($me->types);
+		$me->_writeComplexType($type);
 	}
 
 	if ($me->style eq $DOCUMENT_STYLE) {
@@ -450,6 +449,57 @@ sub _writeTypes {
 	$me->writer->wrElem($END_PREFIX_NAME, 'wsdl:types');
 	$me->writer->wrNewLine;
 }
+
+sub _writeComplexType {
+	my $me   = shift;
+	my $type = shift;
+
+	$me->writer->wrElem($START_PREFIX_NAME, "complexType",  name => $type->wsdlName);
+	$me->writer->wrDoc($type->descr, useAnnotation => 1);
+	
+	if ($type->reftype eq 'HASH') {
+		
+		$me->writer->wrElem($START_PREFIX_NAME, "sequence");
+	
+		for my $attr (@{$type->attrs}) {
+			my %tmpArgs = (
+				name => $attr->name, 
+				type => Pod::WSDL2::Utils::getTypeDescr(
+					$attr->type,
+					$attr->array,
+					$me->types->{$attr->type}
+				)
+			);
+			
+			$tmpArgs{nillable} = $attr->nillable if $attr->nillable;
+			
+			$me->writer->wrElem($START_PREFIX_NAME, "element", %tmpArgs);
+			$me->writer->wrDoc($attr->descr, useAnnotation => 1);
+			$me->writer->wrElem($END_PREFIX_NAME, "element");
+		}
+	
+		$me->writer->wrElem($END_PREFIX_NAME, "sequence");
+	} elsif ($type->reftype eq 'ARRAY') {
+		$me->writer->wrElem($START_PREFIX_NAME, "complexContent");
+		$me->writer->wrElem($START_PREFIX_NAME, "restriction",  base => "soapenc:Array");
+		$me->writer->wrElem($EMPTY_PREFIX_NAME, "attribute",  ref => $TARGET_NS_DECL . ':' . $type->wsdlName, "wsdl:arrayType" => 'xsd:anyType[]');
+		$me->writer->wrElem($END_PREFIX_NAME, "restriction");
+		$me->writer->wrElem($END_PREFIX_NAME, "complexContent");
+	}
+	
+	$me->writer->wrElem($END_PREFIX_NAME, "complexType");
+
+	if ($type->array) {
+		$me->writer->wrElem($START_PREFIX_NAME, "complexType",  name => $ARRAY_PREFIX_NAME . ucfirst $type->wsdlName);
+		$me->writer->wrElem($START_PREFIX_NAME, "complexContent");
+		$me->writer->wrElem($START_PREFIX_NAME, "restriction",  base => "soapenc:Array");
+		$me->writer->wrElem($EMPTY_PREFIX_NAME, "attribute",  ref => "soapenc:arrayType", "wsdl:arrayType" => $TARGET_NS_DECL . ':' . $type->wsdlName . '[]');
+		$me->writer->wrElem($END_PREFIX_NAME, "restriction");
+		$me->writer->wrElem($END_PREFIX_NAME, "complexContent");
+		$me->writer->wrElem($END_PREFIX_NAME, "complexType");
+	}
+}
+
 
 sub _writePortType {
 	my $me = shift;
