@@ -198,7 +198,6 @@ sub _initTypes {
 					$me->{standardTypeArrays}->{$param->type} = 1;
 				}
 			}
-			print STDERR Dumper $param;
 		}
 
 		for my $fault (@{$method->faults}) {
