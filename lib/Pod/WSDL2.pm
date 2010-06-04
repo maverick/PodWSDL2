@@ -181,13 +181,12 @@ sub _initSource {
 sub _initTypes {
 	my $me = shift;
 
-	use Data::Dumper;
 	for my $method (@{$me->{methods}}) {
 		for my $param (@{$method->params},$method->return) {
 			next unless $param;
 
 			if ($param->complex) {
-				$me->_addComplexType($method->name,$param);
+				$param->{type} = $me->_addComplexType($method->name,$param);
 			}
 			else {
 				if (!exists $XSD_STANDARD_TYPE_MAP{$param->type}) {				
@@ -199,10 +198,14 @@ sub _initTypes {
 					$me->{standardTypeArrays}->{$param->type} = 1;
 				}
 			}
+			print STDERR Dumper $param;
 		}
 
 		for my $fault (@{$method->faults}) {
-			unless (exists $XSD_STANDARD_TYPE_MAP{$fault->type}) {
+			if ($fault->complex) {
+				$fault->{type} = $me->_addComplexType($method->name,$fault);
+			}
+			elsif (!exists $XSD_STANDARD_TYPE_MAP{$fault->type}) {
 				$me->_addType($fault->type, 0);
 			}
 		}
@@ -220,7 +223,7 @@ sub _addComplexType {
 	
 	for my $attr (@{$me->types->{$name}->attrs}) {
 		if ($attr->complex) {
-			$me->_addComplexType($name,$attr);
+			$attr->{type} = $me->_addComplexType($name,$attr);
 		}
 		if (!exists $XSD_STANDARD_TYPE_MAP{$attr->type}) {
 			$me->_addType($attr->type, $attr->array);
@@ -231,6 +234,7 @@ sub _addComplexType {
 			$me->{standardTypeArrays}->{$attr->type} = 1;
 		}
 	}
+	return $name;
 }
 
 sub _addType {
