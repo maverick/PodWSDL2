@@ -5,19 +5,21 @@ use warnings;
 our $VERSION = "0.05";
 
 use base("Class::Accessor::Fast");
-__PACKAGE__->mk_ro_accessors(qw(name type nillable descr array));
+__PACKAGE__->mk_ro_accessors(qw(name type nillable descr array complex attrs));
 
 sub new {
 	my ($pkg, $str) = @_;
 
 	defined $str or $str = ''; # avoids warnings
-	my ($name, $type, $needed, $descr, $array, $required);
+	my ($name, $type, $needed, $descr, $array, $required, $complex, $attrs);
 	if (ref($str) eq "HASH") {
 		$name      = $str->{'name'};
 		$type      = $str->{'type'};
 		$descr     = $str->{'docs'};
 		$array     = $str->{'multiple'};
 		$required  = $str->{'required'};
+		$complex   = $str->{'complex'};
+		$attrs     = $str->{'attrs'};
 	}
 	else {
 		my $needed;
@@ -45,7 +47,9 @@ sub new {
 		type     => $type,
 		nillable => ($required)?undef:'true',
 		descr    => $descr,
-		array    => $array
+		array    => $array,
+		complex  => $complex,
+		attrs    => $attrs
 	}, $pkg;
 }
 

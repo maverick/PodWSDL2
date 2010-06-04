@@ -44,7 +44,7 @@ field_name: /[\w-]+/ { $return = $item[1]; 1; }
 
 simple: sigul <commit> data_type required(?) comment(?) { 
 	$return = {
-		simple   => 1,
+		complex  => 0,
 		multiple => $item{'sigul'},
 		type     => $item{'data_type'},
 		required => ($item{'required(?)'}->[0])?1:0,
@@ -64,45 +64,25 @@ fault_type: sigul(?) data_type comment(?) {
 
 hash: '{' hash_element(s) '}' {  
 	$return = { 
-		simple   => 0, 
-		type     => 'hash',
-		elements => $item{'hash_element(s)'}
-	};
-
-	# This is a temporary hack to make hashs return anyType so that
-	# we can move forward with using the new syntax while I work on the actual
-	# implmentation
-	$return = {
-		simple => 1,
-		multiple => 0,
-		type => 'anyType',
-		required => 1,
+		complex => 1, 
+		type    => 'hash',
+		attrs   => $item{'hash_element(s)'}
 	};
 }
 
 array: '[' ( hash | array | simple(s) ) ']' {
 	$return = { 
-		simple   => 0, 
-		type     => 'array', 
-		elements => $item[2]
-	};
-
-	# This is a temporary hack to make hashs return anyType so that
-	# we can move forward with using the new syntax while I work on the actual
-	# implmentation
-	$return = {
-		simple => 1,
-		multiple => 0,
-		type => 'anyType',
-		required => 1,
+		complex => 1, 
+		type    => 'array', 
+		attrs   => $item[2]
 	};
 }
 
 hash_element: field_name '=>' ( hash | array | simple ) {
-	$return = {
+	$return = Pod::WSDL2::Attr->new({
 		'name' => $item{field_name},
 		%{$item[3]}
-	};
+	});
 }
 
 required: /^REQUIRED$/i { $return = 1; }

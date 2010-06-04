@@ -6,18 +6,20 @@ use warnings;
 our $VERSION = "0.05";
 
 use base("Class::Accessor::Fast");
-__PACKAGE__->mk_ro_accessors(qw(type descr array));
+__PACKAGE__->mk_ro_accessors(qw(type descr array complex attr));
 
 sub new {
 	my ($pkg, $str) = @_;
 
 	defined $str or $str = ''; # avoids warnings, dies soon
 
-	my ($type,$descr,$array);
+	my ($type,$descr,$array,$complex,$attr);
 	if (ref($str) eq "HASH") {
-		$type  = $str->{type};
-		$descr = $str->{docs};
-		$array = $str->{multiple};
+		$type    = $str->{type};
+		$descr   = $str->{docs};
+		$array   = $str->{multiple};
+		$complex = $str->{complex};
+		$attr    = $str->{attr};
 	}
 	else {
 		$str =~ s/\s*_RETURN\s*//i;
@@ -33,9 +35,11 @@ sub new {
 	}
 	
 	bless {
-		type   => $type,
-		descr  => $descr || '',
-		array  => $array
+		type    => $type,
+		descr   => $descr || '',
+		array   => $array,
+		complex => $complex,
+		attr    => $attr
 	}, $pkg;
 }
 

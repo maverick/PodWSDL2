@@ -8,17 +8,19 @@ use Carp;
 our $VERSION = "0.05";
 
 use base("Class::Accessor::Fast");
-__PACKAGE__->mk_ro_accessors(qw(type descr wsdlName));
+__PACKAGE__->mk_ro_accessors(qw(type descr wsdlName complex attrs));
 
 sub new {
 	my ($pkg, $str) = @_;
 
 	$str ||= '' ;  # avoid warnings here, will die soon
 
-	my ($type,$descr);
+	my ($type,$descr,$complex,$attrs);
 	if (ref($str) eq "HASH") {
-		$type  = $str->{type};
-		$descr = $str->{docs};
+		$type    = $str->{type};
+		$descr   = $str->{docs};
+		$complex = $str->{complex};
+		$attrs   = $str->{attrs};
 	}
 	else {
 		$str =~ s/^\s*_FAULT\s*//i or confess "_FAULT statements must have structure '_FAULT <type> <text>', like '_FAULT My::Fault This is my documentation'";
@@ -33,6 +35,8 @@ sub new {
 	bless {
 		type     => $type,
 		descr    => $descr,
+		attrs    => $attrs,
+		complex  => $complex,
 		wsdlName => ucfirst $wsdlName,
 	}, $pkg;
 }

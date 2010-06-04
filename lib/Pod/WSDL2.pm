@@ -181,17 +181,23 @@ sub _initSource {
 sub _initTypes {
 	my $me = shift;
 
+	use Data::Dumper;
 	for my $method (@{$me->{methods}}) {
 		for my $param (@{$method->params},$method->return) {
 			next unless $param;
 
-			if (!exists $XSD_STANDARD_TYPE_MAP{$param->type}) {				
-				$me->_addType($param->type, $param->array);
+			if ($param->complex) {
+				$me->_addComplexType($method->name,$param);
 			}
-			elsif ($param->array) {
-				#AHICOX: 10/10/2006
-				#changed to _standardTypeArrays (was singular)
-				$me->{standardTypeArrays}->{$param->type} = 1;
+			else {
+				if (!exists $XSD_STANDARD_TYPE_MAP{$param->type}) {				
+					$me->_addType($param->type, $param->array);
+				}
+				elsif ($param->array) {
+					#AHICOX: 10/10/2006
+					#changed to _standardTypeArrays (was singular)
+					$me->{standardTypeArrays}->{$param->type} = 1;
+				}
 			}
 		}
 
@@ -199,6 +205,30 @@ sub _initTypes {
 			unless (exists $XSD_STANDARD_TYPE_MAP{$fault->type}) {
 				$me->_addType($fault->type, 0);
 			}
+		}
+	}
+}
+
+sub _addComplexType {
+	my $me         = shift;
+	my $methodName = shift;
+	my $param      = shift;
+
+	my $name = join("",map { ucfirst($_) } $methodName, $param->name);
+
+	$me->types->{$name} = new Pod::WSDL2::Type(name => $name, array => $param->array, attrs => $param->attrs);
+	
+	for my $attr (@{$me->types->{$name}->attrs}) {
+		if ($attr->complex) {
+			$me->_addComplexType($name,$attr);
+		}
+		if (!exists $XSD_STANDARD_TYPE_MAP{$attr->type}) {
+			$me->_addType($attr->type, $attr->array);
+		}
+		elsif ($attr->array) {
+			#AHICOX: 10/10/2006
+			#changed to _standardTypeArrays (was singular)
+			$me->{standardTypeArrays}->{$attr->type} = 1;
 		}
 	}
 }
@@ -255,76 +285,73 @@ sub _parseMethodPod {
 	my $podData    = shift;
 	
 	my $method = new Pod::WSDL2::Method(name => $methodName, writer => $me->writer);
+
+=pod
+	my @data = split "\n", $podData;
 	
-	use Data::Dumper;
-	my $old_way = 0;
-	if ($old_way) {
-		my @data = split "\n", $podData;
+	# Preprocess wsdl pod: trim all lines and concatenate lines not
+	# beginning with wsdl type tokens to previous line.
+	# Ignore first element, if it does not begin with wsdl type token.
+	for (my $i = $#data; $i >= 0; $i--) {
 		
-		# Preprocess wsdl pod: trim all lines and concatenate lines not
-		# beginning with wsdl type tokens to previous line.
-		# Ignore first element, if it does not begin with wsdl type token.
-		for (my $i = $#data; $i >= 0; $i--) {
-			
-			if ($data[$i] !~ /^\s*(_INOUT|_IN|_OUT|_RETURN|_DOC|_FAULT|_ONEWAY)/i) {
-				if ($i > 0) {
-					$data[$i - 1] .= "\n$data[$i]";
-					$data[$i] = '';
-				}
-			}
-		}
-
-		for (@data) {
-			s/^\s*//;
-			s/\s*$//;
-
-			if (/^_DOC\s+/i) {
-				$method->doc(new Pod::WSDL2::Doc($_));
-			}
-			else {
-				s/\s+/ /g;
-				if (/^_(INOUT|IN|OUT)\s+/i) {
-					my $param = new Pod::WSDL2::Param($_);
-					$method->addParam($param);
-					$me->standardTypeArrays->{$param->type} = 1 if $param->array and $XSD_STANDARD_TYPE_MAP{$param->type};
-				} elsif (/^_RETURN\s+/i) {
-					my $return = new Pod::WSDL2::Return($_);
-					$method->return($return);
-					$me->standardTypeArrays->{$return->type} = 1 if $return->array and $XSD_STANDARD_TYPE_MAP{$return->type};
-				}
-				elsif (/^_FAULT\s+/i) {
-					$method->addFault(new Pod::WSDL2::Fault($_));
-				} elsif (/^_ONEWAY\s*$/i) {
-					$method->oneway(1);
-				}
+		if ($data[$i] !~ /^\s*(_INOUT|_IN|_OUT|_RETURN|_DOC|_FAULT|_ONEWAY)/i) {
+			if ($i > 0) {
+				$data[$i - 1] .= "\n$data[$i]";
+				$data[$i] = '';
 			}
 		}
 	}
-	else {
-		my $parser = Pod::WSDL2::Parser->new();
 
-		my $data = $parser->wsdlblock($podData) || die "Parse Failed: $!\n".$podData;
+	for (@data) {
+		s/^\s*//;
+		s/\s*$//;
 
-		$method->oneway($data->{oneway});
-
-		if ($data->{docs}) {
-			$method->doc($data->{docs});
+		if (/^_DOC\s+/i) {
+			$method->doc(new Pod::WSDL2::Doc($_));
 		}
-
-		if ($data->{return}) {
-			my $return = $data->{return};
-			$method->return($return);
-			$me->standardTypeArrays->{$return->type} = 1 if $return->array and $XSD_STANDARD_TYPE_MAP{$return->type};
+		else {
+			s/\s+/ /g;
+			if (/^_(INOUT|IN|OUT)\s+/i) {
+				my $param = new Pod::WSDL2::Param($_);
+				$method->addParam($param);
+				$me->standardTypeArrays->{$param->type} = 1 if $param->array and $XSD_STANDARD_TYPE_MAP{$param->type};
+			} elsif (/^_RETURN\s+/i) {
+				my $return = new Pod::WSDL2::Return($_);
+				$method->return($return);
+				$me->standardTypeArrays->{$return->type} = 1 if $return->array and $XSD_STANDARD_TYPE_MAP{$return->type};
+			}
+			elsif (/^_FAULT\s+/i) {
+				$method->addFault(new Pod::WSDL2::Fault($_));
+			} elsif (/^_ONEWAY\s*$/i) {
+				$method->oneway(1);
+			}
 		}
+	}
+=cut
 
-		foreach my $param (@{$data->{inputs}}) {
-			$method->addParam($param);
-			$me->standardTypeArrays->{$param->type} = 1 if $param->array and $XSD_STANDARD_TYPE_MAP{$param->type};
-		}
+	my $parser = Pod::WSDL2::Parser->new();
 
-		foreach my $fault (@{$data->{faults}}) {
-			$method->addFault($fault);
-		}
+	my $data = $parser->wsdlblock($podData) || die "Parse Failed: $!\n".$podData;
+
+	$method->oneway($data->{oneway});
+
+	if ($data->{docs}) {
+		$method->doc($data->{docs});
+	}
+
+	if ($data->{return}) {
+		my $return = $data->{return};
+		$method->return($return);
+		$me->standardTypeArrays->{$return->type} = 1 if $return->array and $XSD_STANDARD_TYPE_MAP{$return->type};
+	}
+
+	foreach my $param (@{$data->{inputs}}) {
+		$method->addParam($param);
+		$me->standardTypeArrays->{$param->type} = 1 if $param->array and $XSD_STANDARD_TYPE_MAP{$param->type};
+	}
+
+	foreach my $fault (@{$data->{faults}}) {
+		$method->addFault($fault);
 	}
 
 	push @{$me->{methods}}, $method;
@@ -350,13 +377,14 @@ sub _getModuleCode {
 		}
 		
 		return ($baseName, $contents);
-	} else {
-	
+	}
+	else {
 		my $moduleFile;
 		
 		if (-e $src) {
 			$moduleFile = $src;
-		} else {
+		}
+		else {
 			my $subDir = $src;
 			$subDir =~ s!::!/!g;
 		
@@ -389,7 +417,8 @@ sub _getModuleCode {
 			}
 			
 			return ($baseName, $contents);
-		} else {
+		}
+		else {
 			die "Can't find any file '$src' and can't locate it as a module in \@INC either (\@INC contains " . join (" ", @INC) . "), died";	
 		}
 	}
@@ -407,7 +436,8 @@ sub _setTargetNS {
 		my $serverURL = $me->location;
 		$serverURL =~ s!(http(s)??://[^/]*).*!$1!;
 		$me->targetNS("$serverURL/$tmp");
-	} else {
+	}
+	else {
 		$me->targetNS($me->location);
 	}
 }
@@ -479,7 +509,8 @@ sub _writeComplexType {
 		}
 	
 		$me->writer->wrElem($END_PREFIX_NAME, "sequence");
-	} elsif ($type->reftype eq 'ARRAY') {
+	}
+	elsif ($type->reftype eq 'ARRAY') {
 		$me->writer->wrElem($START_PREFIX_NAME, "complexContent");
 		$me->writer->wrElem($START_PREFIX_NAME, "restriction",  base => "soapenc:Array");
 		$me->writer->wrElem($EMPTY_PREFIX_NAME, "attribute",  ref => $TARGET_NS_DECL . ':' . $type->wsdlName, "wsdl:arrayType" => 'xsd:anyType[]');

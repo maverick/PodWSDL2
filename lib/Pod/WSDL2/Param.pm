@@ -8,23 +8,23 @@ use Pod::WSDL2::Doc;
 our $VERSION='0.5';
 
 use base("Class::Accessor::Fast");
-__PACKAGE__->mk_ro_accessors(qw(name type paramType descr array simple nillable));
+__PACKAGE__->mk_ro_accessors(qw(name type paramType descr array complex nillable attrs));
 
 sub new {
 	my ($pkg, $str) = @_;
 
 	defined $str or $str = ''; # avoids warnings, dies soon
 	
-	my ($name,$type,$descr,$array,$paramType,$simple,$required,$elements);
+	my ($name,$type,$descr,$array,$paramType,$complex,$required,$attrs);
 	if (ref($str) eq "HASH") {
 		$name      = $str->{'name'};
 		$type      = $str->{'type'};
 		$descr     = $str->{'docs'};
 		$array     = $str->{'multiple'};
 		$paramType = $str->{'input_type'};
-		$simple    = $str->{'simple'};
+		$complex   = $str->{'complex'};
 		$required  = $str->{'required'};
-		$elements  = $str->{'elements'};
+		$attrs     = $str->{'attrs'};
 
 		$paramType =~ s/^_//;
 	}
@@ -49,9 +49,9 @@ sub new {
 		paramType => $paramType,
 		descr     => $descr || '',
 		array     => $array,
-		simple    => $simple,
+		complex   => $complex,
 		nillable  => ($required)?'false':'true',
-		elements  => $elements
+		attrs     => $attrs
 	}, $pkg;
 }
 
