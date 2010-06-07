@@ -12,7 +12,7 @@ sub new {
 
 	defined $str or $str = ''; # avoids warnings
 	my ($name, $type, $needed, $descr, $array, $required, $complex, $attrs);
-	if (ref($str) eq "HASH") {
+	if (ref($str)) {
 		$name      = $str->{'name'};
 		$type      = $str->{'type'};
 		$descr     = $str->{'docs'};

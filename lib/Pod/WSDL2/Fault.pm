@@ -16,7 +16,7 @@ sub new {
 	$str ||= '' ;  # avoid warnings here, will die soon
 
 	my ($type,$descr,$complex,$attrs);
-	if (ref($str) eq "HASH") {
+	if (ref($str)) {
 		$type    = $str->{type};
 		$descr   = $str->{docs};
 		$complex = $str->{complex};

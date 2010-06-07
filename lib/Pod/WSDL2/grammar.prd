@@ -43,6 +43,7 @@ field_name: /[\w-]+/ { $return = $item[1]; 1; }
           | <error> 
 
 simple: sigul <commit> data_type required(?) comment(?) { 
+	# $return = Pod::WSDL2::Attr->new({
 	$return = {
 		complex  => 0,
 		multiple => $item{'sigul'},
@@ -50,6 +51,7 @@ simple: sigul <commit> data_type required(?) comment(?) {
 		required => ($item{'required(?)'}->[0])?1:0,
 		docs     => $item{'comment(?)'}->[0]
 	};
+	#});
 }
 
 sigul: '$' { $return = 0; 1;}

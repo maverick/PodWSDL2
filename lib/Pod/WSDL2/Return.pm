@@ -14,7 +14,7 @@ sub new {
 	defined $str or $str = ''; # avoids warnings, dies soon
 
 	my ($type,$descr,$array,$complex,$attr);
-	if (ref($str) eq "HASH") {
+	if (ref($str)) {
 		$type    = $str->{type};
 		$descr   = $str->{docs};
 		$array   = $str->{multiple};
