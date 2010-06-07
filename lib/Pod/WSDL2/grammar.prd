@@ -74,20 +74,31 @@ hash: '{' <commit> hash_element(s) '}' {
 }
 
 array: '[' <commit> ( hash | array | array_element(s) ) ']' {
-	for (my $i=0; $i <= $#{$item[3]}; $i++) {
-		unless (ref($item[3]->[$i]) eq "Pod::WSDL2::Attr") {
-			$item[3]->[$i] = Pod::WSDL2::Attr->new({
-				'name' => "Index$i",
-				%{$item[3]->[$i]}
-			});
-		}
+	if (ref($item[3]) eq "HASH") {
+		$item[3]->{'multiple'} = 1;
+		$return = $item[3];
 	}
+	else {
+		if (ref($item[3]) eq "ARRAY") {
+			for (my $i=0; $i <= $#{$item[3]}; $i++) {
+				unless (ref($item[3]->[$i]) eq "Pod::WSDL2::Attr") {
+					$item[3]->[$i] = Pod::WSDL2::Attr->new({
+						'name' => "Index$i",
+						%{$item[3]->[$i]}
+					});
+				}
+			}
+		}
+		else {
+			$item[3] = [ $item[3] ];
+		}
 
-	$return = { 
-		complex => 1, 
-		type    => 'array', 
-		attrs   => $item[3]
-	};
+		$return = { 
+			complex => 1, 
+			type    => 'array', 
+			attrs   => $item[3]
+		};
+	}
 }
 
 array_element: '_ATTR' simple {
