@@ -8,7 +8,7 @@ use Carp;
 our $VERSION = "0.05";
 
 use base("Class::Accessor::Fast");
-__PACKAGE__->mk_ro_accessors(qw(type descr wsdlName complex attrs));
+__PACKAGE__->mk_ro_accessors(qw(type descr wsdlName complex attrs name));
 
 sub new {
 	my ($pkg, $str) = @_;
@@ -33,6 +33,7 @@ sub new {
 	$wsdlName =~ s/::(.)/uc $1/eg;
 	
 	bless {
+		name     => 'Fault',
 		type     => $type,
 		descr    => $descr,
 		attrs    => $attrs,

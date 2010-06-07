@@ -3,9 +3,9 @@ package My::InlineComplex;
 =begin WSDL
 
 _IN complex {
-	key => $string	This is the docs
-	key2 => {
-		works => $boolean
+	_ATTR key $string	This is the docs
+	_ATTR key2 {
+		_ATTR works $boolean
 	}
 }
 

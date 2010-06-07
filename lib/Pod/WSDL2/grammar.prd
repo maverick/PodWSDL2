@@ -3,6 +3,7 @@
 	use Pod::WSDL2::Param;
 	use Pod::WSDL2::Return;
 	use Pod::WSDL2::Fault;
+	use Pod::WSDL2::Attr;
 }
 
 wsdlblock: doc_line(s?) command_block(s?) eofile {
@@ -42,14 +43,14 @@ comment: <skip:'[ \t]*'> /.*\n+/ { $return = $item[2]; 1; }
 field_name: /[\w-]+/ { $return = $item[1]; 1; }
           | <error> 
 
-simple: sigul <commit> data_type required(?) comment(?) { 
+simple: sigul <commit> data_type required(?) doc_line(s?) { 
 	# $return = Pod::WSDL2::Attr->new({
 	$return = {
 		complex  => 0,
 		multiple => $item{'sigul'},
 		type     => $item{'data_type'},
 		required => ($item{'required(?)'}->[0])?1:0,
-		docs     => $item{'comment(?)'}->[0]
+		docs     => join('',@{$item{'doc_line(s?)'}})
 	};
 	#});
 }
@@ -64,7 +65,7 @@ fault_type: sigul(?) data_type comment(?) {
 	};
 }
 
-hash: '{' hash_element(s) '}' {  
+hash: '{' <commit> hash_element(s) '}' {  
 	$return = { 
 		complex => 1, 
 		type    => 'hash',
@@ -72,15 +73,28 @@ hash: '{' hash_element(s) '}' {
 	};
 }
 
-array: '[' ( hash | array | simple(s) ) ']' {
+array: '[' <commit> ( hash | array | array_element(s) ) ']' {
+	for (my $i=0; $i <= $#{$item[3]}; $i++) {
+		unless (ref($item[3]->[$i]) eq "Pod::WSDL2::Attr") {
+			$item[3]->[$i] = Pod::WSDL2::Attr->new({
+				'name' => "Index$i",
+				%{$item[3]->[$i]}
+			});
+		}
+	}
+
 	$return = { 
 		complex => 1, 
 		type    => 'array', 
-		attrs   => $item[2]
+		attrs   => $item[3]
 	};
 }
 
-hash_element: field_name '=>' ( hash | array | simple ) {
+array_element: '_ATTR' simple {
+	$return = $item[2];
+}
+
+hash_element: '_ATTR' field_name ( hash | array | simple ) {
 	$return = Pod::WSDL2::Attr->new({
 		'name' => $item{field_name},
 		%{$item[3]}
@@ -89,7 +103,7 @@ hash_element: field_name '=>' ( hash | array | simple ) {
 
 required: /^REQUIRED$/i { $return = 1; }
 
-commands: input_type | one_way | '_RETURN' | '_FAULT'
+commands: input_type | one_way | '_RETURN' | '_FAULT' | '_ATTR' | '{' | '}' | '[' | ']'
 
 one_way: '_ONEWAY' { $return = 'oneway'; }
 

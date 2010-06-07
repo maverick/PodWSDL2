@@ -215,14 +215,17 @@ sub _addComplexType {
 	my $me         = shift;
 	my $methodName = shift;
 	my $param      = shift;
+	my $postfix    = shift;
 
-	my $name = join("",map { ucfirst($_) } $methodName, $param->name);
+	my $name = join("",map { ucfirst($_) } $methodName, $postfix || $param->name);
 
 	$me->types->{$name} = new Pod::WSDL2::Type(name => $name, array => $param->array, attrs => $param->attrs);
 	
 	for my $attr (@{$me->types->{$name}->attrs}) {
+		next unless ref($attr) =~ /::/;
+
 		if ($attr->complex) {
-			$attr->{type} = $me->_addComplexType($name,$attr);
+			$attr->{type} = $me->_addComplexType($name,$attr,$postfix);
 		}
 		if (!exists $XSD_STANDARD_TYPE_MAP{$attr->type}) {
 			$me->_addType($attr->type, $attr->array);

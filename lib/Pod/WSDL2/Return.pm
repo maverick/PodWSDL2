@@ -6,20 +6,20 @@ use warnings;
 our $VERSION = "0.05";
 
 use base("Class::Accessor::Fast");
-__PACKAGE__->mk_ro_accessors(qw(type descr array complex attr));
+__PACKAGE__->mk_ro_accessors(qw(type descr array complex attrs name));
 
 sub new {
 	my ($pkg, $str) = @_;
 
 	defined $str or $str = ''; # avoids warnings, dies soon
 
-	my ($type,$descr,$array,$complex,$attr);
+	my ($type,$descr,$array,$complex,$attrs);
 	if (ref($str)) {
 		$type    = $str->{type};
 		$descr   = $str->{docs};
 		$array   = $str->{multiple};
 		$complex = $str->{complex};
-		$attr    = $str->{attr};
+		$attrs   = $str->{attrs};
 	}
 	else {
 		$str =~ s/\s*_RETURN\s*//i;
@@ -35,11 +35,12 @@ sub new {
 	}
 	
 	bless {
+		name    => 'Return',
 		type    => $type,
 		descr   => $descr || '',
 		array   => $array,
 		complex => $complex,
-		attr    => $attr
+		attrs   => $attrs
 	}, $pkg;
 }
 
