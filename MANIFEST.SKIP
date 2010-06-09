@@ -11,3 +11,5 @@
 .tar.gz$
 \#
 ^experimental
+^WSDLtest.pl$
+^update_grammar.sh$

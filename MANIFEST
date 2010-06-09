@@ -46,4 +46,3 @@ t/My/TypeTest.pm
 t/My/WrongTypeTest.pm
 t/outputtest001.xml
 t/outputtest002.xml
-update_grammar.sh
