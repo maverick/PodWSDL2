@@ -40,7 +40,7 @@ eofile: /^\Z/
 doc_line: ...!commands comment   { $return = $item[2]; 1; }
 comment: <skip:'[ \t]*'> /.*\n+/ { $return = $item[2]; 1; }
 
-field_name: /[\w-]+/ { $return = $item[1]; 1; }
+field_name: /[\w-\.]+/ { $return = $item[1]; 1; }
           | <error> 
 
 simple: sigul <commit> data_type required(?) doc_line(s?) { 
