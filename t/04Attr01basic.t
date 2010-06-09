@@ -39,8 +39,6 @@ $a1 = new Pod::WSDL2::Attr('_ATTR myAttr @string _NEEDED blah blah ...');
 ok($a1->array == 1, 'Read array type correctly from input');
 
 $a1 = new Pod::WSDL2::Attr('_ATTR myAttr @string blah blah etc ...');
-use Data::Dumper;
-print STDERR Dumper $a1;
 ok($a1->nillable eq 'true' && $a1->descr eq 'blah blah etc ...', 'Read descr correctly from input without needed');
 
 $a1 = new Pod::WSDL2::Attr('_ATTR myAttr @string _NEEDED');

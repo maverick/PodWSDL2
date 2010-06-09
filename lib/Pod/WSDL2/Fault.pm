@@ -2,7 +2,6 @@ package Pod::WSDL2::Fault;
 
 use strict;
 use warnings;
-use Data::Dumper;
 use Carp;
 
 our $VERSION = "0.06";
