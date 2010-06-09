@@ -3630,7 +3630,7 @@ sub Parse::RecDescent::Pod::WSDL2::Parser::field_name
     my $text;
     my $lastsep="";
     my $current_match;
-    my $expectation = new Parse::RecDescent::Expectation(q{/[\\w-\\.]+/});
+    my $expectation = new Parse::RecDescent::Expectation(q{/[\\w\\.-]+/});
     $expectation->at($_[1]);
     
     my $thisline;
@@ -3641,7 +3641,7 @@ sub Parse::RecDescent::Pod::WSDL2::Parser::field_name
     while (!$_matched && !$commit)
     {
         
-        Parse::RecDescent::_trace(q{Trying production: [/[\\w-\\.]+/]},
+        Parse::RecDescent::_trace(q{Trying production: [/[\\w\\.-]+/]},
                       Parse::RecDescent::_tracefirst($_[1]),
                       q{field_name},
                       $tracelevel)
@@ -3654,7 +3654,7 @@ sub Parse::RecDescent::Pod::WSDL2::Parser::field_name
         my $repcount = 0;
 
 
-        Parse::RecDescent::_trace(q{Trying terminal: [/[\\w-\\.]+/]}, Parse::RecDescent::_tracefirst($text),
+        Parse::RecDescent::_trace(q{Trying terminal: [/[\\w\\.-]+/]}, Parse::RecDescent::_tracefirst($text),
                       q{field_name},
                       $tracelevel)
                         if defined $::RD_TRACE;
@@ -3662,7 +3662,7 @@ sub Parse::RecDescent::Pod::WSDL2::Parser::field_name
         $expectation->is(q{})->at($text);
         
 
-        unless ($text =~ s/\A($skip)/$lastsep=$1 and ""/e and   $text =~ m/\A(?:[\w-\.]+)/)
+        unless ($text =~ s/\A($skip)/$lastsep=$1 and ""/e and   $text =~ m/\A(?:[\w\.-]+)/)
         {
             
             $expectation->failed();
@@ -3704,7 +3704,7 @@ sub Parse::RecDescent::Pod::WSDL2::Parser::field_name
         
 
 
-        Parse::RecDescent::_trace(q{>>Matched production: [/[\\w-\\.]+/]<<},
+        Parse::RecDescent::_trace(q{>>Matched production: [/[\\w\\.-]+/]<<},
                       Parse::RecDescent::_tracefirst($text),
                       q{field_name},
                       $tracelevel)
@@ -7452,9 +7452,9 @@ package Pod::WSDL2::Parser; sub new { my $self = bless( {
                                                                              'actcount' => 1,
                                                                              'items' => [
                                                                                           bless( {
-                                                                                                   'pattern' => '[\\w-\\.]+',
+                                                                                                   'pattern' => '[\\w\\.-]+',
                                                                                                    'hashname' => '__PATTERN1__',
-                                                                                                   'description' => '/[\\\\w-\\\\.]+/',
+                                                                                                   'description' => '/[\\\\w\\\\.-]+/',
                                                                                                    'lookahead' => 0,
                                                                                                    'rdelim' => '/',
                                                                                                    'line' => 43,
