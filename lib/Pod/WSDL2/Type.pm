@@ -3,7 +3,7 @@ package Pod::WSDL2::Type;
 use strict;
 use warnings;
 
-our $VERSION = "0.05";
+our $VERSION = "0.06";
 
 use Pod::WSDL2::Attr;
 # use Pod::WSDL2::Utils qw(:writexml :namespaces :types);

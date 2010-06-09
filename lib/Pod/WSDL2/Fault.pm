@@ -5,7 +5,7 @@ use warnings;
 use Data::Dumper;
 use Carp;
 
-our $VERSION = "0.05";
+our $VERSION = "0.06";
 
 use base("Class::Accessor::Fast");
 __PACKAGE__->mk_ro_accessors(qw(type descr wsdlName complex attrs name));

@@ -10,7 +10,7 @@ use Pod::WSDL2::Doc;
 use Pod::WSDL2::Writer;
 use Pod::WSDL2::Utils qw(:writexml :namespaces :messages);
 
-our $VERSION = "0.05";
+our $VERSION = "0.06";
 
 use base("Class::Accessor::Fast");
 __PACKAGE__->mk_accessors(qw(doc return oneway));
