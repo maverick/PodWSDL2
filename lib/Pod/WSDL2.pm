@@ -292,49 +292,6 @@ sub _parseMethodPod {
 	
 	my $method = new Pod::WSDL2::Method(name => $methodName, writer => $me->writer);
 
-=pod
-	my @data = split "\n", $podData;
-	
-	# Preprocess wsdl pod: trim all lines and concatenate lines not
-	# beginning with wsdl type tokens to previous line.
-	# Ignore first element, if it does not begin with wsdl type token.
-	for (my $i = $#data; $i >= 0; $i--) {
-		
-		if ($data[$i] !~ /^\s*(_INOUT|_IN|_OUT|_RETURN|_DOC|_FAULT|_ONEWAY)/i) {
-			if ($i > 0) {
-				$data[$i - 1] .= "\n$data[$i]";
-				$data[$i] = '';
-			}
-		}
-	}
-
-	for (@data) {
-		s/^\s*//;
-		s/\s*$//;
-
-		if (/^_DOC\s+/i) {
-			$method->doc(new Pod::WSDL2::Doc($_));
-		}
-		else {
-			s/\s+/ /g;
-			if (/^_(INOUT|IN|OUT)\s+/i) {
-				my $param = new Pod::WSDL2::Param($_);
-				$method->addParam($param);
-				$me->standardTypeArrays->{$param->type} = 1 if $param->array and $XSD_STANDARD_TYPE_MAP{$param->type};
-			} elsif (/^_RETURN\s+/i) {
-				my $return = new Pod::WSDL2::Return($_);
-				$method->return($return);
-				$me->standardTypeArrays->{$return->type} = 1 if $return->array and $XSD_STANDARD_TYPE_MAP{$return->type};
-			}
-			elsif (/^_FAULT\s+/i) {
-				$method->addFault(new Pod::WSDL2::Fault($_));
-			} elsif (/^_ONEWAY\s*$/i) {
-				$method->oneway(1);
-			}
-		}
-	}
-=cut
-
 	my $parser = Pod::WSDL2::Parser->new();
 
 	my $data = $parser->wsdlblock($podData) || die "Parse Failed: $!\n".$podData;
