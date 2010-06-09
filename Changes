@@ -41,3 +41,8 @@ Revision history for Perl extension Pod::WSDL.
 			  =cut
 			  or perhaps at instatiation with a 'baseName' option?
 	
+0.06	Wed Jun  9 15:27:23 CDT 2010
+	- MAVERICK: Forked original Pod::WSDL.  Replaced regexp based parsing with
+	  a parser built on Parse::RecDescent.  You can now describe complex data structures
+	  inline, as well as preserve the formatting of the documentation blocks.
+	  Parsing rules appear to be backwards compatible with the original version.
