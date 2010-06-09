@@ -13,6 +13,7 @@ WriteMakefile(
     	'XML::XPath'   => 1.13,
     	'XML::XPath'   => 1.13,
 		'Parse::RecDescent' => 1.94,
+		'Class::Accessor' => 0.31,
     	'Pod::Text'    => 2.21},
     ($] >= 5.006 ?     ## Add these new keywords supported since 5.005
       (ABSTRACT_FROM  => 'lib/Pod/WSDL2.pm', # retrieve abstract from module
