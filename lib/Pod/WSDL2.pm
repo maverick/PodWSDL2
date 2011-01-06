@@ -26,7 +26,7 @@ use Pod::WSDL2::Parser;
 # ------------------ > "CONSTANTS" ----------------------------------------- #
 # -------------------------------------------------------------------------- #
 
-our $VERSION = "0.06";
+our $VERSION = "0.07";
 
 our $WSDL_METHOD_REGEXP_BEG = qr/^=(?:begin)\s+wsdl\s*\n(.*?)^=(?:cut|end\s+wsdl).*?^\s*sub\s+(\w+)/ims;
 our $WSDL_METHOD_REGEXP_FOR = qr/^=(?:for)\s+wsdl\s*\n(.*?)\n\n^\s*sub\s+(\w+)/ims;
