@@ -34,7 +34,7 @@ our $WSDL_TYPE_REGEXP_BEG   = qr/^=(?:begin)\s+wsdl\s*\n(.*?_ATTR.*?)^=(?:cut|en
 our $WSDL_TYPE_REGEXP_FOR   = qr/^=(?:for)\s+wsdl\s*\n(.*?_ATTR.*?)\n\n/ims;
 
 our $DEFAULT_BASE_NAME      = 'myService';
-our $PORT_TYPE_SUFFIX_NAME  = 'Handler';
+our $PORT_TYPE_SUFFIX_NAME  = ''; # 'Handler';
 our $BINDING_SUFFIX_NAME    = 'SoapBinding';
 our $SERVICE_SUFFIX_NAME    = 'Service';
 
