@@ -4,11 +4,28 @@
 	use Pod::WSDL2::Return;
 	use Pod::WSDL2::Fault;
 	use Pod::WSDL2::Attr;
+
+	sub wrap_docs {
+		my $block = join('',@_);
+
+		$block =~ s/\r//g;	# remove \r
+		$block =~ s/^\n+//;	# remove \n at the front of the block
+		$block =~ s/\n+$//;	# remove \n at the end of the block
+
+		$block =~ s/^[ \t]+//mg;	# remove spaces at the front of lines
+		$block =~ s/[ \t]+$//mg;	# remove spaces at the end of lines
+
+		# collapse two lines into one when there's not a blank one between them.
+		$block =~ s/([^\n])[ \t]*\n[ \t]*([^\n])/$1 $2/g;
+
+		return $block;
+	}
+
 }
 
 wsdlblock: doc_line(s?) command_block(s?) eofile {
 	$return = {
-		'docs' => Pod::WSDL2::Doc->new(join('',@{$item[1]}))
+		'docs' => Pod::WSDL2::Doc->new(wrap_docs(@{$item[1]}))
 	};
 
 	foreach (@{$item[2]}) {
@@ -50,7 +67,7 @@ simple: sigul <commit> data_type required(?) doc_line(s?) {
 		multiple => $item{'sigul'},
 		type     => $item{'data_type'},
 		required => ($item{'required(?)'}->[0])?1:0,
-		docs     => join('',@{$item{'doc_line(s?)'}})
+		docs     => wrap_docs(@{$item{'doc_line(s?)'}})
 	};
 	#});
 }
@@ -61,7 +78,7 @@ sigul: '$' { $return = 0; 1;}
 fault_type: sigul(?) data_type comment(?) {
 	$return = {
 		type => $item{'data_type'},
-		docs => $item{'comment(?)'}->[0]
+		docs => wrap_docs($item{'comment(?)'}->[0])
 	};
 }
 
@@ -112,7 +129,7 @@ hash_element: '_ATTR' field_name ( hash | array | simple ) {
 	});
 }
 
-required: /^REQUIRED$/i { $return = 1; }
+required: ('REQUIRED'|'required') { $return = 1; }
 
 commands: input_type | one_way | '_RETURN' | '_FAULT' | '_ATTR' | '{' | '}' | '[' | ']'
 
