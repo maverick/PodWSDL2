@@ -13,7 +13,7 @@ our %EXPORT_TAGS = (
 );
 
 our @EXPORT_OK = (@{$EXPORT_TAGS{writexml}}, @{$EXPORT_TAGS{namespaces}}, @{$EXPORT_TAGS{messages}}, @{$EXPORT_TAGS{types}});
-our $VERSION = "0.07";
+our $VERSION = "0.08";
 
 # writexml
 our $END_PREFIX_NAME       = 'end';

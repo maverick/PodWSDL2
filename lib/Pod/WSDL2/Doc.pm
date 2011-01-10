@@ -3,7 +3,7 @@ package Pod::WSDL2::Doc;
 use strict;
 use warnings;
 
-our $VERSION = "0.07";
+our $VERSION = "0.08";
 
 use base("Class::Accessor::Fast");
 __PACKAGE__->mk_accessors(qw(descr));

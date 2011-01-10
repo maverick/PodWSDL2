@@ -6,7 +6,7 @@ use XML::Writer;
 use Pod::WSDL2::Utils ':writexml';
 
 our $AUTOLOAD;
-our $VERSION = "0.07";
+our $VERSION = "0.08";
 
 our $INDENT_CHAR = "\t";
 our $NL_CHAR     = "\n";
