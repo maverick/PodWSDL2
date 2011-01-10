@@ -25,7 +25,7 @@
 
 wsdlblock: doc_line(s?) command_block(s?) eofile {
 	$return = {
-		'docs' => Pod::WSDL2::Doc->new(wrap_docs(@{$item[1]}))
+		'docs' => Pod::WSDL2::Doc->new(join('',@{$item[1]}))
 	};
 
 	foreach (@{$item[2]}) {
@@ -55,7 +55,7 @@ fault_block:  '_FAULT'  <commit> ( hash | array | fault_type ) { $return = Pod::
 eofile: /^\Z/
 
 doc_line: ...!commands comment   { $return = $item[2]; 1; }
-comment: <skip:'[ \t]*'> /.*\n+/ { $return = $item[2]; 1; }
+comment: <skip: ''> /.*\n+/      { $return = $item[2]; 1; }
 
 field_name: /[\w\.-]+/ { $return = $item[1]; 1; }
           | <error> 

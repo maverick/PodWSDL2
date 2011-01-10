@@ -699,7 +699,7 @@ sub Parse::RecDescent::Pod::WSDL2::Parser::wsdlblock
 
         $_tok = ($_noactions) ? 0 : do {
 	$return = {
-		'docs' => Pod::WSDL2::Doc->new(wrap_docs(@{$item[1]}))
+		'docs' => Pod::WSDL2::Doc->new(join('',@{$item[1]}))
 	};
 
 	foreach (@{$item[2]}) {
@@ -5993,7 +5993,7 @@ sub Parse::RecDescent::Pod::WSDL2::Parser::comment
     while (!$_matched && !$commit)
     {
         local $skip = defined($skip) ? $skip : $Parse::RecDescent::skip;
-        Parse::RecDescent::_trace(q{Trying production: [<skip:'[ \t]*'> /.*\\n+/]},
+        Parse::RecDescent::_trace(q{Trying production: [<skip: ''> /.*\\n+/]},
                       Parse::RecDescent::_tracefirst($_[1]),
                       q{comment},
                       $tracelevel)
@@ -6008,12 +6008,12 @@ sub Parse::RecDescent::Pod::WSDL2::Parser::comment
 
         
 
-        Parse::RecDescent::_trace(q{Trying directive: [<skip:'[ \t]*'>]},
+        Parse::RecDescent::_trace(q{Trying directive: [<skip: ''>]},
                     Parse::RecDescent::_tracefirst($text),
                       q{comment},
                       $tracelevel)
                         if defined $::RD_TRACE; 
-        $_tok = do { my $oldskip = $skip; $skip='[ \t]*'; $oldskip };
+        $_tok = do { my $oldskip = $skip; $skip= ''; $oldskip };
         if (defined($_tok))
         {
             Parse::RecDescent::_trace(q{>>Matched directive<< (return value: [}
@@ -6082,7 +6082,7 @@ sub Parse::RecDescent::Pod::WSDL2::Parser::comment
         
 
 
-        Parse::RecDescent::_trace(q{>>Matched production: [<skip:'[ \t]*'> /.*\\n+/]<<},
+        Parse::RecDescent::_trace(q{>>Matched production: [<skip: ''> /.*\\n+/]<<},
                       Parse::RecDescent::_tracefirst($text),
                       q{comment},
                       $tracelevel)
@@ -6808,7 +6808,7 @@ package Pod::WSDL2::Parser; sub new { my $self = bless( {
                                                                                                   'line' => 26,
                                                                                                   'code' => '{
 	$return = {
-		\'docs\' => Pod::WSDL2::Doc->new(wrap_docs(@{$item[1]}))
+		\'docs\' => Pod::WSDL2::Doc->new(join(\'\',@{$item[1]}))
 	};
 
 	foreach (@{$item[2]}) {
@@ -8321,10 +8321,10 @@ package Pod::WSDL2::Parser; sub new { my $self = bless( {
                                                                           'items' => [
                                                                                        bless( {
                                                                                                 'hashname' => '__DIRECTIVE1__',
-                                                                                                'name' => '<skip:\'[ \\t]*\'>',
+                                                                                                'name' => '<skip: \'\'>',
                                                                                                 'lookahead' => 0,
                                                                                                 'line' => 58,
-                                                                                                'code' => 'my $oldskip = $skip; $skip=\'[ \\t]*\'; $oldskip'
+                                                                                                'code' => 'my $oldskip = $skip; $skip= \'\'; $oldskip'
                                                                                               }, 'Parse::RecDescent::Directive' ),
                                                                                        bless( {
                                                                                                 'pattern' => '.*\\n+',
